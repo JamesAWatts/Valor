@@ -1,0 +1,171 @@
+{
+    "kobold": {
+        "hp": 6,
+        "armor": 6,
+        "die": 4,
+        "bonus": 1,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 100,
+        "reward": {
+            "gold": 5,
+            "items": "loincloth"
+        }
+    },
+    "kobald_slinger": {
+        "hp": 4,
+        "armor": 5,
+        "die": 4,
+        "bonus": 1,
+        "attack_range": 5,
+        "attack_count": 1,
+        "xp": 100,
+        "reward": {
+            "gold": 5,
+            "items": ["sling", "loincloth"]
+        }
+    },
+    "kobald_sorcer":{
+        "hp": 10,
+        "armor": 6,
+        "die": 6,
+        "bonus": 2,
+        "attack_range": 5,
+        "attack_count": 1,
+        "xp": 150,
+        "reward": {
+            "gold": 10,
+            "items": ["staff", "tattered robes"]
+        }
+    },
+    "goblin": {
+        "hp": 10,
+        "armor": 7,
+        "die": 6,
+        "bonus": 2,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 125,
+        "reward": {
+            "gold": 8,
+            "items": ["dagger", "potion"]
+        }
+    },
+    "goblin_archer": {
+        "hp": 8,
+        "armor": 6,
+        "die": 6,
+        "bonus": 2,
+        "attack_range": 5,
+        "attack_count": 1,
+        "xp": 125,
+        "reward": {
+            "gold": 8,
+            "items": ["shortbow", "potion"]
+        }
+    },
+    "goblin_chieften": {
+        "hp": 20,
+        "armor": 8,
+        "die": 8,
+        "bonus": 4,
+        "attack_range": 2,
+        "attack_count": 1,
+        "xp": 175,
+        "reward": {
+            "gold": 16,
+            "items": ["warhammer", "potion"]
+        }
+    },
+    "cultist": {
+        "hp": 12,
+        "armor": 10,
+        "die": 4,
+        "bonus": 3,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 150,
+        "reward": {
+            "gold": 12,
+            "items": ["dagger", "robes"]
+        }
+    },
+     "devout_cultist": {
+        "hp": 16,
+        "armor": 10,
+        "die": 6,
+        "bonus": 3,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 175,
+        "reward": {
+            "gold": 16,
+            "items": ["staff", "potion"]
+        }
+    },
+    "cult_leader": {
+        "hp": 24,
+        "armor": 12,
+        "die": 10,
+        "bonus": 4,
+        "attack_range": 5,
+        "attack_count": 2,
+        "xp": 200,
+        "reward": {
+            "gold": 24,
+            "items": ["staff", "leather armor"]
+        }
+    },
+    "thief": {
+        "hp": 14,
+        "armor": 10,
+        "die": 8,
+        "bonus": 4,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 150,
+        "reward": {
+            "gold": 20,
+            "items": ["sword", "chainmail"]
+        }
+    },
+    "assassin": {
+        "hp": 16,
+        "armor": 10,
+        "die": 8,
+        "bonus": 5,
+        "attack_range": 5,
+        "attack_count": 1,
+        "xp": 180,
+        "reward": {
+            "gold": 25,
+            "items": ["longbow", "leather armor"]
+        }
+    },
+    "gaurd": {
+        "hp": 20,
+        "armor": 12,
+        "die": 8,
+        "bonus": 4,
+        "attack_range": 1,
+        "attack_count": 2,
+        "xp": 200,
+        "reward": {
+            "gold": 25,
+            "items": ["mace", "chainmail"]
+        }
+    },
+    "gaurd_captain": {
+        "hp": 30,
+        "armor": 14,
+        "die": 10,
+        "bonus": 5,
+        "attack_range": 2,
+        "attack_count": 2,
+        "xp": 400,
+        "reward": {
+            "gold": 50,
+            "items": ["glaive", "half plate armor"]
+        }
+    }
+}

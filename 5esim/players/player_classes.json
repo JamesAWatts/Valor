@@ -1,0 +1,66 @@
+{
+    "fighter": {
+        "name": "jerome",
+        "hp": 10,
+        "armor": "chain_mail",
+        "weapon":"sword",
+        "proficiency": 1,
+        "attack_count": 1
+    },
+    "monk": {
+        "name": "hannah",
+        "hp": 9,
+        "armor": "unarmored",
+        "weapon":"unarmored",
+        "proficiency": 1,
+        "attack_count": 2
+    },
+    "archer": {
+        "name": "finrel",
+        "hp": 9,
+        "armor": "studded_leather",
+        "weapon":"bow",
+        "proficiency": 1,
+        "attack_count": 1
+    },
+    "rougue": {
+        "name": "jessie",
+        "hp": 9,
+        "armor": "studded_leather",
+        "weapon":"dagger",
+        "proficiency": 1,
+        "attack_count": 1
+    },
+    "sorcerer": {
+        "name": "gustavo",
+        "hp": 8,
+        "armor": "unarmored",
+        "weapon":"fire_bolt",
+        "proficiency": 1,
+        "attack_count": 1
+    },
+    "wizard": {
+        "name": "rylai",
+        "hp": 8,
+        "armor": "unarmored",
+        "weapon":"frost_bolt",
+        "proficiency": 1,
+        "attack_count": 1
+    },
+    "druid": {
+        "name": "lillian",
+        "hp": 9,
+        "armor": "hide",
+        "weapon":"thorn_whip",
+        "proficiency": 1,
+        "attack_count": 1
+    },
+    "alchemist": {
+        "name": "jeff",
+        "hp": 9,
+        "armor": "studded_leather",
+        "weapon":"poison_spray",
+        "proficiency": 1,
+        "attack_count": 1
+    }
+}
