@@ -1,4 +1,4 @@
-import json
+﻿import json
 import os
 
 
@@ -8,7 +8,7 @@ def load_player_classes(path=None):
     if path is None:
         path = os.path.join(base_dir, 'player_classes.json')
     
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, 'r', encoding='utf-8-sig') as f:
         data = json.load(f)
     
     return data
@@ -31,12 +31,28 @@ def get_class_stats_at_level(class_name, level, player_classes=None):
     # Start with base stats (excluding 'levels' key)
     stats = {k: v for k, v in class_def.items() if k != 'levels'}
     
+    # Ensure lists are initialized if they exist in base
+    for k, v in stats.items():
+        if isinstance(v, list):
+            stats[k] = list(v) # Copy to avoid mutation issues
+
     # Apply level-specific overrides for all levels up to and including current level
     levels_def = class_def.get('levels', {})
     for lvl in range(1, level + 1):
         lvl_str = str(lvl)
         if lvl_str in levels_def:
-            stats.update(levels_def[lvl_str])
+            level_data = levels_def[lvl_str]
+            for key, value in level_data.items():
+                # Merge lists (like spells), overwrite others
+                if isinstance(value, list):
+                    if key not in stats:
+                        stats[key] = []
+                    # Extend unique items to avoid duplicates if re-calculating?
+                    # Actually standard list extend is safer, we can de-dupe later if needed.
+                    # But for spells, we definitely want to accumulate.
+                    stats[key].extend([item for item in value if item not in stats[key]])
+                else:
+                    stats[key] = value
     
     return stats
 
@@ -137,7 +153,7 @@ def update_xp_and_level(player_data, xp_gain, class_name=None, base_hp=None):
     # Apply all class-specific level progression stats
     level_progression_keys = [
         'proficiency_bonus', 'attack_count', 'damage_die', 
-        'sneak_attack_rolls', 'cantrip_dice_rolled'
+        'sneak_attack_rolls', 'cantrip_dice_rolled', 'spells', 'skills'
     ]
     for key in level_progression_keys:
         if key in class_stats:

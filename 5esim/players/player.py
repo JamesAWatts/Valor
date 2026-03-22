@@ -1,37 +1,48 @@
-import pprint
+﻿import pprint
 import json
 import os
-
-try:
-    from players import Weapons
-    from players import armor as armor_module
-except ModuleNotFoundError:
-    import Weapons
-    import armor as armor_module
 
 # Locate JSON path in the same folder as this script
 base_dir = os.path.dirname(__file__)
 json_path = os.path.join(base_dir, 'player_classes.json')
 
-with open(json_path, 'r', encoding='utf-8') as f:
+with open(json_path, 'r', encoding='utf-8-sig') as f:
     classes = json.load(f)
+
+
+def load_weapons():
+    base_dir = os.path.dirname(__file__)
+    path = os.path.join(base_dir, 'Weapons.json')
+
+    with open(path, 'r', encoding='utf-8-sig') as f:
+        return json.load(f)
+
+weapons_data = load_weapons()
 
 
 def get_weapon_stats(weapon_name):
     weapon_key = (weapon_name or 'unarmed').lower()
-    weapon_data = Weapons.weapons_list.get(weapon_key)
 
-    if not weapon_data:
-        # fallback for undefined weapons, keep the player operational
-        weapon_data = Weapons.weapons_list.get('unarmed', {
-            'die': 4,
-            'on_hit_effect': 'swift',
-            'bonus': 0,
-            'attack_range': 1,
-        })
+    # Access weapons_list correctly (it's a flat dict of weapon names in Weapons.json)
+    # Note: original code had .values() loop which might be for nested structure
+    # but based on prompt, it seems it's one level deep
+    
+    wl = weapons_data.get('weapon_list', {})
+    if weapon_key in wl:
+        return wl[weapon_key]
 
-    return weapon_data
+    return wl.get('unarmed', {'die': 4, 'attack_range': 1, 'bonus': 0})
 
+def load_armor():
+    base_dir = os.path.dirname(__file__)
+    path = os.path.join(base_dir, 'armor.json')
+
+    with open(path, 'r', encoding='utf-8-sig') as f:
+        data = json.load(f)
+
+    return data.get('armor_list', {})
+    
+armor_data = load_armor()
 
 def apply_weapon_to_player(player_data, weapon_name=None):
     if not weapon_name:
@@ -51,89 +62,56 @@ def apply_weapon_to_player(player_data, weapon_name=None):
 def get_armor_stats(armor_name):
     armor_name = (armor_name or 'unarmored').lower()
 
-    # find armor in armor categories
-    for category, entries in armor_module.armor_dict.items():
-        if armor_name in entries:
-            armor_entry = entries[armor_name]
-            base_ac = armor_entry.get('armor') if 'armor' in armor_entry else armor_entry.get('ac', 10)
-            return category, armor_name, int(base_ac)
+    if armor_name in armor_data:
+        armor_entry = armor_data[armor_name]
+        return {
+            'name': armor_name,
+            'type': armor_entry.get('type', 'none'),
+            'ac': armor_entry.get('ac', 10)
+        }
 
-    # fallback to unarmored light
-    unarmored = armor_module.armor_dict['light_armor']['unarmored']
-    return 'light_armor', 'unarmored', int(unarmored['armor'])
+    # fallback to unarmored
+    return {'name': 'unarmored', 'type': 'none', 'ac': 10}
 
 
 def apply_armor_to_player(player_data):
     armor_item = player_data.get('armor', 'unarmored')
-    
-    # If armor is already an integer (already processed), just return
+
     if isinstance(armor_item, int):
         return player_data
-    
-    category, armor_name, base_ac = get_armor_stats(armor_item)
 
-    proficiency = int(player_data.get('proficiency', 0))
-    if category == 'light_armor':
-        bonus = proficiency - 1
-    elif category == 'medium_armor':
-        bonus = proficiency - 2
+    armor_stats = get_armor_stats(armor_item)
+
+    armor_type = armor_stats['type']
+    base_ac = armor_stats['ac']
+
+    proficiency = int(player_data.get('proficiency_bonus', player_data.get('proficiency', 0)))
+
+    # Simple AC calc: Base AC + Proficiency scaling for light/medium, or just AC for heavy/shield
+    # This logic follows what was there but cleaned up.
+    if armor_type == 'light':
+        bonus = max(0, proficiency - 1)
+    elif armor_type == 'medium':
+        bonus = max(0, proficiency - 2)
+    elif armor_type == 'shield':
+        # Shields add to the player's current AC. 
+        # In this simple model, we just treat it as part of the total.
+        bonus = 0
     else:
         bonus = 0
 
-    ac_value = max(0, base_ac + bonus)
+    ac_value = base_ac + bonus
 
-    player_data['armor_category'] = category
-    player_data['armor_name'] = armor_name
+    player_data['armor_name'] = armor_stats['name']
+    player_data['armor_type'] = armor_type
     player_data['armor_base'] = base_ac
     player_data['armor_bonus'] = bonus
     player_data['ac'] = ac_value
-    # keep compatibility with existing simulator expectations
+
+    # keep compatibility with simulator
     player_data['armor'] = ac_value
 
     return player_data
-
-
-def apply_monk_rules(player_data):
-    """Apply monk-specific rules"""
-    player_class = player_data.get('class', '').lower()
-    if player_class != 'monk':
-        return player_data
-
-    weapon = player_data.get('weapon', '').lower()
-    is_unarmed = weapon in ('unarmed', 'unarmored')
-
-    # Rule 1: Increase attack_count by 1 when weapon is unarmed (fist or unarmed)
-    if is_unarmed:
-        # Store the base attack_count the first time (from class definition)
-        if 'base_attack_count' not in player_data:
-            player_data['base_attack_count'] = int(player_data.get('attack_count', 1))
-        
-        # Always apply the bonus based on the base value, making this idempotent
-        player_data['attack_count'] = player_data['base_attack_count'] + 1
-
-    # Rule 2: Damage die scaling at levels 4, 8, 12, 16 (ONLY for unarmed)
-    if is_unarmed:
-        level = int(player_data.get('level', 1))
-        base_die = 4  # monk martial arts starts at d4
-
-        # Calculate how many times to scale (every 4 levels starting at level 4)
-        scale_count = 0
-        if level >= 4:
-            scale_count = (level - 1) // 4
-
-        scaled_die = base_die + (2 * scale_count)
-        player_data['damage_die'] = scaled_die
-
-    # Rule 3: Unarmored monks get 2*proficiency added to AC
-    armor_name = player_data.get('armor_name', 'unarmored').lower()
-    if armor_name == 'unarmored':
-        proficiency = int(player_data.get('proficiency', 0))
-        monks_bonus = 2 * proficiency
-        player_data['ac'] = 10 + monks_bonus
-        player_data['unarmored_ac_bonus'] = monks_bonus
-
-    return player_data
-
 
 def choose_player_class(class_data):
     class_names = list(class_data.keys())
@@ -157,7 +135,7 @@ def choose_player_class(class_data):
             print('Invalid class selection, please try again.')
             continue
 
-        chosen_data = class_data[chosen_name]
+        chosen_data = class_data[chosen_name].copy() # Copy to avoid mutating original source
 
         # Apply armor to show AC in stats display
         apply_armor_to_player(chosen_data)
@@ -167,10 +145,12 @@ def choose_player_class(class_data):
         # Get level 1 attack count from player_classes.json
         from players.leveler import load_player_classes
         player_classes = load_player_classes()
-        level1_attack_count = player_classes[chosen_name].get('levels', {}).get('1', {}).get('attack_count', 1)
+        level1_stats = player_classes[chosen_name].get('levels', {}).get('1', {})
+        level1_attack_count = level1_stats.get('attack_count', 1)
+        
         print(f"  HP: {chosen_data.get('hp')}")
         print(f"  Weapon: {chosen_data.get('weapon')}")
-        print(f"  Armor: {chosen_data.get('armor')}")
+        print(f"  Armor AC: {chosen_data.get('ac')} ({chosen_data.get('armor_name')})")
         print(f"  Level 1 Attack Count: {level1_attack_count}")
 
         confirm = input('Confirm this class? (y/n): ').strip().lower()

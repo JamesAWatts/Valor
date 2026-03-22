@@ -1,4 +1,4 @@
-{
+﻿{
     "kobold": {
         "hp": 6,
         "armor": 6,
@@ -9,10 +9,12 @@
         "xp": 100,
         "reward": {
             "gold": 5,
-            "items": "loincloth"
+            "items": [
+                {"name": "loincloth", "type": "junk"}
+            ]
         }
     },
-    "kobald_slinger": {
+    "kobold_slinger": {
         "hp": 4,
         "armor": 5,
         "die": 4,
@@ -22,10 +24,13 @@
         "xp": 100,
         "reward": {
             "gold": 5,
-            "items": ["sling", "loincloth"]
+            "items": [
+                {"name": "sling", "type": "weapon"},
+                {"name": "loincloth", "type": "junk"}
+            ]
         }
     },
-    "kobald_sorcer":{
+    "kobold_sorcerer":{
         "hp": 10,
         "armor": 6,
         "die": 6,
@@ -35,7 +40,10 @@
         "xp": 150,
         "reward": {
             "gold": 10,
-            "items": ["staff", "tattered robes"]
+            "items": [
+                {"name": "staff", "type": "weapon"},
+                {"name": "tattered robes", "type": "junk"}
+            ]
         }
     },
     "goblin": {
@@ -48,7 +56,10 @@
         "xp": 125,
         "reward": {
             "gold": 8,
-            "items": ["dagger", "potion"]
+            "items": [
+                {"name": "dagger", "type": "weapon"},
+                {"name": "potion", "type": "consumable"}
+            ]
         }
     },
     "goblin_archer": {
@@ -61,7 +72,10 @@
         "xp": 125,
         "reward": {
             "gold": 8,
-            "items": ["shortbow", "potion"]
+            "items": [
+                {"name": "shortbow", "type": "weapon"},
+                {"name": "potion", "type": "consumable"}
+            ]
         }
     },
     "goblin_chieften": {
@@ -74,7 +88,10 @@
         "xp": 175,
         "reward": {
             "gold": 16,
-            "items": ["warhammer", "potion"]
+            "items": [
+                {"name": "warhammer", "type": "weapon"},
+                {"name": "potion", "type": "consumable"}
+            ]
         }
     },
     "cultist": {
@@ -87,7 +104,10 @@
         "xp": 150,
         "reward": {
             "gold": 12,
-            "items": ["dagger", "robes"]
+            "items": [
+                {"name": "dagger", "type": "weapon"},
+                {"name": "robes", "type": "junk"}
+            ]
         }
     },
      "devout_cultist": {
@@ -100,7 +120,10 @@
         "xp": 175,
         "reward": {
             "gold": 16,
-            "items": ["staff", "potion"]
+            "items": [
+                {"name": "staff", "type": "weapon"},
+                {"name": "potion", "type": "consumable"}
+            ]
         }
     },
     "cult_leader": {
@@ -113,7 +136,10 @@
         "xp": 200,
         "reward": {
             "gold": 24,
-            "items": ["staff", "leather armor"]
+            "items": [
+                {"name": "staff", "type": "weapon"},
+                {"name": "leather armor", "type": "armor"}
+            ]
         }
     },
     "thief": {
@@ -126,7 +152,10 @@
         "xp": 150,
         "reward": {
             "gold": 20,
-            "items": ["sword", "chainmail"]
+            "items": [
+                {"name": "sword", "type": "weapon"},
+                {"name": "chainmail", "type": "armor"}
+            ]
         }
     },
     "assassin": {
@@ -139,10 +168,13 @@
         "xp": 180,
         "reward": {
             "gold": 25,
-            "items": ["longbow", "leather armor"]
+            "items": [
+                {"name": "longbow", "type": "weapon"},
+                {"name": "leather armor", "type": "armor"}
+            ]
         }
     },
-    "gaurd": {
+    "guard": {
         "hp": 20,
         "armor": 12,
         "die": 8,
@@ -152,10 +184,13 @@
         "xp": 200,
         "reward": {
             "gold": 25,
-            "items": ["mace", "chainmail"]
+            "items": [
+                {"name": "mace", "type": "weapon"},
+                {"name": "chainmail", "type": "armor"}
+            ]
         }
     },
-    "gaurd_captain": {
+    "guard_captain": {
         "hp": 30,
         "armor": 14,
         "die": 10,
@@ -165,7 +200,10 @@
         "xp": 400,
         "reward": {
             "gold": 50,
-            "items": ["glaive", "half plate armor"]
+            "items": [
+                {"name": "glaive", "type": "weapon"},
+                {"name": "half_plate", "type": "armor"}
+            ]
         }
     }
 }

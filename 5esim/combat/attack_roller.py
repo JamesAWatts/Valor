@@ -1,4 +1,4 @@
-import random
+﻿import random
 
 
 def roll_d20(advantage=0):
@@ -11,8 +11,8 @@ def roll_d20(advantage=0):
     return rolls[0], rolls
 
 
-def attack_roll(attack_bonus, enemy_ac, crit_range=(20,)):
-    attack_value, rolls = roll_d20()  # default normal
+def attack_roll(attack_bonus, enemy_ac, crit_range=(20,), advantage=0):
+    attack_value, rolls = roll_d20(advantage)
     hit = False
     is_critical = attack_value in crit_range
 
@@ -42,8 +42,8 @@ def damage_roll(damage_die, attack_bonus, critical=False, player_data=None):
     - Others: standard damage_die + bonus
     """
     player_class = player_data.get('class', '') if player_data else ''
-    
-    if player_class == 'rougue':
+
+    if player_class == 'rogue':
         # Rogue: standard damage + sneak attack
         base = random.randint(1, damage_die) + attack_bonus
         sneak_attack_rolls = player_data.get('sneak_attack_rolls', 0)
@@ -52,15 +52,15 @@ def damage_roll(damage_die, attack_bonus, critical=False, player_data=None):
         if critical:
             return total + random.randint(1, damage_die)
         return total
-    
+
     elif player_class in ('sorcerer', 'wizard', 'druid', 'alchemist'):
-        # Spellcaster: roll cantrip_dice_rolled × damage_die instead of standard damage
+        # Spellcaster: roll cantrip_dice_rolled × damage_die instead of standard damage  
         cantrip_dice_rolled = player_data.get('cantrip_dice_rolled', 1)
         base = sum(random.randint(1, damage_die) for _ in range(cantrip_dice_rolled)) + attack_bonus
         if critical:
             return base + random.randint(1, damage_die)
         return base
-    
+
     else:
         # Standard damage calculation for fighters, monks, archers, etc.
         base = random.randint(1, damage_die) + attack_bonus
@@ -69,7 +69,7 @@ def damage_roll(damage_die, attack_bonus, critical=False, player_data=None):
         return base
 
 
-def combat_round(enemy_ac, attack_count, damage_die, attack_bonus, crit_on_19=False):
+def combat_round(enemy_ac, attack_count, damage_die, attack_bonus, crit_on_19=False):     
     crit_range = (19, 20) if crit_on_19 else (20,)
     total_damage = 0
     results = []
@@ -78,7 +78,7 @@ def combat_round(enemy_ac, attack_count, damage_die, attack_bonus, crit_on_19=Fa
         print(f"Attack {i+1}:")
         result = attack_roll(attack_bonus, enemy_ac, crit_range)
         if result['hit']:
-            dmg = damage_roll(damage_die, attack_bonus, critical=result['critical'])
+            dmg = damage_roll(damage_die, attack_bonus, critical=result['critical'])      
             total_damage += dmg
             status = 'CRITICAL HIT' if result['critical'] else 'HIT'
             print(f"  {status}! d20={result['roll']} (total {result['total']}), damage={dmg}")
