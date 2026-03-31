@@ -5,11 +5,13 @@ Now I'm migrating to Pygame, and creating something I can also plug API's into a
 
 <img width="1279" height="750" alt="image" src="https://github.com/user-attachments/assets/c672b1fd-dceb-448e-b362-01258dd7c418" />
 <img width="1301" height="759" alt="image" src="https://github.com/user-attachments/assets/1cd77e76-837e-4f59-b4e3-64af147e4c9a" /> 
-<img width="1287" height="761" alt="image" src="https://github.com/user-attachments/assets/24185e6d-84ab-402c-a832-174fc0736510" />
+<img width="1274" height="752" alt="image" src="https://github.com/user-attachments/assets/3a40c0d0-6ac0-47a6-9bee-8b78d1e9ebc6" />
+<img width="1270" height="749" alt="image" src="https://github.com/user-attachments/assets/6a264171-b8f5-443e-82bc-3746213dd8a9" />
 
 
 
-   --- CURRENT FEATURES ---
+
+#   --- CURRENT FEATURES ---
 1. Implimented a class system similar to Dnd, Multiclassing friendly!
 2. Dice based combat with status effects like Advantage, and much more!
 3. Random encounters that get progressivly more dificult as you level up!
@@ -22,7 +24,7 @@ Now I'm migrating to Pygame, and creating something I can also plug API's into a
 10. HIGH SCORE! > Key actions are tracked and at the end of the game, a score is given
 11. Sprites have entered the frey > some still need some tweaking 
 
-   --- FUTURE LAND ---
+#   --- FUTURE LAND ---
 1. ANIMATIONS > Looking to start simple wiht a flashing animation for "hits", stay tuned ...
 2. API INTEGRATION > learning more about APIs and applying it to this game, stay tuned ...
 3. ENEMY REBALANCE > Currently testing combat for bugs and found the enemeis to be a little to weak / uninteresting. They need to learn some skills and spells
