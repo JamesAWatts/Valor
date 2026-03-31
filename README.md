@@ -1,4 +1,4 @@
-# DnD-lite
+# Valor
 This project started as a proof of concept for my python studies and has quickly grown into a passion project.
 What started as a dice roller for DnD, turned into a hit calculator, then became a CLI game. Check previous Commits for Simulator.py if you want to play the CLI version!
 Now I'm migrating to Pygame, and creating something I can also plug API's into as a learning experience.
