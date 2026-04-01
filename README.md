@@ -7,7 +7,8 @@ Now I'm migrating to Pygame, and creating something I can also plug API's into a
 
 <img width="1273" height="717" alt="image" src="https://github.com/user-attachments/assets/53fd0df7-7c13-45d8-85de-1c87eb31dcac" />
 
-<img width="1273" height="717" alt="image" src="https://github.com/user-attachments/assets/12b559dc-a981-434b-98cb-e855063be488" />
+<img width="1279" height="720" alt="image" src="https://github.com/user-attachments/assets/20967b19-1b1e-47a8-8e66-8dd247d48cfb" />
+
 
 #   --- CURRENT FEATURES ---
 1. Implimented a class system similar to Dnd, Multiclassing friendly!
