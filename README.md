@@ -14,17 +14,16 @@ Now I'm migrating to Pygame, and creating something I can also plug API's into a
 1. Implimented a class system similar to Dnd, Multiclassing friendly!
 2. Dice based combat with status effects like Advantage, and much more!
 3. Random encounters that get progressivly more dificult as you level up!
-4. Loot tables! You're enemies might have a coinpurse... or something more interesting!
-5. Legendary items! > your best you is just a pile of gold away.
-6. Blacksmith > Improve your weapons!
-7. Interactive inventory system > that shiney new sword will comwe in handy ;)
-8. A Hub town to return to between battles, Rest up, gear up, and get back out there.
-9. A save system, complete with three slots
-10. HIGH SCORE! > Key actions are tracked and at the end of the game, a score is given
-11. Sprites have entered the frey > some still need some tweaking 
-12. Enemies have been reworked, now planning which ability to use and saving resources for them.
-13. alomg with enemies, encounters now scale with player level, pulling up to 4 enemies into the fray.
-14. valor.exe now available here: https://drive.google.com/drive/folders/17YxxzoRTFG2VOok3hbmiT4EYTFhUklKF
+4. Shop filled with all your needs.
+5. Blacksmith for improving your weapons!
+6. Interactive inventory system > that shiney new sword will comwe in handy ;)
+7. A Hub town to return to between battles, Rest up, gear up, and get back out there.
+8. A save system, complete with three slots
+9. HIGH SCORE! > Key actions are tracked and at the end of the game, a score is given
+10. Sprites have entered the frey > some still need some tweaking 
+11. Enemies have been reworked, now planning which ability to use and saving resources for them.
+12. alomg with enemies, encounters now scale with player level, pulling up to 4 enemies into the fray.
+13. valor.exe now available here: https://drive.google.com/drive/folders/17YxxzoRTFG2VOok3hbmiT4EYTFhUklKF
     
 #   --- FUTURE LAND ---
 
