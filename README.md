@@ -5,10 +5,9 @@ Now I'm migrating to Pygame, and creating something I can also plug API's into a
 
 <img width="1276" height="719" alt="image" src="https://github.com/user-attachments/assets/d10072b6-fcfb-4c0c-8161-d7db76e13482" />
 
-<img width="1273" height="717" alt="image" src="https://github.com/user-attachments/assets/53fd0df7-7c13-45d8-85de-1c87eb31dcac" />
+<img width="1259" height="710" alt="image" src="https://github.com/user-attachments/assets/5e3f682c-6026-4b02-b7eb-4534723c7ffb" />
 
-<img width="1279" height="720" alt="image" src="https://github.com/user-attachments/assets/20967b19-1b1e-47a8-8e66-8dd247d48cfb" />
-
+<img width="1273" height="711" alt="image" src="https://github.com/user-attachments/assets/8e58ca8f-27d1-469a-be77-c39abba4cf66" />
 
 #   --- CURRENT FEATURES ---
 1. Implimented a class system similar to Dnd, Multiclassing friendly!
@@ -23,7 +22,7 @@ Now I'm migrating to Pygame, and creating something I can also plug API's into a
 10. Sprites have entered the frey > some still need some tweaking 
 11. Enemies have been reworked, now planning which ability to use and saving resources for them.
 12. alomg with enemies, encounters now scale with player level, pulling up to 4 enemies into the fray.
-13. valor.exe now available here: https://drive.google.com/drive/folders/17YxxzoRTFG2VOok3hbmiT4EYTFhUklKF
+13. valor.exe now available here: https://drive.google.com/drive/folders/17YxxzoRTFG2VOok3hbmiT4EYTFhUklKF (version 0.1.0 > Latest update is version 0.1.1, and not in exe yet)
     
 #   --- FUTURE LAND ---
 
