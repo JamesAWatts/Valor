@@ -6,94 +6,13 @@ import sys
 # Add project root to path to allow absolute imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from core.players.player import choose_player_class, classes as player_classes, apply_weapon_to_player, apply_armor_to_player
+from core.players.player import choose_player_class, classes as player_classes, apply_weapon_to_player, apply_armor_to_player, load_consumables, load_spells, load_skills
+from core.creatures.enemies import load_enemy_data, get_scaled_enemies
 from core.players.player_inventory import create_inventory, add_gold, add_item, display_inventory, manage_inventory, award_loot
 from core.players.leveler import update_xp_and_level, xp_to_next_level, get_class_stats_at_level, load_player_classes, add_class_level
 from core.combat.attack_roller import attack_roll, damage_roll
 from core.combat.combat_engine import CombatEngine
 from core.players.shop import visit_shop
-
-def load_enemy_data():
-    base_dir = os.path.dirname(__file__)
-    json_path = os.path.join(base_dir, '..', '..', 'data', 'creatures', 'enemies.json')
-    with open(json_path, 'r', encoding='utf-8-sig') as f:
-        return json.load(f)
-
-def load_consumables():
-    base_dir = os.path.dirname(__file__)
-    json_path = os.path.join(base_dir, '..', '..', 'data', 'players', 'consumables.json')
-    try:
-        with open(json_path, 'r', encoding='utf-8-sig') as f:
-            return json.load(f).get('consumable_list', {})
-    except FileNotFoundError:
-        return {}
-
-def load_spells():
-    base_dir = os.path.dirname(__file__)
-    json_path = os.path.join(base_dir, '..', '..', 'data', 'players', 'spells.json')
-    try:
-        with open(json_path, 'r', encoding='utf-8-sig') as f:
-            return json.load(f).get('spell_list', {})
-    except FileNotFoundError:
-        return {}
-
-def load_skills():
-    base_dir = os.path.dirname(__file__)
-    json_path = os.path.join(base_dir, '..', '..', 'data', 'players', 'skills.json')
-    try:
-        with open(json_path, 'r', encoding='utf-8-sig') as f:
-            return json.load(f).get('skill_list', {})
-    except FileNotFoundError:
-        return {}
-
-def get_scaled_enemies(enemy_data, player_level=1):
-    """
-    Budget-based encounter system:
-    Picks enemies until their total level matches the player_level.
-    """
-    budget = player_level
-    encounter = []
-    
-    # Map enemies to names so we can copy them
-    all_enemies = list(enemy_data.items())
-    
-    # Safety: Ensure we have at least level 1 enemies
-    if not any(e[1].get('level', 1) <= player_level for e in all_enemies):
-        # If no enemies are low enough, just pick the weakest one
-        name, stats = all_enemies[0]
-        enemy_instance = stats.copy()
-        enemy_instance['name'] = name.replace('_', ' ').title()
-        return [enemy_instance]
-
-    while budget > 0 and len(encounter) < 4:
-        # Filter enemies we can afford
-        affordable = [e for e in all_enemies if e[1].get('level', 1) <= budget]
-        
-        if not affordable:
-            break
-            
-        # Pick one
-        name, stats = random.choice(affordable)
-        
-        # Create a deep copy
-        enemy_instance = stats.copy()
-        
-        # Check if we already have this enemy type to add a suffix (A, B, C)
-        # Use name-based comparison
-        count = sum(1 for e in encounter if e.get('base_name') == name)
-        enemy_instance['base_name'] = name
-        
-        if count > 0:
-            suffix = f" {chr(65 + count)}"
-            enemy_instance['name'] = name.replace('_', ' ').title() + suffix
-        else:
-            enemy_instance['name'] = name.replace('_', ' ').title()
-        
-        encounter.append(enemy_instance)
-        budget -= stats.get('level', 1)
-        
-    return encounter
-
 
 def choose_enemies(enemy_data, player_level=1):
     enemies = get_scaled_enemies(enemy_data, player_level)
