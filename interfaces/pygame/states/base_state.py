@@ -11,26 +11,29 @@ class BaseState:
         if not self.active_menu:
             return
 
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_click = any(event.type == pygame.MOUSEBUTTONDOWN for event in events)
-
-        # Mouse input
-        selection = self.active_menu.handle_mouse(mouse_pos, mouse_click)
-        if selection is not None:
-            self.active_menu.selected = selection
-            option = self.active_menu.options[selection]
-            self.on_select(option)
-        
-        if not self.active_menu:
-            return
-
-        # Keyboard input
+        # Handle all input (keyboard and mouse) via the menu's own event handling
+        # handle_event returns the selected option string if confirmed
         for event in events:
             if not self.active_menu:
                 break
+            
+            # 1. Keyboard Navigation & Selection
             result = self.active_menu.handle_event(event)
             if result:
                 self.on_select(result)
+                return
+
+            # 2. Mouse Navigation & Selection
+            if event.type in [pygame.MOUSEBUTTONDOWN, pygame.MOUSEMOTION]:
+                mouse_pos = pygame.mouse.get_pos()
+                mouse_click = (event.type == pygame.MOUSEBUTTONDOWN)
+                
+                # handle_mouse returns the index of the option if clicked, or just updates hover
+                selection_idx = self.active_menu.handle_mouse(mouse_pos, mouse_click)
+                if selection_idx is not None and mouse_click:
+                    option = self.active_menu.options[selection_idx]
+                    self.on_select(option)
+                    return
 
     def on_select(self, option):
         raise NotImplementedError

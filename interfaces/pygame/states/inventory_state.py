@@ -5,8 +5,8 @@ from interfaces.pygame.states.base_state import BaseState
 from interfaces.pygame.ui.menu import Menu
 from interfaces.pygame.ui.backgrounds import BackgroundManager
 from interfaces.pygame.ui.dialogue_box import DialogueBox
-from core.players.player import apply_weapon_to_player, apply_armor_to_player, apply_trinket_to_player, apply_shield_to_player, load_weapons, load_armor, load_trinkets, load_shields, can_equip_armor
-from core.players.shop import load_consumables
+from core.players.player import apply_weapon_to_player, apply_armor_to_player, apply_trinket_to_player, apply_shield_to_player, load_weapons, load_armor, load_trinkets, load_shields, can_equip_armor, get_weapon_display_name, get_armor_display_name, load_consumables
+from core.players.shop import visit_shop
 
 class InventoryState(BaseState):
     def __init__(self, game, font):
@@ -97,7 +97,13 @@ class InventoryState(BaseState):
         options = []
         descriptions = {}
         for item_key in items:
-            display_name = item_key.replace('_', ' ').title()
+            if category == "weapons":
+                display_name = get_weapon_display_name(self.game.player, item_key)
+            elif category == "armor":
+                display_name = get_armor_display_name(self.game.player, item_key)
+            else:
+                display_name = item_key.replace('_', ' ').title()
+                
             count = category_data[item_key]
             
             if item_key in data:

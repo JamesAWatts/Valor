@@ -12,7 +12,7 @@
         },
         "bone_toss": {
             "name": "Bone Toss",
-            "cost": 1,
+            "cost": 2,
             "resource": "sp",
             "type": "attack",
             "dice": "1d6+2",
@@ -33,6 +33,10 @@
             "resource": "sp",
             "type": "attack",
             "dice": "2d12+6",
+            "dot": true,
+            "dot_dice": "3d4",
+            "duration": 3,
+            "power": 2,
             "description": "A brutal thrust with sharp horns."
         },
         "charge": {

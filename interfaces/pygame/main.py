@@ -21,6 +21,7 @@ font = pygame.font.SysFont(None, scale_font(DEFAULT_FONT_SIZE))
 # Initialize Music and Game managers
 music_manager = MusicManager()
 game = GameManager(music_manager=music_manager)
+game.set_debug_font(font)
 
 # Start title music immediately
 music_manager.play_state_music('title')
@@ -34,6 +35,12 @@ while True:
         if event.type == pygame.QUIT: 
             pygame.quit()
             exit()
+        
+        # --- Handle Global Debug Toggle (F3) ---
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_F3:
+                if game.debug_overlay:
+                    game.debug_overlay.toggle()
 
     screen.fill((30,30,30))
 

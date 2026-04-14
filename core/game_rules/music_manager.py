@@ -1,12 +1,12 @@
 import pygame
 import os
 import random
+from core.game_rules.path_utils import get_resource_path
 
 class MusicManager:
     def __init__(self):
-        # 1. Get the Project Root (where assets/ lives)
-        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        self.music_dir = os.path.join(base_dir, 'assets', 'bgm')
+        # 1. Get the dynamic path to assets/bgm
+        self.music_dir = get_resource_path(os.path.join('assets', 'bgm'))
         
         self.current_track = None
         self.last_combat_index = -1
@@ -22,7 +22,7 @@ class MusicManager:
             
         # 3. Set an initial volume
         pygame.mixer.music.set_volume(self.volume)
-        print(f"MusicManager: Mixer initialized. Root: {base_dir}")
+        print(f"MusicManager: Mixer initialized. Music Dir: {self.music_dir}")
 
     def set_volume(self, value):
         """Sets the volume (0.0 to 1.0)."""
@@ -69,9 +69,13 @@ class MusicManager:
             try:
                 pygame.mixer.music.stop()
                 pygame.mixer.music.load(new_path)
-                pygame.mixer.music.play(-1) # Loop forever
+                
+                # Jingle/Win music should play only once (loop=0)
+                loops = 0 if state_name in ['level_up', 'levelup'] else -1
+                pygame.mixer.music.play(loops)
+                
                 self.current_track = new_path
-                print(f"MusicManager: Now playing {new_path}")
+                print(f"MusicManager: Now playing {new_path} (loops={loops})")
             except Exception as e:
                 print(f"MusicManager Error: Could not play {new_path}: {e}")
         else:
@@ -93,7 +97,9 @@ class MusicManager:
 
         # If there's only one track, just return it
         if len(tracks) == 1:
-            return os.path.join(combat_dir, tracks[0])
+            full_path = os.path.join(combat_dir, tracks[0])
+            self.last_combat_index = 0
+            return full_path
 
         # Pick a random track that's different from the last one
         new_index = self.last_combat_index

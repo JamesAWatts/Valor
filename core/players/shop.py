@@ -1,16 +1,7 @@
 import json
 import os
-from .player import load_weapons, load_armor, load_trinkets, load_shields, apply_weapon_to_player, apply_armor_to_player, apply_trinket_to_player, apply_shield_to_player
+from .player import load_weapons, load_armor, load_trinkets, load_shields, apply_weapon_to_player, apply_armor_to_player, apply_trinket_to_player, apply_shield_to_player, load_consumables
 from .player_inventory import spend_gold, add_item
-
-def load_consumables():
-    base_dir = os.path.dirname(__file__)
-    json_path = os.path.join(base_dir, '..', '..', 'data', 'players', 'consumables.json')
-    try:
-        with open(json_path, 'r', encoding='utf-8-sig') as f:
-            return json.load(f).get('consumable_list', {})
-    except FileNotFoundError:
-        return {}
 
 def visit_shop(player_data, inventory):
     weapons_data = load_weapons().get('weapon_list', {})

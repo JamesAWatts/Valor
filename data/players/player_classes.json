@@ -1,9 +1,10 @@
 {
     "fighter": {
-        "hp": 10,
+        "hp": 15,
         "armor": "chain_mail",
         "weapon": "sword",
         "armor_proficiencies": ["none", "medium", "heavy", "shield"],
+        "weapon_proficiencies": ["simple", "martial"],
         "levels": {
             "1": { "proficiency_bonus": 2, "attack_count": 1, "skills": ["heavy_strikes"] },
             "2": { "proficiency_bonus": 2, "attack_count": 1, "skills": ["second_wind"] },
@@ -28,38 +29,40 @@
         }
     },
     "monk": {
-        "hp": 9,
+        "hp": 14,
         "armor": "unarmored",
         "weapon": "unarmed",
         "armor_proficiencies": ["none", "shield", "robe"],
+        "weapon_proficiencies": ["simple"],
         "levels": {
             "1": { "proficiency_bonus": 2, "attack_count": 2, "damage_die": 4, "skills": ["flurry_of_blows"] },
-            "2": { "proficiency_bonus": 2, "attack_count": 3, "damage_die": 4 },
-            "3": { "proficiency_bonus": 2, "attack_count": 3, "damage_die": 4, "skills": ["patient_defense"] },
-            "4": { "proficiency_bonus": 2, "attack_count": 3, "damage_die": 6 },
-            "5": { "proficiency_bonus": 3, "attack_count": 4, "damage_die": 6, "skills": ["stunning_strike"] },
-            "6": { "proficiency_bonus": 3, "attack_count": 4, "damage_die": 6 },
-            "7": { "proficiency_bonus": 3, "attack_count": 4, "damage_die": 6 },
-            "8": { "proficiency_bonus": 3, "attack_count": 4, "damage_die": 8 },
-            "9": { "proficiency_bonus": 4, "attack_count": 4, "damage_die": 8, "skills": ["wholeness_of_body"] },
-            "10": { "proficiency_bonus": 4, "attack_count": 5, "damage_die": 8 },
-            "11": { "proficiency_bonus": 4, "attack_count": 5, "damage_die": 8 },
-            "12": { "proficiency_bonus": 4, "attack_count": 5, "damage_die": 10 },
-            "13": { "proficiency_bonus": 5, "attack_count": 5, "damage_die": 10, "skills": ["ki_blast"] },
-            "14": { "proficiency_bonus": 5, "attack_count": 5, "damage_die": 10 },
-            "15": { "proficiency_bonus": 5, "attack_count": 5, "damage_die": 10 },
-            "16": { "proficiency_bonus": 5, "attack_count": 5, "damage_die": 12 },
+            "2": { "proficiency_bonus": 2, "attack_count": 2, "damage_die": 4 },
+            "3": { "proficiency_bonus": 2, "attack_count": 2, "damage_die": 4, "skills": ["flowing_strikes"] },
+            "4": { "proficiency_bonus": 2, "attack_count": 2, "damage_die": 6 },
+            "5": { "proficiency_bonus": 3, "attack_count": 2, "damage_die": 6, "skills": ["stunning_strike"] },
+            "6": { "proficiency_bonus": 3, "attack_count": 2, "damage_die": 6 },
+            "7": { "proficiency_bonus": 3, "attack_count": 3, "damage_die": 6 },
+            "8": { "proficiency_bonus": 3, "attack_count": 3, "damage_die": 8 },
+            "9": { "proficiency_bonus": 4, "attack_count": 3, "damage_die": 8, "skills": ["wholeness_of_body"] },
+            "10": { "proficiency_bonus": 4, "attack_count": 3, "damage_die": 8 },
+            "11": { "proficiency_bonus": 4, "attack_count": 4, "damage_die": 8 },
+            "12": { "proficiency_bonus": 4, "attack_count": 4, "damage_die": 10 },
+            "13": { "proficiency_bonus": 5, "attack_count": 4, "damage_die": 10, "skills": ["inner_focus"] },
+            "14": { "proficiency_bonus": 5, "attack_count": 4, "damage_die": 10 },
+            "15": { "proficiency_bonus": 5, "attack_count": 4, "damage_die": 10, "skills":["ki_blast"] },
+            "16": { "proficiency_bonus": 5, "attack_count": 4, "damage_die": 12 },
             "17": { "proficiency_bonus": 6, "attack_count": 5, "damage_die": 12 },
-            "18": { "proficiency_bonus": 6, "attack_count": 6, "damage_die": 12 },
-            "19": { "proficiency_bonus": 6, "attack_count": 6, "damage_die": 12 },
-            "20": { "proficiency_bonus": 6, "attack_count": 6, "damage_die": 12, "skills": ["quivering_palm"] }
+            "18": { "proficiency_bonus": 6, "attack_count": 5, "damage_die": 12 },
+            "19": { "proficiency_bonus": 6, "attack_count": 5, "damage_die": 12, "skills": ["quivering_palm"] },
+            "20": { "proficiency_bonus": 6, "attack_count": 5, "damage_die": 12 }
         }
     },
     "archer": {
-        "hp": 9,
+        "hp": 13,
         "armor": "studded_leather",
         "weapon": "bow",
         "armor_proficiencies": ["none", "light", "medium", "shield"],
+        "weapon_proficiencies": ["simple", "martial"],
         "levels": {
             "1": { "proficiency_bonus": 2, "attack_count": 1, "skills": ["hunters_mark"] },
             "2": { "proficiency_bonus": 2, "attack_count": 1 },
@@ -84,11 +87,12 @@
         }
     },
     "rogue": {
-        "hp": 9,
+        "hp": 13,
         "armor": "studded_leather",
         "weapon": "dagger",
         "sneak_attack_die": 6,
         "armor_proficiencies": ["none", "light", "shield"],
+        "weapon_proficiencies": ["simple"],
         "levels": {
             "1": { "proficiency_bonus": 2, "attack_count": 1, "sneak_attack_rolls": 1, "skills": ["sneak_attack"] },
             "2": { "proficiency_bonus": 2, "attack_count": 1, "sneak_attack_rolls": 1 },
@@ -113,10 +117,11 @@
         }
     },
     "sorcerer": {
-        "hp": 7,
+        "hp": 12,
         "armor": "unarmored",
         "weapon": "staff",
         "armor_proficiencies": ["none", "shield", "robe"],
+        "weapon_proficiencies": ["simple", "caster"],
         "levels": {
             "1": { "proficiency_bonus": 2, "cantrip_dice_rolled": 1, "spells": ["chromatic_orb"] },
             "2": { "proficiency_bonus": 2, "cantrip_dice_rolled": 1 },
@@ -141,10 +146,11 @@
         }
     },
     "wizard": {
-        "hp": 7,
+        "hp": 12,
         "armor": "unarmored",
         "weapon": "staff",
         "armor_proficiencies": ["none", "shield", "robe"],
+        "weapon_proficiencies": ["simple", "caster"],
         "levels": {
             "1": { "proficiency_bonus": 2, "cantrip_dice_rolled": 1, "spells": ["magic_missile"]},
             "2": { "proficiency_bonus": 2, "cantrip_dice_rolled": 1 },
@@ -169,10 +175,11 @@
         }
     },
     "druid": {
-        "hp": 8,
+        "hp": 13,
         "armor": "leather",
         "weapon": "staff",
         "armor_proficiencies": ["none", "robe", "medium", "shield"],
+        "weapon_proficiencies": ["simple", "caster"],
         "levels": {
             "1": { "proficiency_bonus": 2, "cantrip_dice_rolled": 1, "spells": ["cure_wounds"]},
             "2": { "proficiency_bonus": 2, "cantrip_dice_rolled": 1 },

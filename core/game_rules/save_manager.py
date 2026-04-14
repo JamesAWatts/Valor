@@ -1,8 +1,9 @@
 import json
 import os
+from core.game_rules.path_utils import get_writeable_path
 
 class SaveManager:
-    SAVE_DIR = os.path.join(os.getcwd(), "saves")
+    SAVE_DIR = get_writeable_path("saves")
 
     @staticmethod
     def ensure_save_dir():

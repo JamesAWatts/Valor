@@ -1,5 +1,3 @@
-from tkinter import font
-
 import pygame
 from interfaces.pygame.ui.debug_overlay import DebugOverlay
 
@@ -15,19 +13,21 @@ class GameManager:
         self.music_manager = music_manager
 
     def set_debug_font(self, font):
-        self.debug_overlay = DebugOverlay(font)
+        # The new DebugOverlay initializes its own font based on size, 
+        # but we can pass a size or just use the default.
+        self.debug_overlay = DebugOverlay()
 
     def change_state(self, new_state):
         self.state = new_state
-        
+
         # Automatically update music when state changes
         if self.music_manager and new_state:
             # Get the class name (e.g., 'HubState')
             state_class_name = type(new_state).__name__
-            
+
             # Convert 'HubState' -> 'hub', 'TitleState' -> 'title', etc.
             state_key = state_class_name.replace('State', '').lower()
-            
+
             # Tell the music manager to play music for this state
             self.music_manager.play_state_music(state_key)
 
@@ -38,5 +38,8 @@ class GameManager:
     def draw(self, screen):
         if self.state:
             self.state.draw(screen)
-        if self.god_mode and self.debug_overlay:
+
+        if self.debug_overlay:
+            # Clear transient data each frame
+            self.debug_overlay.clear_frame_data()
             self.debug_overlay.draw(screen, self)

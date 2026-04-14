@@ -1,5 +1,6 @@
 import pygame
 import os
+from core.game_rules.path_utils import get_resource_path
 
 class SpriteManager:
     """
@@ -46,13 +47,13 @@ class SpriteManager:
         if cache_key in SpriteManager._cache:
             return SpriteManager._cache[cache_key]
 
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-        sprite_path = os.path.join(base_dir, "assets", "sprites", "enemy_images", filename)
+        # Use get_resource_path for dynamic asset loading
+        sprite_path = get_resource_path(os.path.join("assets", "sprites", "enemy_images", filename))
 
         try:
             if not os.path.exists(sprite_path):
                 # Try variations
-                images_dir = os.path.join(base_dir, "assets", "sprites", "enemy_images")
+                images_dir = get_resource_path(os.path.join("assets", "sprites", "enemy_images"))
                 all_files = os.listdir(images_dir)
                 matches = [f for f in all_files if f.lower().startswith(enemy_key)]
                 if matches:
@@ -81,14 +82,14 @@ class SpriteManager:
         if cache_key in SpriteManager._cache:
             return SpriteManager._cache[cache_key]
 
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-        sprite_path = os.path.join(base_dir, "assets", "sprites", "player_sprites", filename)
+        # Use get_resource_path for dynamic asset loading
+        sprite_path = get_resource_path(os.path.join("assets", "sprites", "player_sprites", filename))
 
         try:
             if not os.path.exists(sprite_path):
                 # Try webp fallback for special cases like kobold sorc if any
                 if class_name == "kobold_sorcerer":
-                     sprite_path = os.path.join(base_dir, "assets", "sprites", "player_sprites", "Kobald_sorc.webp")
+                     sprite_path = get_resource_path(os.path.join("assets", "sprites", "player_sprites", "Kobald_sorc.webp"))
                 else:
                      raise FileNotFoundError(f"No player sprite found for {class_name}")
 

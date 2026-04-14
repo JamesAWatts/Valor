@@ -5,7 +5,7 @@
             "cost": 1,
             "resource": "sp",
             "type": "attack",
-            "dice": "1d8+2",
+            "dice": "2d8+3",
             "use_attack_count": true,
             "description": "A powerful blow that deals heavy damage."
         },
@@ -14,27 +14,26 @@
             "cost": 2,
             "resource": "sp",
             "type": "attack",
-            "dice": "2d8+4",
+            "dice": "3d8+6",
             "use_attack_count": true,
             "description": "You push yourself beyond your limits for an extra burst of power."
         },
         "second_wind": {
             "name": "Second Wind",
-            "cost": 1,
+            "cost": 2,
             "resource": "sp",
             "type": "heal",
-            "dice": "1d10+4",
+            "dice": "2d10+4",
             "description": "You call upon your stamina to regain hit points."
         },
         "shield_bash": {
             "name": "Shield Bash",
-            "cost": 2,
+            "cost": 3,
             "resource": "sp",
             "type": "attack",
-            "dice": "2d8+4",
+            "dice": "3d8+6",
             "effect": "enemy_advantage",
-            "power": -1,
-            "use_attack_count": false,
+            "power": -2,
             "description": "A blunt strike with your shield that leaves the enemy dazed."
         },
         "precision_strike": {
@@ -42,16 +41,16 @@
             "cost": 5,
             "resource": "sp",
             "type": "auto",
-            "dice": "2d8+6",
-            "use_attack_count": true,
+            "dice": "4d10+8",
             "description": "A carefully aimed blow that is almost impossible to miss."
         },
         "indomitable": {
             "name": "Indomitable",
-            "cost": 2,
+            "cost": 4,
             "resource": "sp",
             "type": "heal",
-            "dice": "3d10+10",
+            "dice": "2d10+4",
+            "use_attack_count": true,
             "description": "You shrug off your wounds through sheer force of will."
         },
         "cleave": {
@@ -59,81 +58,101 @@
             "cost": 5,
             "resource": "sp",
             "type": "attack",
-            "dice": "4d10+10",
+            "dice": "4d8+8",
             "aoe": true,
-            "use_attack_count": true,
             "description": "A wide sweeping strike that deals massive damage."
         },
         "superior_strike": {
             "name": "Superior Strike",
             "cost": 8,
             "resource": "sp",
-            "type": "attack",
-            "dice": "6d10+15",
-            "use_attack_count": true,
-            "description": "A flurry of devastating blows."
+            "type": "auto",
+            "dice": "6d10+8",
+            "multiplier": 2,
+            "description": "A focused strike that deals enormous damage."
         },
         "death_blow": {
             "name": "Death Blow",
-            "cost": 10,
+            "cost": 12,
             "resource": "sp",
-            "type": "attack",
-            "dice": "10d10+20",
-            "use_attack_count": true,
-            "description": "A lethal strike aimed at a vital point."
+            "type": "auto",
+            "dice": "6d10+8",
+            "dot": true,
+            "dot_dice": "2d10+4",
+            "multiplier": 3,
+            "description": "A lethal strike aimed at a vital point, causing severe bleeding."
         },
         "flurry_of_blows": {
             "name": "Flurry of Blows",
             "cost": 1,
             "resource": "sp",
             "type": "attack",
-            "dice": "2d6+4",
+            "use_damage_die": true,
             "use_attack_count": true,
+            "multiplier": 2,
             "description": "A rapid succession of unarmed strikes."
         },
-        "patient_defense": {
-            "name": "Patient Defense",
-            "cost": 1,
+        "flowing_strikes": {
+            "name": "Flowing Strikes",
+            "cost": 3,
             "resource": "sp",
-            "type": "buff",
-            "effect": "enemy_advantage",
-            "power": -1,
+            "type": "attack",
+            "aoe": true,
+            "use_damage_die": true,
             "description": "You focus on your defense, making it harder for enemies to hit you."
         },
         "stunning_strike": {
             "name": "Stunning Strike",
-            "cost": 2,
+            "cost": 4,
             "resource": "sp",
             "type": "attack",
-            "dice": "1d8+4",
+            "use_damage_die": true,
+            "multiplier": 4,
             "effect": "stunned",
             "power": 1,
             "description": "A precise strike that interferes with the flow of energy in an opponent's body."
         },
         "wholeness_of_body": {
             "name": "Wholeness of Body",
-            "cost": 3,
+            "cost": 4,
             "resource": "sp",
             "type": "heal",
             "dice": "3d8+10",
+            "use_attack_count": true,
             "description": "You gain the ability to heal yourself through meditation."
+        },
+        "inner_focus": {
+            "name": "Inner Focus",
+            "cost": 6,
+            "resource": "sp",
+            "type": "buff",
+            "effect": "crit on 19",
+            "effect2": "advantage",
+            "effect3": "damage",
+            "power": 5,
+            "duration": 3,
+            "description": "Take a turn to focus your ki, becoming more lethal for a short time."
         },
         "ki_blast": {
             "name": "Ki Blast",
-            "cost": 4,
+            "cost": 8,
             "resource": "sp",
             "type": "attack",
-            "dice": "6d6+12",
+            "use_damage_die": true,
+            "use_attack_count": true,
+            "multiplier": 2,
             "aoe": true,
             "description": "You unleash a wave of ki energy in all directions."
         },
         "quivering_palm": {
             "name": "Quivering Palm",
-            "cost": 8,
+            "cost": 10,
             "resource": "sp",
             "type": "auto",
-            "dice": "20d10+50",
-            "hp_threshold": 300,
+            "dice": "6d10+10",
+            "dot": true,
+            "dot_dice": "2d10+10",
+            "duration": 3,
             "description": "You set up lethal vibrations in someone's body."
         },
         "hunters_mark": {
@@ -163,6 +182,7 @@
             "use_attack_count": true,
             "dot": true,
             "dot_dice": "2d4",
+            "duration": 3,
             "effect":"enemy_advantage",
             "power": -2,
             "description": "Strike wiht a poisoned blade, weakening the target for 2 turns"
@@ -184,6 +204,7 @@
             "type": "attack",
             "dot": true,
             "dot_dice": "3d4",
+            "duration": 3,
             "description": "Strike an atery and cause the target to bleed."
         },
         "smoke_bomb": {
@@ -216,6 +237,7 @@
             "use_attack_count": true,
             "dot": true,
             "dot_dice": "3d4",
+            "duration": 3,
             "description": "Thow knives at all enemis, cuasing bleed on hit."
         },
         "death_strike": {

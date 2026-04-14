@@ -22,15 +22,14 @@ class ClassSelectState(BaseState):
 
         import os
         from core.game_rules.constants import scale_x, scale_y
-        
-        # Adjust path to reach assets/sprites/player_sprites
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-        sprite_path = os.path.join(base_dir, "assets", "sprites", "player_sprites", f"{class_name}.png")
-        
+        from core.game_rules.path_utils import get_resource_path
+
+        # Use get_resource_path to find the sprites dynamically
+        sprite_path = get_resource_path(os.path.join("assets", "sprites", "player_sprites", f"{class_name}.png"))
+
         # Handle .webp for Kobold Sorcerer if needed, or other extensions
         if not os.path.exists(sprite_path):
-            sprite_path = os.path.join(base_dir, "assets", "sprites", "player_sprites", f"{class_name}.webp")
-
+            sprite_path = get_resource_path(os.path.join("assets", "sprites", "player_sprites", f"{class_name}.webp"))
         try:
             sprite = pygame.image.load(sprite_path).convert_alpha()
             # Scale sprite to a reasonable size (e.g., 200x200 raw)

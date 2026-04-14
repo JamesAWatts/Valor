@@ -11,6 +11,7 @@
             "name": "Buckler",
             "type": "shield",
             "ac": 1,
+            "damage resist": 1,
             "cost": 25,
             "description": "A small, round shield. Lightweight but basic."
         },
@@ -18,6 +19,7 @@
             "name": "Shield",
             "type": "shield",
             "ac": 2,
+            "damage resist": 1,
             "cost": 50,
             "description": "A standard wooden shield with iron banding."
         },
@@ -25,6 +27,7 @@
             "name": "Kite Shield",
             "type": "shield",
             "ac": 3,
+            "damage resist": 2,
             "cost": 100,
             "description": "A large shield providing excellent coverage."
         },
@@ -32,15 +35,18 @@
             "name": "Tower Shield",
             "type": "shield",
             "ac": 4,
+            "damage resist": 2,
             "cost": 500,
             "description": "A massive shield that covers most of your body."
         },
         "arcane_ward": {
             "name": "Arcane Ward",
             "type": "shield",
-            "ac": 1,
-            "spell_save": 2,
-            "cost": 600,
+            "ac": 2,
+            "damage resist": 1,
+            "spell_save": 1,
+            "spell_resist": 1,
+            "cost": 300,
             "description": "A shield etched with runes that improve spell success."
         }
 ,
@@ -48,15 +54,18 @@
             "name": "Sturdy Targe",
             "type": "shield",
             "ac": 2,
+            "damage resist": 2,
             "bonus_sp": 10,
-            "cost": 750,
+            "cost": 400,
             "description": "A combat shield designed for endurance."
         },
         "dragon_scale_shield": {
             "name": "Dragon Scale Shield",
             "type": "shield",
-            "ac": 5,
-            "bonus_hp": 15,
+            "ac": 4,
+            "spell_resist": 2,
+            "spell_save": 2,
+            "damage resist": 3,
             "cost": 1500,
             "description": "A legendary shield made from the scales of a red dragon."
         }

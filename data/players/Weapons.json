@@ -20,15 +20,29 @@
         },
         "staff": {
             "type": "melee",
+            "weapon_class": "simple",
             "attack_range": 1,
             "die": 6,
             "on_hit_effect": "vex",
             "bonus": 0,
+            "spell_save": 1,
             "cost": 5,
-            "description": "A long wooden rod, favored by travelers and sorcerers alike."
+            "description": "A long wooden rod that aids in focusing magical energy. +1 Spell DC."
+        },
+        "wand": {
+            "type": "melee",
+            "weapon_class": "caster",
+            "attack_range": 1,
+            "die": 4,
+            "on_hit_effect": "none",
+            "bonus": 0,
+            "spell_save": 2,
+            "cost": 25,
+            "description": "A short, slender stick used to channel powerful spells. +2 Spell DC."
         },
         "hammer": {
             "type": "melee",
+            "weapon_class": "simple",
             "attack_range": 1,
             "die": 6,
             "on_hit_effect": "slow",
@@ -38,6 +52,7 @@
         },
         "sword": {
             "type": "melee",
+            "weapon_class": "martial",
             "attack_range": 1,
             "die": 8,
             "on_hit_effect": "vex",
@@ -47,6 +62,7 @@
         },
         "axe": {
             "type": "melee",
+            "weapon_class": "martial",
             "attack_range": 1,
             "die": 8,
             "on_hit_effect": "graze",
@@ -56,6 +72,7 @@
         },
         "mace": {
             "type": "melee",
+            "weapon_class": "martial",
             "attack_range": 1,
             "die": 8,
             "on_hit_effect": "sap",
@@ -65,6 +82,7 @@
         },
         "warhammer": {
             "type": "melee",
+            "weapon_class": "martial",
             "attack_range": 1,
             "die": 8,
             "on_hit_effect": "push",
@@ -74,6 +92,7 @@
         },
         "greatsword": {
             "type": "melee",
+            "weapon_class": "martial",
             "attack_range": 1,
             "die": 10,
             "on_hit_effect": "graze",
@@ -83,6 +102,7 @@
         },
         "greataxe": {
             "type": "melee",
+            "weapon_class": "martial",
             "attack_range": 1,
             "die": 12,
             "on_hit_effect": "graze",
@@ -92,6 +112,7 @@
         },
         "rusty_sword": {
             "type": "melee",
+            "weapon_class": "martial",
             "attack_range": 1,
             "die": 4,
             "on_hit_effect": "none",
@@ -101,6 +122,7 @@
         },
         "whip": {
             "type": "melee",
+            "weapon_class": "martial",
             "attack_range": 2,
             "die": 6,
             "on_hit_effect": "slow",
@@ -110,6 +132,7 @@
         },
         "maul": {
             "type": "melee",
+            "weapon_class": "martial",
             "attack_range": 2,
             "die": 10,
             "on_hit_effect": "push",
@@ -119,6 +142,7 @@
         },
         "glaive": {
             "type": "melee",
+            "weapon_class": "martial",
             "attack_range": 2,
             "die": 10,
             "on_hit_effect": "cleave",
@@ -128,6 +152,7 @@
         },
         "sling": {
             "type": "ranged",
+            "weapon_class": "simple",
             "attack_range": 3,
             "die": 4,
             "on_hit_effect": "slow",
@@ -137,6 +162,7 @@
         },
         "shortbow": {
             "type": "ranged",
+            "weapon_class": "simple",
             "attack_range": 4,
             "die": 6,
             "on_hit_effect": "swift",
@@ -146,6 +172,7 @@
         },
         "bow": {
             "type": "ranged",
+            "weapon_class": "martial",
             "attack_range": 5,
             "die": 6,
             "on_hit_effect": "sap",
@@ -155,6 +182,7 @@
         },
         "longbow": {
             "type": "ranged",
+            "weapon_class": "martial",
             "attack_range": 7,
             "die": 8,
             "on_hit_effect": "vex",
@@ -164,6 +192,7 @@
         },
         "crossbow": {
             "type": "ranged",
+            "weapon_class": "martial",
             "attack_range": 5,
             "die": 10,
             "on_hit_effect": "push",

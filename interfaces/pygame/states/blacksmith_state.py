@@ -38,7 +38,7 @@ class BlacksmithState(BaseState):
             
             if level < 3:
                 cost = UPGRADE_COSTS[level + 1]
-                descriptions[display_name] = f"Upgrade to +{level+1} for {cost}g. Increases damage and accuracy."
+                descriptions[display_name] = f"Upgrade to +{level+1} for {cost}g. Increases damage, accuracy, and Spell DC."
             else:
                 descriptions[display_name] = "Max level reached."
                 

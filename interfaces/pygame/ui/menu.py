@@ -74,34 +74,38 @@ class Menu:
         if center_x is None: center_x = self.pos[0]
         if start_y is None: start_y = self.pos[1]
         
-        # Convert to RAW coordinates for Panel
-        raw_center_x = center_x / SCALE_X
-        raw_start_y = start_y / SCALE_Y
-
-        # --- CALCULATE RAW DIMENSIONS ---
-        raw_line_h = self.font.get_height() / SCALE_Y
-        raw_spacing = raw_line_h + 5
+        # --- CALCULATE DIMENSIONS ---
+        line_h = self.font.get_height()
+        spacing = line_h + scale_y(5)
         
-        raw_header_h = (raw_line_h + 15) if self.header else 0
-        raw_top_pad = 15
-        raw_bottom_pad = 25
+        header_h = (line_h + scale_y(15)) if self.header else 0
+        top_pad = scale_y(15)
+        bottom_pad = scale_y(25)
         
-        raw_w = self.get_raw_width()
-        raw_h = raw_header_h + (len(self.options) * raw_spacing) + raw_top_pad + raw_bottom_pad
+        # get_width() returns scaled width
+        w = self.get_width()
+        h = header_h + (len(self.options) * spacing) + top_pad + bottom_pad
 
-        # Anchor Logic (Raw)
-        raw_panel_x = raw_center_x - raw_w // 2
-        raw_panel_y = raw_start_y - raw_top_pad
+        # Anchor Logic (Screen Space)
+        panel_x = center_x - w // 2
+        panel_y = start_y - top_pad
 
-        # --- CLAMPING (RAW 800x600) ---
-        if raw_panel_x < 5: raw_panel_x = 5
-        if raw_panel_x + raw_w > 795: raw_panel_x = 795 - raw_w
-        if raw_panel_y < 5: raw_panel_y = 5
-        if raw_panel_y + raw_h > 595: raw_panel_y = 595 - raw_h
+        # --- CLAMPING (Screen Space) ---
+        if panel_x < scale_x(5): panel_x = scale_x(5)
+        if panel_x + w > SCREEN_WIDTH - scale_x(5): panel_x = SCREEN_WIDTH - scale_x(5) - w
+        if panel_y < scale_y(5): panel_y = scale_y(5)
+        if panel_y + h > SCREEN_HEIGHT - scale_y(5): panel_y = SCREEN_HEIGHT - scale_y(5) - h
 
-        # Draw Panel (Panel will scale these back to screen space)
+        # Draw Panel (Panel expects raw, but we'll bypass scaling by passing 1.0 or modifying Panel)
+        # Better: Update Panel to accept 'is_scaled' or just pass raw values by dividing.
+        # But for now, let's keep it simple and just use raw values for Panel input.
+        raw_w = w / SCALE_X
+        raw_h = h / SCALE_Y
+        raw_x = panel_x / SCALE_X
+        raw_y = panel_y / SCALE_Y
+
         panel = Panel(
-            raw_panel_x, raw_panel_y, raw_w, raw_h,
+            raw_x, raw_y, raw_w, raw_h,
             bg_color=self.bg_color, border_color=self.border_color,
             border_width=3, centered=False, border_radius=15, alpha=self.alpha
         )
@@ -112,17 +116,16 @@ class Menu:
         
         # Draw Content (Screen Space)
         draw_center_x = rect.centerx
-        current_y = rect.y + (raw_top_pad * SCALE_Y)
+        current_y = rect.y + top_pad
         
         if self.header:
             tw, th = self.font.size(self.header)
             draw_text_outlined(screen, self.header, self.font, COLOR_GOLD, draw_center_x - tw // 2, current_y)
-            current_y += (raw_line_h + 10) * SCALE_Y
+            current_y += (line_h + scale_y(10))
             
-            line_y = current_y - 5 * SCALE_Y
-            pygame.draw.line(screen, self.border_color, (rect.x + 10 * SCALE_X, line_y), (rect.right - 10 * SCALE_X, line_y), 2)
+            line_y = current_y - scale_y(5)
+            pygame.draw.line(screen, self.border_color, (rect.x + scale_x(10), line_y), (rect.right - scale_x(10), line_y), 2)
 
-        spacing = raw_spacing * SCALE_Y
         for i, option in enumerate(self.options):
             color = (255, 255, 0) if i == self.selected else (255, 255, 255)
             if self.is_disabled(i): color = (150, 150, 150)

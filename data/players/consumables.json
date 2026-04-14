@@ -1,7 +1,7 @@
 ﻿{
     "consumable_list": {
-        "potion": {
-            "name": "Potion",
+        "healing_potion": {
+            "name": "Healing Potion",
             "cost": 10,
             "effect_type": "heal",
             "value": 10,

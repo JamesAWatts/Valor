@@ -74,7 +74,7 @@ class HubState(BaseState):
 
     def handle_main_menu(self, option):
         if option == "Fight":
-            from interfaces.cli.main import load_enemy_data, get_scaled_enemies
+            from core.creatures.enemies import load_enemy_data, get_scaled_enemies
             enemy_data = load_enemy_data()
             enemies = get_scaled_enemies(enemy_data, self.game.player.get('level', 1))
 
@@ -118,6 +118,7 @@ class HubState(BaseState):
                 p["current_mp"] = p.get("max_mp", 0)
                 p["current_sp"] = p.get("max_sp", 0)
                 p["rest_count"] = p.get("rest_count", 0) + 1
+                validate_player_data(p)
             else:
                 print("DEBUG: Not enough gold to rest")
 

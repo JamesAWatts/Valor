@@ -1,64 +1,78 @@
 import pygame
+from collections import deque
 from core.game_rules.constants import scale_x, scale_y
 
 class DebugOverlay:
-    def __init__(self, font):
-        self.font = font
+    def __init__(self, font_size=18, max_lines=12):
+        pygame.font.init()
+        # Try to use a fixed-width font for better alignment, fallback to default
+        try:
+            self.font = pygame.font.SysFont("consolas", font_size)
+        except:
+            self.font = pygame.font.SysFont(None, font_size)
+        
+        self.visible = False
         self.padding = scale_x(10)
-        self.line_height = font.get_height() + scale_y(2)
+        self.line_height = font_size + scale_y(2)
+        
+        # Store recent logs
+        self.logs = deque(maxlen=max_lines)
+        
+        # Live values
+        self.data = {}
 
-    def draw(self, screen, game):
-        state = game.state
+    def toggle(self):
+        self.visible = not self.visible
 
-        lines = []
+    def log(self, message):
+        self.logs.appendleft(message)
 
-        # --- State info ---
-        lines.append(f"State: {state.__class__.__name__}")
+    def set(self, key, value):
+        self.data[key] = value
 
-        # --- Player info ---
-        if hasattr(game, "player") and game.player:
-            hp = game.player.get("current_hp", "?")
-            max_hp = game.player.get("max_hp", "?")
-            lines.append(f"Player HP: {hp}/{max_hp}")
+    def clear_frame_data(self):
+        """Call this each frame if you want transient values"""
+        self.data = {}
 
-        # --- Combat-specific info ---
-        if state.__class__.__name__ == "CombatState":
-            lines.append(f"Phase: {getattr(state, 'phase', '?')}")
-            lines.append(f"Menu: {getattr(state, 'menu_state', '?')}")
+    def draw(self, surface, game=None):
+        if not self.visible:
+            return
+        
+        x, y = self.padding, self.padding
+        
+        # Background box
+        width = scale_x(420)
+        height = scale_y(400)
+        bg_rect = pygame.Rect(x - 5, y - 5, width, height)
+        
+        # Draw semi-transparent background (if surface supports it, otherwise solid)
+        # For simplicity in this engine, we'll stick to a dark solid or high-alpha black
+        pygame.draw.rect(surface, (10, 10, 10), bg_rect)
+        pygame.draw.rect(surface, (0, 255, 0), bg_rect, 1) # Green border
+        
+        # --- System Info ---
+        if game and game.state:
+            self.set("State", type(game.state).__name__)
 
-            if hasattr(state, "enemies"):
-                for i, enemy in enumerate(state.enemies):
-                    ehp = enemy.get("current_hp", "?")
-                    max_ehp = enemy.get("max_hp", "?")
-                    lines.append(f"Enemy {i}: {enemy['name']} {ehp}/{max_ehp}")
-
-        # --- Dialogue ---
-        if hasattr(state, "dialogue"):
-            lines.append(f"Dialogue Active: {bool(state.dialogue.current_message)}")
-            lines.append(f"Typing: {state.dialogue.is_typing}")
-
-        # --- Controls ---
-        lines.append("---- DEBUG ----")
-        lines.append("ENTER: advance dialogue")
-        lines.append("ESC: quit (if implemented)")
-
-        # --- Draw background ---
-        width = scale_x(300)
-        height = self.padding * 2 + len(lines) * self.line_height
-
-        bg_rect = pygame.Rect(
-            self.padding,
-            self.padding,
-            width,
-            height
-        )
-
-        pygame.draw.rect(screen, (0, 0, 0), bg_rect)
-        pygame.draw.rect(screen, (0, 255, 0), bg_rect, 1)
-
-        # --- Draw text ---
-        for i, line in enumerate(lines):
-            text_surface = self.font.render(line, True, (0, 255, 0))
-            x = bg_rect.x + self.padding
-            y = bg_rect.y + self.padding + i * self.line_height
-            screen.blit(text_surface, (x, y))
+        # --- Live Data ---
+        for key, value in self.data.items():
+            text = f"{key}: {value}"
+            surf = self.font.render(text, True, (0, 255, 0))
+            surface.blit(surf, (x, y))
+            y += self.line_height
+        
+        y += scale_y(10)
+        pygame.draw.line(surface, (0, 100, 0), (x, y), (x + width - scale_x(20), y))
+        y += scale_y(10)
+        
+        # --- Logs ---
+        for log in self.logs:
+            color = (255, 255, 255)
+            if "FAIL" in log or "Missed" in log:
+                color = (255, 100, 100)
+            elif "Hit" in log or "resisted" in log:
+                color = (100, 255, 100)
+            
+            surf = self.font.render(log, True, color)
+            surface.blit(surf, (x, y))
+            y += self.line_height

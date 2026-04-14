@@ -1,18 +1,17 @@
 import pprint
 import json
 import os
+from core.game_rules.path_utils import get_resource_path
 
-# Locate JSON path in the data directory
-base_dir = os.path.dirname(__file__)
-json_path = os.path.join(base_dir, '..', '..', 'data', 'players', 'player_classes.json')
+# Locate JSON path in the data directory dynamically
+json_path = get_resource_path(os.path.join('data', 'players', 'player_classes.json'))
 
 with open(json_path, 'r', encoding='utf-8-sig') as f:
     classes = json.load(f)
 
 
 def load_weapons():
-    base_dir = os.path.dirname(__file__)
-    path = os.path.join(base_dir, '..', '..', 'data', 'players', 'Weapons.json')
+    path = get_resource_path(os.path.join('data', 'players', 'Weapons.json'))
 
     with open(path, 'r', encoding='utf-8-sig') as f:
         return json.load(f)
@@ -28,8 +27,7 @@ def get_weapon_stats(weapon_name):
     return wl.get('unarmed', {'die': 4, 'attack_range': 1, 'bonus': 0})
 
 def load_armor():
-    base_dir = os.path.dirname(__file__)
-    path = os.path.join(base_dir, '..', '..', 'data', 'players', 'armor.json')
+    path = get_resource_path(os.path.join('data', 'players', 'armor.json'))
     with open(path, 'r', encoding='utf-8-sig') as f:
         data = json.load(f)
     return data.get('armor_list', {})
@@ -37,8 +35,7 @@ def load_armor():
 armor_data = load_armor()
 
 def load_shields():
-    base_dir = os.path.dirname(__file__)
-    path = os.path.join(base_dir, '..', '..', 'data', 'players', 'shields.json')
+    path = get_resource_path(os.path.join('data', 'players', 'shields.json'))
     try:
         with open(path, 'r', encoding='utf-8-sig') as f:
             data = json.load(f)
@@ -49,8 +46,7 @@ def load_shields():
 shields_data = load_shields()
 
 def load_trinkets():
-    base_dir = os.path.dirname(__file__)
-    path = os.path.join(base_dir, '..', '..', 'data', 'players', 'trinkets.json')
+    path = get_resource_path(os.path.join('data', 'players', 'trinkets.json'))
     try:
         with open(path, 'r', encoding='utf-8-sig') as f:
             data = json.load(f)
@@ -60,14 +56,52 @@ def load_trinkets():
 
 trinkets_data = load_trinkets()
 
+def load_consumables():
+    json_path = get_resource_path(os.path.join('data', 'players', 'consumables.json'))
+    try:
+        with open(json_path, 'r', encoding='utf-8-sig') as f:
+            return json.load(f).get('consumable_list', {})
+    except FileNotFoundError:
+        return {}
+
+def load_spells():
+    json_path = get_resource_path(os.path.join('data', 'players', 'spells.json'))
+    try:
+        with open(json_path, 'r', encoding='utf-8-sig') as f:
+            return json.load(f).get('spell_list', {})
+    except FileNotFoundError:
+        return {}
+
+def load_skills():
+    json_path = get_resource_path(os.path.join('data', 'players', 'skills.json'))
+    try:
+        with open(json_path, 'r', encoding='utf-8-sig') as f:
+            return json.load(f).get('skill_list', {})
+    except FileNotFoundError:
+        return {}
+
 def apply_weapon_to_player(player_data, weapon_name=None):
     if not weapon_name:
         weapon_name = player_data.get('weapon', 'unarmed')
 
     weapon_stats = get_weapon_stats(weapon_name)
+    
+    # Class die is set in recalculate_stats (from leveler.py)
+    # We must capture it before overwriting player_data['damage_die']
+    class_die = int(player_data.get('damage_die', 0))
+    weapon_die = int(weapon_stats.get('die', 4))
 
     player_data['weapon'] = weapon_name
-    player_data['damage_die'] = weapon_stats.get('die')
+    
+    # Monk Override: Unarmed or Simple weapons use class die if better
+    if player_data.get('class') == 'monk':
+        w_class = weapon_stats.get('weapon_class', 'simple')
+        if weapon_name == 'unarmed' or w_class == 'simple':
+            player_data['damage_die'] = max(class_die, weapon_die)
+        else:
+            player_data['damage_die'] = weapon_die
+    else:
+        player_data['damage_die'] = weapon_die
     
     # Base on-hit effect from weapon stats
     player_data['on_hit_effect'] = weapon_stats.get('on_hit_effect') or weapon_stats.get('condition')
@@ -136,6 +170,24 @@ def get_trinket_stats(trinket_name):
         return trinkets_data[trinket_key]
     return trinkets_data.get('none', {'bonus_ac': 0, 'bonus_hp': 0})
 
+def can_equip_weapon(player_data, weapon_name):
+    """
+    Checks if the player's class is proficient with the given weapon.
+    """
+    weapon_stats = get_weapon_stats(weapon_name)
+    weapon_class = weapon_stats.get('weapon_class', 'simple')
+    
+    class_name = player_data.get('class', 'fighter')
+    
+    from .leveler import load_player_classes
+    classes_data = load_player_classes()
+    class_info = classes_data.get(class_name, {})
+    
+    # All classes get simple proficiency if not explicitly defined otherwise, 
+    # but we added it to all in player_classes.json
+    proficiencies = class_info.get('weapon_proficiencies', ['simple'])
+    return weapon_class in proficiencies
+
 def can_equip_armor(player_data, armor_name):
     """
     Checks if the player's class is proficient with the given armor.
@@ -148,12 +200,46 @@ def can_equip_armor(player_data, armor_name):
         return True
         
     class_name = player_data.get('class', 'fighter')
+    
     from .leveler import load_player_classes
     classes_data = load_player_classes()
     class_info = classes_data.get(class_name, {})
     
     proficiencies = class_info.get('armor_proficiencies', ['none'])
     return armor_type in proficiencies
+
+def get_weapon_display_name(player, weapon_name):
+    """
+    Returns the formatted name of a weapon including its enchantment and upgrade level.
+    Example: 'Fire Dagger +1'
+    """
+    if not weapon_name or weapon_name == 'none':
+        return "None"
+        
+    base_name = weapon_name.replace('_', ' ').title()
+    
+    upgrades = player.get('weapon_upgrades', {}).get(weapon_name, {})
+    level = upgrades.get('level', 0)
+    enchantment = upgrades.get('enchantment')
+    
+    display_name = base_name
+    
+    if enchantment:
+        enchant_str = enchantment.replace('_', ' ').title()
+        display_name = f"{enchant_str} {display_name}"
+        
+    if level > 0:
+        display_name = f"{display_name} +{level}"
+        
+    return display_name
+
+def get_armor_display_name(player, armor_name):
+    """
+    Returns the formatted name of armor.
+    """
+    if not armor_name or armor_name == 'none':
+        return "None"
+    return armor_name.replace('_', ' ').title()
 
 def apply_armor_to_player(player_data):
     # Recalculate AC and Buffs based on ALL equipment
@@ -240,13 +326,26 @@ def apply_armor_to_player(player_data):
 
     # Bonuses
     eq_dmg = armor_stats.get('bonus_dmg', 0) + shield_stats.get('bonus_dmg', 0) + trinket_stats.get('bonus_atk', 0)
-    eq_spell_save = armor_stats.get('spell_save', 0) + shield_stats.get('spell_save', 0) + trinket_stats.get('spell_save', 0)
+    
+    # Include base weapon spell_save bonus
+    weapon_name = player_data.get('weapon', 'unarmed')
+    weapon_stats = get_weapon_stats(weapon_name)
+    weapon_spell_save = weapon_stats.get('spell_save', 0)
+    
+    eq_spell_save = armor_stats.get('spell_save', 0) + shield_stats.get('spell_save', 0) + trinket_stats.get('spell_save', 0) + weapon_spell_save
+    eq_spell_resist = armor_stats.get('spell_resist', 0) + shield_stats.get('spell_resist', 0) + trinket_stats.get('spell_resist', 0)
+    
     player_data['equipment_dmg_bonus'] = eq_dmg
     
-    upgrades = player_data.get('weapon_upgrades', {}).get(player_data.get('weapon', 'unarmed'), {})
+    upgrades = player_data.get('weapon_upgrades', {}).get(weapon_name, {})
+    weapon_level = upgrades.get('level', 0)
+    eq_spell_save += weapon_level
+    
     if upgrades.get('enchantment') == 'focusing_lens':
         eq_spell_save += 1
+        
     player_data['spell_save'] = eq_spell_save
+    player_data['spell_resist'] = eq_spell_resist
     
     return player_data
 

@@ -2,11 +2,10 @@ import pygame
 import random
 import os
 from core.game_rules.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from core.game_rules.path_utils import get_resource_path
 
-# Adjust BASE_DIR to reach the project root from interfaces/pygame/ui/
-# interfaces/pygame/ui/backgrounds.py -> interfaces/pygame/ui -> interfaces/pygame -> interfaces -> 5esim (root)
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-ASSETS_DIR = os.path.join(BASE_DIR, "assets", "backgrounds")
+# Use get_resource_path to find the assets/backgrounds folder dynamically
+ASSETS_DIR = get_resource_path(os.path.join("assets", "backgrounds"))
 
 class BackgroundManager:
     """

@@ -2,6 +2,8 @@ import pygame
 from core.game_rules.constants import scale_x, scale_y, SCREEN_WIDTH, SCREEN_HEIGHT, COLOR_GOLD, COLOR_WHITE
 from interfaces.pygame.ui.panel import Panel, draw_text_outlined
 
+from core.players.player import get_weapon_display_name, get_armor_display_name
+
 class InventoryPanel:
     def __init__(self, font, weapons_db, armor_db, shields_db, trinkets_db):
         self.font = font
@@ -63,7 +65,13 @@ class InventoryPanel:
             item_key = player.get(slot, 'none')
             
             label = f"{slot.title()}: "
-            val_str = item_key.replace('_', ' ').title()
+            
+            if slot == 'weapon':
+                val_str = get_weapon_display_name(player, item_key)
+            elif slot == 'armor':
+                val_str = get_armor_display_name(player, item_key)
+            else:
+                val_str = item_key.replace('_', ' ').title()
             
             # Draw label
             lx = rect.x + scale_x(15)

@@ -1,18 +1,17 @@
 import json
 import os
+from core.game_rules.path_utils import get_resource_path
 
 def load_player_classes(path=None):
     """Load player class definitions."""
-    base_dir = os.path.dirname(__file__)
     if path is None:
-        path = os.path.join(base_dir, '..', '..', 'data', 'players', 'player_classes.json')
+        path = get_resource_path(os.path.join('data', 'players', 'player_classes.json'))
     with open(path, 'r', encoding='utf-8-sig') as f:
         return json.load(f)
 
 def load_xp_table():
     """Load unified XP table."""
-    base_dir = os.path.dirname(__file__)
-    path = os.path.join(base_dir, '..', '..', 'data', 'players', 'xp_table.json')
+    path = get_resource_path(os.path.join('data', 'players', 'xp_table.json'))
     with open(path, 'r', encoding='utf-8-sig') as f:
         return json.load(f)
 
@@ -86,14 +85,15 @@ def recalculate_stats(player_data):
     player_data['proficiency_bonus'] = prof_bonus
 
     # BASE HP Calculation
-    # First class taken gives full hit die, subsequent levels give (die/2)+1
+    # First class taken gives 9 + full hit die, subsequent levels give (die/2)+1
     base_max_hp = 0
     first_class = True
     for class_name, level in class_levels.items():
         c_def = class_defs.get(class_name.lower(), {})
         hit_die = c_def.get('hp', 8)
         if first_class:
-            base_max_hp += hit_die + (level - 1) * ((hit_die // 2) + 1)
+            # Rule: 9 + hit_die at level 1, then standard gain
+            base_max_hp += 9 + hit_die + (level - 1) * ((hit_die // 2) + 1)
             first_class = False
         else:
             base_max_hp += level * ((hit_die // 2) + 1)
@@ -122,7 +122,9 @@ def recalculate_stats(player_data):
     player_data['attack_count'] = 1
     player_data['sneak_attack_rolls'] = 0
     player_data['cantrip_dice_rolled'] = 1
-    player_data['spell_save'] = 0
+    
+    # Spell Save Base (equipment will add to this)
+    player_data['spell_save_base'] = 8 + prof_bonus + (total_level // 4)
     
     for class_name, level in class_levels.items():
         c_def = class_defs.get(class_name.lower())
@@ -227,21 +229,18 @@ def get_level_up_benefits(player_data, class_name):
 def add_class_level(player_data, class_name):
     """Add a level in a specific class and update stats."""
     player_data.setdefault('class_levels', {})
+    class_name = class_name.lower()
     player_data['class_levels'][class_name] = player_data['class_levels'].get(class_name, 0) + 1
     
-    # HP Increase: Use class hit die
-    class_defs = load_player_classes()
-    c_def = class_defs.get(class_name.lower())
-    if c_def:
-        hit_die = c_def.get('hp', 8)
-        # 5e rule: gain half hit die + 1 on level up (or roll, we use fixed)
-        hp_gain = (hit_die // 2) + 1
-        player_data['hp'] += hp_gain
-        player_data['max_hp'] = player_data.get('max_hp', player_data['hp']) + hp_gain
-        player_data['current_hp'] = player_data.get('current_hp', player_data['hp']) + hp_gain
-
     player_data['level'] = sum(player_data['class_levels'].values())
+    
+    # Recalculate base stats
     recalculate_stats(player_data)
+    
+    # Synchronize with equipment and current HP
+    from .player import validate_player_data
+    validate_player_data(player_data)
+    
     return player_data
 
 def update_xp_and_level(player_data, xp_gain):

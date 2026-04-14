@@ -1,6 +1,7 @@
 import json
 import os
 import random
+from core.game_rules.path_utils import get_resource_path
 
 class EnemyAI:
     _skills_cache = None
@@ -12,20 +13,18 @@ class EnemyAI:
         if cls._skills_cache is not None:
             return
 
-        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        
         # Load Player Skills (shared)
-        skills_path = os.path.join(base_dir, 'data', 'players', 'skills.json')
+        skills_path = get_resource_path(os.path.join('data', 'players', 'skills.json'))
         with open(skills_path, 'r', encoding='utf-8-sig') as f:
             cls._skills_cache = json.load(f).get('skill_list', {})
 
         # Load Player Spells (shared)
-        spells_path = os.path.join(base_dir, 'data', 'players', 'spells.json')
+        spells_path = get_resource_path(os.path.join('data', 'players', 'spells.json'))
         with open(spells_path, 'r', encoding='utf-8-sig') as f:
             cls._spells_cache = json.load(f).get('spell_list', {})
 
         # Load Exclusive Enemy Abilities
-        enemy_path = os.path.join(base_dir, 'data', 'creatures', 'enemy_abilities.json')
+        enemy_path = get_resource_path(os.path.join('data', 'creatures', 'enemy_abilities.json'))
         with open(enemy_path, 'r', encoding='utf-8-sig') as f:
             cls._enemy_abilities_cache = json.load(f).get('ability_list', {})
 

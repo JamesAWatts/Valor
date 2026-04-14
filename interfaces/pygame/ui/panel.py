@@ -3,15 +3,18 @@ from core.game_rules.constants import scale_x, scale_y, COLOR_GOLD
 
 def draw_text_outlined(screen, text, font, color, x, y, outline_color=(0,0,0), outline_width=2):
     """Draws text with a simple outline for readability."""
-    # Draw outline
-    for dx in range(-outline_width, outline_width + 1):
-        for dy in range(-outline_width, outline_width + 1):
-            if dx == 0 and dy == 0: continue
-            outline_surf = font.render(text, True, outline_color)
-            screen.blit(outline_surf, (x + dx, y + dy))
+    # Pre-render the surfaces to avoid multiple renders in loops
+    outline_surf = font.render(text, True, outline_color)
+    main_surf = font.render(text, True, color)
+    
+    # Draw outline in 4 diagonal directions (sufficient for 2px outline)
+    offsets = [(-outline_width, -outline_width), (outline_width, -outline_width), 
+               (-outline_width, outline_width), (outline_width, outline_width)]
+    
+    for dx, dy in offsets:
+        screen.blit(outline_surf, (x + dx, y + dy))
 
     # Draw main text
-    main_surf = font.render(text, True, color)
     screen.blit(main_surf, (x, y))
     return main_surf.get_rect(topleft=(x, y))
 

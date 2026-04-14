@@ -5,19 +5,18 @@ from interfaces.pygame.ui.menu import Menu
 from interfaces.pygame.ui.backgrounds import BackgroundManager
 from interfaces.pygame.ui.panel import draw_text_outlined
 from core.game_rules.constants import scale_y, scale_x, COLOR_WHITE, COLOR_GOLD, SCREEN_WIDTH, SCREEN_HEIGHT
+from core.game_rules.path_utils import get_resource_path
 
 class TitleState(BaseState):
     def __init__(self, game, font):
         super().__init__(game, font)
         self.background = BackgroundManager.get_title_bg()
         
-        # Load Banner
-        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-        banner_path = os.path.join(base_dir, "assets", "banner", "Banner_noBG.png")
+        # Use get_resource_path for dynamic banner loading
+        banner_path = get_resource_path(os.path.join("assets", "banner", "Banner_noBG.png"))
         try:
             self.banner_img = pygame.image.load(banner_path).convert_alpha()
         except Exception as e:
-            
             print(f"DEBUG: Could not load banner: {e}")
             self.banner_img = None
 

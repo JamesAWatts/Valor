@@ -1,4 +1,4 @@
-﻿import random
+import random
 import re
 
 
@@ -68,26 +68,34 @@ def attack_roll(attack_bonus, enemy_ac, crit_range=(20,), advantage=0):
 def damage_roll(damage_die, attack_bonus, critical=False, player_data=None):
     """
     Calculate damage based on player class and stats.
-    - Spellcasters (sorcerer, wizard, druid, alchemist): rolls cantrip_dice_rolled × damage_die
-    - Others: standard damage_die + bonus
+    Returns (damage_amount, dice_string).
     """
     player_class = player_data.get('class', '') if player_data else ''
     eq_bonus = int(player_data.get('equipment_dmg_bonus', 0)) if player_data else 0
+    total_bonus = attack_bonus + eq_bonus
 
     if player_class in ('sorcerer', 'wizard', 'druid', 'alchemist'):
-        # Spellcaster: roll cantrip_dice_rolled × damage_die instead of standard damage  
         cantrip_dice_rolled = player_data.get('cantrip_dice_rolled', 1)
-        base = sum(random.randint(1, damage_die) for _ in range(cantrip_dice_rolled)) + attack_bonus + eq_bonus
+        dice_str = f"{cantrip_dice_rolled}d{damage_die}"
+        if total_bonus != 0:
+            dice_str += f"{'+' if total_bonus > 0 else ''}{total_bonus}"
+        
+        base = sum(random.randint(1, damage_die) for _ in range(cantrip_dice_rolled)) + total_bonus
         if critical:
-            return base + random.randint(1, damage_die)
-        return base
+            dice_str += f" + 1d{damage_die} (CRIT)"
+            return base + random.randint(1, damage_die), dice_str
+        return base, dice_str
 
     else:
-        # Standard damage calculation for fighters, monks, archers, rogues, etc.
-        base = random.randint(1, damage_die) + attack_bonus + eq_bonus
+        dice_str = f"1d{damage_die}"
+        if total_bonus != 0:
+            dice_str += f"{'+' if total_bonus > 0 else ''}{total_bonus}"
+            
+        base = random.randint(1, damage_die) + total_bonus
         if critical:
-            return base + random.randint(1, damage_die)
-        return base
+            dice_str += f" + 1d{damage_die} (CRIT)"
+            return base + random.randint(1, damage_die), dice_str
+        return base, dice_str
 
 
 def combat_round(enemy_ac, attack_count, damage_die, attack_bonus, crit_on_19=False):     
@@ -99,7 +107,8 @@ def combat_round(enemy_ac, attack_count, damage_die, attack_bonus, crit_on_19=Fa
         print(f"Attack {i+1}:")
         result = attack_roll(attack_bonus, enemy_ac, crit_range)
         if result['hit']:
-            dmg = damage_roll(damage_die, attack_bonus, critical=result['critical'])      
+            # damage_roll now returns (damage, dice_str)
+            dmg, _ = damage_roll(damage_die, attack_bonus, critical=result['critical'])      
             total_damage += dmg
             status = 'CRITICAL HIT' if result['critical'] else 'HIT'
             print(f"  {status}! d20={result['roll']} (total {result['total']}), damage={dmg}")

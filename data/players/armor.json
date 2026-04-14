@@ -4,114 +4,153 @@
             "type": "none",
             "ac":10,
             "cost":0,
+            "spell_resist": 2,
             "description": "No armor. You rely on your agility and luck."
         },
         "padded":{
             "type": "light",
             "ac":11,
             "cost":10,
+            "spell_resist": 1,
+            "bonus_sp": 2,
             "description": "Quilted layers of cloth and batting. Basic protection."
         },
         "leather":{
             "type": "light",
             "ac":12,
-            "cost":20,
+            "cost":25,
+            "spell_resist": 1,
+            "bonus_sp": 4,
             "description": "Standard leather armor used by scouts and rogues."
         },
         "studded_leather":{
             "type": "light",
             "ac":13,
-            "cost":50,
+            "cost":100,
+            "spell_resist": 2,
+            "bonus_sp": 6,
             "description": "Made from tough but flexible leather, studded leather is reinforced with close-set rivets or spikes."
+        },
+        "dark_leather":{
+            "type": "light",
+            "ac":14,
+            "cost":500,
+            "spell_resist": 3,
+            "bonus_sp": 8,
+            "description": "Studded leather, dyed black and enchanted to provide extra protection."
+        },
+        "assassin_leather":{
+            "type": "light",
+            "ac":15,
+            "cost":1000,
+            "spell_resist": 4,
+            "bonus_sp": 10,
+            "description": "Enchanted leather armor providing unparallelled stealth and protection."
         },
         "hide_armor":{
             "type": "medium",
             "ac":12,
-            "cost":20,
+            "cost":50,
+            "spell_resist": 1,
             "description": "Rugged armor made from the hides of wild beasts."
         },
         "chain_shirt":{
             "type": "medium",
             "ac":13,
-            "cost":50,
+            "cost":200,
+            "damage_resist": 1,
             "description": "Made of interlocking metal rings, a chain shirt is worn between layers of clothing or leather."
         },
         "breastplate":{
             "type": "medium",
             "ac":14,
-            "cost":200,
+            "cost":600,
+            "damage_resist": 1,
+            "spell_resist": 1,
             "description": "This armor consists of a fitted metal chest piece worn with supple leather."
         },
         "half_plate":{
             "type": "medium",
             "ac":15,
-            "cost":800,
+            "cost":1200,
+            "damage_resist": 2,
+            "spell_resist": 2,
             "description": "Half plate consists of shaped metal plates that cover most of the wearer's body."
         },
         "ring_mail":{
             "type": "heavy",
             "ac":14,
             "cost":100,
+            "damage_resist": 1,
             "description": "This armor is leather armor with heavy rings sewn into it."
         },
         "chainmail":{
             "type": "heavy",
             "ac":16,
             "cost":400,
+            "damage_resist": 2,
             "description": "A complete suit of chain mail, providing excellent protection."
         },
         "splint":{
             "type": "heavy",
             "ac":17,
             "cost":1200,
+            "damage_resist": 3,
             "description": "This armor is made of narrow vertical strips of metal riveted to a backing of leather."
         },
         "plate":{
             "type": "heavy",
             "ac":18,
             "cost":2000,
+            "damage_resist": 4,
             "description": "Plate consists of shaped, interlocking metal plates to cover the entire body."
         },
         "novice_robe":{
             "type": "robe",
-            "ac": 10,
+            "ac": 11,
             "spell_save": 1,
-            "cost": 50,
-            "description": "A basic robe for apprentices. Improves spell success."
+            "spell_resist": 2,
+            "cost": 30,
+            "description": "A basic robe for apprentices. Improves spell success and resistance."
         },
         "adept_robe":{
             "type": "robe",
-            "ac": 11,
+            "ac": 12,
             "spell_save": 2,
-            "cost": 300,
-            "description": "A finely woven robe for experienced casters. Noticeable spell success boost."
+            "spell_resist": 3,
+            "cost": 100,
+            "description": "A finely woven robe for experienced casters. Noticeable spell boost."
         },
         "archmage_robe":{
             "type": "robe",
-            "ac": 12,
-            "spell_save": 5,
+            "ac": 13,
+            "spell_save": 3,
+            "spell_resist": 4,
             "bonus_dmg": 5,
-            "cost": 1200,
-            "description": "A powerful robe crackling with energy. Greatly increases spell success and Damage."
+            "cost": 1000,
+            "description": "A powerful robe crackling with energy. Greatly increases spell success, resistance and Damage."
         },
         "monk_wraps":{
             "type": "robe",
             "ac": 12,
-            "bonus_sp": 10,
+            "bonus_sp": 4,
+            "spell_resist": 2,
             "cost": 400,
             "description": "Simple linen wraps that aid in focus. Increases Stamina."
         },
         "ascendant_wraps":{
             "type": "robe",
             "ac": 13,
-            "bonus_sp": 15,
+            "bonus_sp": 8,
+            "spell_resist": 3,
             "cost": 800,
             "description": "Simple linen wraps that aid in focus. Increases Stamina."
         },
         "grandmaster_wraps":{
             "type": "robe",
             "ac": 14,
-            "bonus_sp": 20,
+            "bonus_sp": 12,
+            "spell_resist": 4,
             "cost": 1500,
             "description": "Simple linen wraps that aid in focus. Increases Stamina."
         }

@@ -1,9 +1,10 @@
 import json
 import os
 from core.game_rules.constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from core.game_rules.path_utils import get_writeable_path
 
 class ScoreManager:
-    HIGH_SCORES_FILE = os.path.join(os.getcwd(), "saves", "high_scores.json")
+    HIGH_SCORES_FILE = os.path.join(get_writeable_path("saves"), "high_scores.json")
 
     @staticmethod
     def calculate_score(player_data, retired=False):

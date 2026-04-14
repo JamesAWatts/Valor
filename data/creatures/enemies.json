@@ -9,7 +9,7 @@
         "attack_count": 1,
         "xp": 100,
         "reward": {
-            "gold": 2,
+            "gold": 3,
             "items": [
                 {"name": "loincloth", "type": "junk"}
             ]
@@ -26,7 +26,7 @@
         "xp": 100,
         "skills": ["sling_shot"],
         "reward": {
-            "gold": 2,
+            "gold": 3,
             "items": [
                 {"name": "sling", "type": "weapon"},
                 {"name": "loincloth", "type": "junk"}
@@ -44,7 +44,7 @@
         "xp": 120,
         "skills": ["bone_toss"],
         "reward": {
-            "gold": 3,
+            "gold": 5,
             "items": [
                 {"name": "bone", "type": "junk"},
                 {"name": "rusty_sword", "type": "junk"}
@@ -53,16 +53,18 @@
     },
     "kobold_sorcerer":{
         "level": 2,
-        "hp": 12,
+        "hp": 10,
         "armor": 6,
         "die": 6,
         "bonus": 2,
         "attack_range": 5,
         "attack_count": 1,
-        "xp": 150,
+        "xp": 175,
+        "spell_dc": 10,
+        "spell_resist": 2,
         "spells": ["magic_missile", "lesser_heal"],
         "reward": {
-            "gold": 10,
+            "gold": 12,
             "items": [
                 {"name": "staff", "type": "weapon"},
                 {"name": "tattered_robes", "type": "junk"}
@@ -77,13 +79,13 @@
         "bonus": 2,
         "attack_range": 1,
         "attack_count": 1,
-        "xp": 125,
+        "xp": 150,
         "skills": ["hunters_mark"],
         "reward": {
-            "gold": 8,
+            "gold": 10,
             "items": [
                 {"name": "dagger", "type": "weapon"},
-                {"name": "potion", "type": "consumable"}
+                {"name": "healing_potion", "type": "consumable"}
             ]
         }
     },
@@ -95,13 +97,13 @@
         "bonus": 2,
         "attack_range": 5,
         "attack_count": 1,
-        "xp": 125,
+        "xp": 150,
         "skills": ["hunters_mark"],
         "reward": {
-            "gold": 8,
+            "gold": 10,
             "items": [
                 {"name": "shortbow", "type": "weapon"},
-                {"name": "potion", "type": "consumable"}
+                {"name": "healing_potion", "type": "consumable"}
             ]
         }
     },
@@ -113,10 +115,12 @@
         "bonus": 3,
         "attack_range": 1,
         "attack_count": 1,
-        "xp": 150,
+        "xp": 250,
+        "spell_dc": 12,
+        "spell_resist": 4,
         "spells": ["inflict_wounds", "lesser_heal"],
         "reward": {
-            "gold": 12,
+            "gold": 15,
             "items": [
                 {"name": "dagger", "type": "weapon"},
                 {"name": "robes", "type": "junk"}
@@ -131,10 +135,12 @@
         "bonus": 4,
         "attack_range": 1,
         "attack_count": 2,
-        "xp": 160,
+        "xp": 300,
+        "spell_dc": 11,
+        "spell_resist": 3,
         "skills": ["allure"],
         "reward": {
-            "gold": 15,
+            "gold": 18,
             "items": [
                 {"name": "harpy_feather", "type": "junk"},
                 {"name": "shiny_trinket", "type": "junk"}
@@ -149,7 +155,7 @@
         "bonus": 4,
         "attack_range": 1,
         "attack_count": 1,
-        "xp": 150,
+        "xp": 500,
         "skills": ["sneak_attack"],
         "sneak_attack_die": 6,
         "sneak_attack_rolls": 3,
@@ -169,13 +175,13 @@
         "bonus": 4,
         "attack_range": 2,
         "attack_count": 1,
-        "xp": 175,
+        "xp": 650,
         "skills": ["heavy_strikes"],
         "reward": {
-            "gold": 16,
+            "gold": 26,
             "items": [
                 {"name": "warhammer", "type": "weapon"},
-                {"name": "potion", "type": "consumable"}
+                {"name": "healing_potion", "type": "consumable"}
             ]
         }
     },
@@ -187,12 +193,12 @@
         "bonus": 5,
         "attack_range": 5,
         "attack_count": 1,
-        "xp": 180,
+        "xp": 1000,
         "skills": ["poison_strike", "smoke_bomb"],
         "sneak_attack_die": 6,
         "sneak_attack_rolls": 4,
         "reward": {
-            "gold": 25,
+            "gold": 40,
             "items": [
                 {"name": "longbow", "type": "weapon"},
                 {"name": "studded_leather", "type": "armor"}
@@ -207,10 +213,10 @@
         "bonus": 4,
         "attack_range": 1,
         "attack_count": 2,
-        "xp": 200,
+        "xp": 1200,
         "skills": ["heavy_strikes", "shield_bash"],
         "reward": {
-            "gold": 25,
+            "gold": 50,
             "items": [
                 {"name": "mace", "type": "weapon"},
                 {"name": "chainmail", "type": "armor"}
@@ -225,10 +231,10 @@
         "bonus": 5,
         "attack_range": 1,
         "attack_count": 1,
-        "xp": 250,
+        "xp": 2000,
         "skills": ["heavy_strikes", "cleave"],
         "reward": {
-            "gold": 20,
+            "gold": 75,
             "items": [
                 {"name": "greataxe", "type": "weapon"},
                 {"name": "hide_armor", "type": "armor"}
@@ -242,11 +248,11 @@
         "die": 10,
         "bonus": 5,
         "attack_range": 2,
-        "attack_count": 2,
-        "xp": 400,
+        "attack_count": 3,
+        "xp": 5000,
         "skills": ["heavy_strikes", "indomitable"],
         "reward": {
-            "gold": 50,
+            "gold": 100,
             "items": [
                 {"name": "glaive", "type": "weapon"},
                 {"name": "half_plate", "type": "armor"}
@@ -260,11 +266,11 @@
         "die": 12,
         "bonus": 6,
         "attack_range": 1,
-        "attack_count": 1,
-        "xp": 500,
+        "attack_count": 3,
+        "xp": 10000,
         "skills": ["gore", "charge"],
         "reward": {
-            "gold": 60,
+            "gold": 250,
             "items": [
                 {"name": "greataxe", "type": "weapon"},
                 {"name": "strength_potion", "type": "consumable"}
@@ -278,12 +284,14 @@
         "die": 8,
         "bonus": 7,
         "attack_range": 5,
-        "attack_count": 2,
-        "xp": 750,
+        "attack_count": 3,
+        "xp": 12500,
+        "spell_dc": 14,
+        "spell_resist": 6,
         "on_hit_effect": "sap",
         "skills": ["petrifying_gaze"],
         "reward": {
-            "gold": 100,
+            "gold": 280,
             "items": [
                 {"name": "snake_scale", "type": "junk"},
                 {"name": "poison_vial", "type": "consumable"}
@@ -297,11 +305,13 @@
         "die": 10,
         "bonus": 8,
         "attack_range": 1,
-        "attack_count": 2,
-        "xp": 1000,
+        "attack_count": 3,
+        "xp": 20000,
+        "spell_dc": 15,
+        "spell_resist": 8,
         "spells": ["vampiric_touch", "darkness", "greater_heal"],
         "reward": {
-            "gold": 150,
+            "gold": 500,
             "items": [
                 {"name": "plate", "type": "armor"},
                 {"name": "greatsword", "type": "weapon"}
@@ -316,10 +326,14 @@
         "bonus": 9,
         "attack_range": 2,
         "attack_count": 3,
-        "xp": 1500,
+        "xp": 25000,
+        "spell_dc": 16,
+        "spell_resist": 7,
         "skills": ["fire_breath", "tail_swipe"],
+        "effect": "advantage",
+        "power": -2,
         "reward": {
-            "gold": 250,
+            "gold": 600,
             "items": [
                 {"name": "lion_pelt", "type": "junk"},
                 {"name": "mana_potion", "type": "consumable"}
@@ -334,7 +348,9 @@
         "bonus": 12,
         "attack_range": 5,
         "attack_count": 3,
-        "xp": 5000,
+        "xp": 50000,
+        "spell_dc": 18,
+        "spell_resist": 10,
         "skills": ["dragon_breath", "wing_buffet"],
         "spells": ["fire_storm", "meteor_swarm", "greater_heal"],
         "reward": {

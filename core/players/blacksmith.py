@@ -1,7 +1,7 @@
 
 UPGRADE_COSTS = {
-    1: 100,
-    2: 300,
+    1: 250,
+    2: 500,
     3: 1000
 }
 
@@ -74,8 +74,9 @@ def upgrade_weapon(player, weapon_name):
         from core.players.player import apply_weapon_to_player
         apply_weapon_to_player(player)
         
-    display_name = weapon_name.replace('_', ' ').title()
-    return True, f"Upgraded {display_name} to +{info['level']}!"
+    from core.players.player import get_weapon_display_name
+    display_name = get_weapon_display_name(player, weapon_name)
+    return True, f"Upgraded weapon to {display_name}!"
 
 def can_enchant(player, weapon_name, enchantment_key):
     if enchantment_key not in ENCHANTMENTS:
@@ -106,6 +107,6 @@ def enchant_weapon(player, weapon_name, enchantment_key):
         from core.players.player import apply_weapon_to_player
         apply_weapon_to_player(player)
         
-    display_weapon = weapon_name.replace('_', ' ').title()
-    display_enchant = enchantment_key.replace('_', ' ').title()
-    return True, f"Enchanted {display_weapon} with {display_enchant}!"
+    from core.players.player import get_weapon_display_name
+    display_name = get_weapon_display_name(player, weapon_name)
+    return True, f"Enchanted weapon to {display_name}!"
