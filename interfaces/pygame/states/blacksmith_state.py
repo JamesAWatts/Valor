@@ -6,7 +6,7 @@ from core.players.blacksmith import UPGRADE_COSTS, ENCHANTMENTS, get_weapon_upgr
 from core.game_rules.constants import scale_x, scale_y, SCREEN_WIDTH, COLOR_GOLD, COLOR_WHITE
 
 class BlacksmithState(BaseState):
-    def __init__(self, game, font):
+    def __init__(self, game, font, player=None):
         super().__init__(game, font)
         # Use a specialized background if available, or fallback to shop/rest
         try:
@@ -14,9 +14,10 @@ class BlacksmithState(BaseState):
         except:
             self.background = BackgroundManager.get_rest_bg()
 
-        self.inventory = game.player.get("inventory_ref", {})
+        self.player = player if player else game.player
+        self.inventory = self.player.get("inventory_ref", {})
         self.mode = "MAIN"
-        self.selected_weapon = game.player.get('weapon', 'unarmed')
+        self.selected_weapon = self.player.get('weapon', 'unarmed')
         
         self.main_menu = Menu(["Upgrade Weapon", "Enchant Weapon", "Back"], font, width=200, header="The Iron Anvil")
         self.active_menu = self.main_menu
@@ -27,11 +28,11 @@ class BlacksmithState(BaseState):
         descriptions = {}
         
         # Always include currently equipped weapon even if not in inventory count
-        equipped = self.game.player.get('weapon', 'unarmed')
+        equipped = self.player.get('weapon', 'unarmed')
         weapon_list = sorted(list(set(list(weapons.keys()) + [equipped])))
         
         for w in weapon_list:
-            info = get_weapon_upgrade_info(self.game.player, w)
+            info = get_weapon_upgrade_info(self.player, w)
             level = info['level']
             display_name = f"{w.replace('_', ' ').title()} (+{level})"
             options.append(display_name)
@@ -76,7 +77,7 @@ class BlacksmithState(BaseState):
                 self.active_menu = self.main_menu
             else:
                 weapon_name = option.split(" (+")[0].replace(" ", "_").lower()
-                success, msg = upgrade_weapon(self.game.player, weapon_name)
+                success, msg = upgrade_weapon(self.player, weapon_name)
                 print(f"BLACKSMITH: {msg}")
                 self.refresh_upgrade_menu()
 
@@ -96,7 +97,7 @@ class BlacksmithState(BaseState):
                 self.active_menu.header = "Select Weapon to Enchant"
             else:
                 enchant_key = option.split(" (")[0].lower()
-                success, msg = enchant_weapon(self.game.player, self.selected_weapon, enchant_key)
+                success, msg = enchant_weapon(self.player, self.selected_weapon, enchant_key)
                 print(f"BLACKSMITH: {msg}")
                 self.mode = "MAIN"
                 self.active_menu = self.main_menu
@@ -112,7 +113,5 @@ class BlacksmithState(BaseState):
         draw_text_outlined(screen, gold_text, self.font, COLOR_GOLD, (SCREEN_WIDTH // 2) - (gw // 2), scale_y(40))
 
         if self.active_menu:
-            # Center the menu
-            mx = SCREEN_WIDTH // 2
-            my = (screen.get_height() // 2) - (len(self.active_menu.options) * 15)
-            self.active_menu.draw(screen, mx, my)
+            # Center the menu (Base 400, 300)
+            self.active_menu.draw(screen, 400, 300)

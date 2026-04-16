@@ -101,7 +101,7 @@ def recalculate_stats(player_data):
     player_data['max_hp_base'] = base_max_hp
 
     # MANA POOL (MP)
-    caster_classes = ["wizard", "druid", "alchemist", "sorcerer"]
+    caster_classes = ["wizard", "druid", "alchemist", "sorcerer", "cleric"]
     max_mp = 0
     for c_name, c_level in class_levels.items():
         if c_name.lower() in caster_classes:
@@ -123,7 +123,7 @@ def recalculate_stats(player_data):
     player_data['sneak_attack_rolls'] = 0
     player_data['cantrip_dice_rolled'] = 1
     
-    # Spell Save Base (equipment will add to this)
+    # Spell DC Base (equipment will add to this)
     player_data['spell_save_base'] = 8 + prof_bonus + (total_level // 4)
     
     for class_name, level in class_levels.items():
@@ -182,7 +182,7 @@ def get_level_up_benefits(player_data, class_name):
         benefits.append(f"Proficiency Bonus: +{new_prof}")
         
     # MP/SP
-    caster_classes = ["wizard", "druid", "alchemist", "sorcerer"]
+    caster_classes = ["wizard", "druid", "alchemist", "sorcerer", "cleric"]
     martial_classes = ["fighter", "monk", "archer", "rogue"]
     if class_name_lower in caster_classes:
         benefits.append("Mana: +1")
@@ -252,8 +252,10 @@ def update_xp_and_level(player_data, xp_gain):
     player_data.setdefault('level', 1)
     player_data['xp'] += xp_gain
     
-    new_total_level = get_total_level_for_xp(player_data['xp'])
-    if new_total_level > player_data['level']:
-        # We don't apply it here because the user must CHOOSE the class.
-        return True
-    return False
+    return needs_level_up(player_data)
+
+def needs_level_up(player_data):
+    """Check if player has enough XP to level up."""
+    current_level = player_data.get('level', 1)
+    total_xp = player_data.get('xp', 0)
+    return get_total_level_for_xp(total_xp) > current_level

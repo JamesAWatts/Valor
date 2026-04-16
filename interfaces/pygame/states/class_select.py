@@ -5,7 +5,7 @@ from interfaces.pygame.ui.backgrounds import BackgroundManager
 from core.players.player import classes
 
 class ClassSelectState(BaseState):
-    def __init__(self, game, font):
+    def __init__(self, game, font, hiring=False):
         super().__init__(game, font)
         # Use manager to pick a random rest/selection background
         self.background = BackgroundManager.get_rest_bg()
@@ -14,6 +14,7 @@ class ClassSelectState(BaseState):
         self.menu = Menu(self.class_names, font, width=250)
         self.active_menu = self.menu
         self.sprite_cache = {}
+        self.hiring = hiring
 
     def get_class_sprite(self, class_name):
         class_name = class_name.lower()
@@ -41,10 +42,16 @@ class ClassSelectState(BaseState):
             return None
 
     def on_select(self, option):
-        self.game.player = self.create_player(option)
-
-        from .hub import HubState
-        self.game.change_state(HubState(self.game, self.font))
+        new_player = self.create_player(option)
+        
+        if self.hiring:
+            self.game.party.append(new_player)
+            from .tavern import TavernState
+            self.game.change_state(TavernState(self.game, self.font))
+        else:
+            self.game.player = new_player
+            from .hub import HubState
+            self.game.change_state(HubState(self.game, self.font))
 
     def create_player(self, class_name):
         from core.players.player import apply_weapon_to_player, apply_armor_to_player
@@ -59,7 +66,13 @@ class ClassSelectState(BaseState):
 
         # 2. Set base attributes
         player_profile['class'] = class_key
-        player_profile['name'] = getattr(self.game, 'player_name', 'Adventurer')
+        
+        # Use game.party_member_name if hiring, else game.player_name
+        if self.hiring:
+            player_profile['name'] = getattr(self.game, 'party_member_name', 'Mercenary')
+        else:
+            player_profile['name'] = getattr(self.game, 'player_name', 'Adventurer')
+            
         player_profile['xp'] = 0
         player_profile['level'] = 1
         player_profile['kill_count'] = 0
@@ -70,7 +83,7 @@ class ClassSelectState(BaseState):
         player_profile['base_hp'] = player_profile['max_hp']
 
         # Mana/MP for casters
-        caster_classes = ["wizard", "druid", "alchemist", "sorcerer"]
+        caster_classes = ["wizard", "druid", "alchemist", "sorcerer", "cleric"]
         if class_key in caster_classes:
             player_profile['max_mp'] = 1
             player_profile['current_mp'] = 1
@@ -104,7 +117,15 @@ class ClassSelectState(BaseState):
         apply_armor_to_player(player_profile)
 
         # 5. Initialize inventory
-        player_inventory = create_inventory(player_profile)
+        # Hiring characters might share gold or have their own.
+        # Usually gold is shared in these games.
+        if self.hiring:
+            # Mercenary uses the same inventory as the lead?
+            # Let's check how create_inventory works.
+            player_inventory = self.game.player['inventory_ref']
+        else:
+            player_inventory = create_inventory(player_profile)
+            
         player_profile['inventory_ref'] = player_inventory
         
         # 6. Initialize weapon upgrades

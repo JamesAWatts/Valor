@@ -24,7 +24,7 @@ class TitleState(BaseState):
         self.fade_speed = 2
         self.title_pos = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
         
-        self.menu = Menu(["New Game", "Load Game", "High Scores", "Settings"], font, width=200)
+        self.menu = Menu(["New Game", "Load Game", "High Scores", "Settings"], font, width=200, pos=(400, 400))
         self.active_menu = None 
         
         self.state = "FADING" # FADING, PRESS_START, MENU, NAMING
@@ -140,7 +140,7 @@ class TitleState(BaseState):
             screen.blit(prompt_surf, (SCREEN_WIDTH // 2 - pw // 2, SCREEN_HEIGHT * 2 // 3))
 
         elif self.state == "MENU" and self.active_menu:
-            self.active_menu.draw(screen, SCREEN_WIDTH // 2, SCREEN_HEIGHT * 2 // 3)
+            self.active_menu.draw(screen, 400, 400)
             
         elif self.state == "NAMING":
             # Draw name input box

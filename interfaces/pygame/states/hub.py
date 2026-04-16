@@ -13,17 +13,18 @@ class HubState(BaseState):
         super().__init__(game, font)
 
         # Ensure player data is valid and stats are recalculated
-        validate_player_data(game.player)
+        for p in self.game.party:
+            validate_player_data(p)
 
         # Get persistent hub background from manager
-        self.background = BackgroundManager.get_hub_bg(game.player)
+        self.background = BackgroundManager.get_hub_bg(self.game.player)
 
-        self.base_options = ["Fight", "Shop", "Blacksmith", "Rest", "Save Game", "Inventory", "Settings", "Retire"]
+        self.base_options = ["Fight", "Tavern", "Shop", "Inventory", "Settings", "Retire"]
         options = list(self.base_options)
         if game.god_mode:
             options += ["Level Up", "Invincible"]
 
-        self.menu = Menu(options, font, width = 50)
+        self.menu = Menu(options, font, width=150, pos=(120, 200))
         
         # --- Cheat Code Setup ---
         self.cheat_code = [pygame.K_UP, pygame.K_UP, pygame.K_DOWN, pygame.K_DOWN, 
@@ -33,6 +34,7 @@ class HubState(BaseState):
         self.sub_menu = None
         self.menu_state = "MAIN"
         self.active_menu = self.menu
+        self.selected_index = 0 # Currently viewed party member
         
         # Load data for inventory panel
         weapons_db = load_weapons().get('weapon_list', {})
@@ -49,9 +51,16 @@ class HubState(BaseState):
             self.handle_dev_menu(option)
 
     def update(self, events):
-        # Check for cheat code keys
+        # Check for cheat code keys and character switching
         for event in events:
             if event.type == pygame.KEYDOWN:
+                # Character Switching (Left/Right Arrow)
+                if event.key == pygame.K_LEFT:
+                    self.selected_index = (self.selected_index - 1) % len(self.game.party)
+                elif event.key == pygame.K_RIGHT:
+                    self.selected_index = (self.selected_index + 1) % len(self.game.party)
+
+                # Cheat Code Detection
                 if event.key in [pygame.K_UP, pygame.K_DOWN, pygame.K_LEFT, pygame.K_RIGHT]:
                     self.current_input_sequence.append(event.key)
                     # Keep only the last N keys where N is the length of the cheat code
@@ -73,30 +82,34 @@ class HubState(BaseState):
         super().update(events)
 
     def handle_main_menu(self, option):
+        p = self.game.party[self.selected_index]
         if option == "Fight":
             from core.creatures.enemies import load_enemy_data, get_scaled_enemies
+            import math
+            
+            # Determine encounter level
+            if len(self.game.party) > 1:
+                total_level = sum(p.get('level', 1) for p in self.game.party)
+                encounter_level = math.ceil(total_level / 2)
+            else:
+                encounter_level = self.game.player.get('level', 1)
+
             enemy_data = load_enemy_data()
-            enemies = get_scaled_enemies(enemy_data, self.game.player.get('level', 1))
+            enemies = get_scaled_enemies(enemy_data, encounter_level)
 
             self.game.enemies = enemies
 
             from .combat import CombatState
             self.game.change_state(CombatState(self.game, self.font))
+
         elif option == "Shop":
             from .shop_state import ShopState
-            self.game.change_state(ShopState(self.game, self.font))
-
-        elif option == "Blacksmith":
-            from .blacksmith_state import BlacksmithState
-            self.game.change_state(BlacksmithState(self.game, self.font))
+            self.game.change_state(ShopState(self.game, self.font, player=p))
 
         elif option == "Inventory":
             from .inventory_state import InventoryState
-            self.game.change_state(InventoryState(self.game, self.font))
-
-        elif option == "Save Game":
-            from .save_state import SaveState
-            self.game.change_state(SaveState(self.game, self.font, mode="SAVE"))
+            # Pass selected character to inventory
+            self.game.change_state(InventoryState(self.game, self.font, player=p))
 
         elif option == "Retire":
             from .game_over import GameOverState
@@ -106,21 +119,9 @@ class HubState(BaseState):
             from .settings_state import SettingsState
             self.game.change_state(SettingsState(self.game, self.font, previous_state=self))
 
-        elif option == "Rest":
-            p = self.game.player
-            if "inventory_ref" not in p: return
-            inv = p["inventory_ref"]
-            cost = 5 + p.get("rest_count", 0)
-
-            if self.game.god_mode or inv.get("gold", 0) >= cost:
-                if not self.game.god_mode: inv["gold"] -= cost
-                p["current_hp"] = p.get("max_hp", 10)
-                p["current_mp"] = p.get("max_mp", 0)
-                p["current_sp"] = p.get("max_sp", 0)
-                p["rest_count"] = p.get("rest_count", 0) + 1
-                validate_player_data(p)
-            else:
-                print("DEBUG: Not enough gold to rest")
+        elif option == "Tavern":
+            from .tavern import TavernState
+            self.game.change_state(TavernState(self.game, self.font))
 
         elif option == "Dev Tools":
             dev_options = ["1,000 HP", "10,000 Gold", "Level Up", "Restart Game", "Back"]
@@ -134,6 +135,7 @@ class HubState(BaseState):
             self.active_menu = self.menu
         else:
             from interfaces.pygame.Dev_Mode import DevTools
+            # Apply to selected character
             msg = DevTools.apply_dev_action(option, self.game)
             if msg:
                 print(f"DEV: {msg}")
@@ -146,7 +148,7 @@ class HubState(BaseState):
         self.draw_background(screen)
 
         width, height = screen.get_size()
-        p = self.game.player
+        p = self.game.party[self.selected_index]
 
         # --- Title ---
         title_str = "Adventure Hub"
@@ -168,14 +170,10 @@ class HubState(BaseState):
         gold_y = title_y + th + scale_y(5)
         draw_text_outlined(screen, gold_str, self.font, COLOR_GOLD, width // 2 - gw // 2, gold_y)
 
-        # --- Player Info Panel ---
-        self.inventory_panel.draw(screen, p)
-
-        # --- Player Bars (Top Center - Shifted Down) ---
+        # --- Player Bars (Top Center) ---
         from interfaces.pygame.ui.bars import draw_bar
 
         if p:
-            # Shifted down to accommodate title and gold
             bx = width // 2 - scale_x(100)
             by = gold_y + gh + scale_y(15)
 
@@ -194,24 +192,78 @@ class HubState(BaseState):
                 draw_bar(screen, bx, by + y_off, scale_x(200), scale_y(25),
                          cur_sp, p.get("max_sp", 0), (255, 200, 0), self.font)
 
+        # --- Draw Party Characters (Rotating Dish) ---
+        from interfaces.pygame.graphics.enemy_sprites import SpriteManager
+        num_party = len(self.game.party)
+        
+        # Shift the entire platter left by 50px
+        platter_center_x = width // 2 - scale_x(50)
+        
+        # Determine side indices
+        left_idx = (self.selected_index - 1) % num_party
+        right_idx = (self.selected_index + 1) % num_party
+
+        # 1. Draw Left/Right (Inactive) Characters first for depth
+        if num_party > 1:
+            side_indices = []
+            if num_party == 2:
+                side_indices = [(right_idx, False)] # Just one on the right
+            else:
+                side_indices = [(left_idx, True), (right_idx, False)]
+
+            for idx, is_left in side_indices:
+                char = self.game.party[idx]
+                # Closer to center: offset 160 instead of 200
+                bx_off = -scale_x(160) if is_left else scale_x(160)
+                # Up 10px: -50 total offset
+                by_off = -scale_y(50)
+                
+                p_class = char.get("class", "fighter")
+                # Reduced size: 152x152 (5% less than 160)
+                sprite = SpriteManager.get_player_sprite(p_class, size=(scale_x(152), scale_y(152)))
+                if sprite:
+                    inactive_sprite = sprite.copy()
+                    try:
+                        inactive_sprite = pygame.transform.grayscale(inactive_sprite)
+                    except AttributeError:
+                        inactive_sprite.fill((100, 100, 100, 255), special_flags=pygame.BLEND_RGBA_MULT)
+                    
+                    sw, sh = inactive_sprite.get_size()
+                    screen.blit(inactive_sprite, (platter_center_x + bx_off - sw // 2, height - sh - scale_y(60) + by_off))
+
+        # 2. Draw Active Character (Front and Center)
+        player_class = p.get("class", "fighter")
+        sprite = SpriteManager.get_player_sprite(player_class, size=(scale_x(256), scale_y(256)))
+        if sprite:
+            sw, sh = sprite.get_size()
+            char_x = platter_center_x - sw // 2
+            char_y = height - sh - scale_y(20)
+            screen.blit(sprite, (char_x, char_y))
+
+            # --- Floating Navigation Arrows (Tightened) ---
+            if num_party > 1:
+                import math
+                arrow_float = math.sin(pygame.time.get_ticks() * 0.005) * scale_x(5)
+                ay = char_y + sh // 2
+                
+                # Left Arrow - 0px outside
+                alx = char_x - arrow_float
+                pygame.draw.polygon(screen, COLOR_GOLD, [
+                    (alx, ay), (alx + scale_x(15), ay - scale_y(12)), (alx + scale_x(15), ay + scale_y(12))
+                ])
+                
+                # Right Arrow - 0px outside
+                arx = char_x + sw + arrow_float
+                pygame.draw.polygon(screen, COLOR_GOLD, [
+                    (arx, ay), (arx - scale_x(15), ay - scale_y(12)), (arx - scale_x(15), ay + scale_y(12))
+                ])
+
+        # --- Player Info Panel (Right Side) - Drawn AFTER characters for layering ---
+        self.inventory_panel.draw(screen, p)
+
         # --- MENU (Left Aligned) ---
         if self.active_menu:
-            menu_width = self.active_menu.get_width()
-            
-            # Precisely calculate menu height to match Menu.py's internal layout
-            line_h = self.font.get_height()
-            spacing = line_h + scale_y(5)
-            header_h = (line_h + scale_y(15)) if self.active_menu.header else 0
-            # Total height from the 'start_y' parameter to the bottom of the panel
-            menu_height_below_start = header_h + (len(self.active_menu.options) * spacing) + scale_y(25)
-            
-            # Align to the left side with 20px padding
-            menu_center_x = (menu_width // 2) + scale_x(20)
-            
-            # Align bottom with player panel (which ends at height - scale_y(40))
-            menu_start_y = (height - scale_y(40)) - menu_height_below_start
-            
-            self.active_menu.draw(screen, menu_center_x, menu_start_y)
+            self.active_menu.draw(screen, 120, 400)
             
         # --- Tooltip (Draw LAST) ---
         self.inventory_panel.draw_tooltip(screen)

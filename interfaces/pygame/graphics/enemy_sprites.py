@@ -87,8 +87,11 @@ class SpriteManager:
 
         try:
             if not os.path.exists(sprite_path):
+                # Placeholder mapping for cleric
+                if class_name == "cleric":
+                    sprite_path = get_resource_path(os.path.join("assets", "sprites", "player_sprites", "wizard2.png"))
                 # Try webp fallback for special cases like kobold sorc if any
-                if class_name == "kobold_sorcerer":
+                elif class_name == "kobold_sorcerer":
                      sprite_path = get_resource_path(os.path.join("assets", "sprites", "player_sprites", "Kobald_sorc.webp"))
                 else:
                      raise FileNotFoundError(f"No player sprite found for {class_name}")

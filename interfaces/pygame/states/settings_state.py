@@ -25,7 +25,7 @@ class SettingsState(BaseState):
     def refresh_menu_text(self):
         """Updates the menu text to show current settings."""
         music_status = "Off" if self.game.music_manager.is_muted else "On"
-        new_options = [f"Music: {music_status}", "Exit Game", "Back"]
+        new_options = [f"Music: {music_status}", "Save Game", "Exit Game", "Back"]
         self.menu.set_options(new_options)
 
     def update(self, events):
@@ -60,6 +60,9 @@ class SettingsState(BaseState):
         if "Music:" in option:
             self.game.music_manager.toggle_mute()
             self.refresh_menu_text()
+        elif option == "Save Game":
+            from .save_state import SaveState
+            self.game.change_state(SaveState(self.game, self.font, mode="SAVE"))
         elif option == "Back":
             if self.previous_state:
                 self.game.change_state(self.previous_state)
@@ -93,6 +96,6 @@ class SettingsState(BaseState):
         thumb_x = int(self.slider_rect.x + (self.game.music_manager.volume * self.slider_rect.width))
         pygame.draw.circle(screen, COLOR_WHITE, (thumb_x, self.slider_rect.centery), self.thumb_radius)
         
-        # Menu (Below Slider)
+        # Menu (Below Slider - Base 400, 450)
         if self.active_menu:
-            self.active_menu.draw(screen, SCREEN_WIDTH // 2, self.slider_rect.y + scale_y(100))
+            self.active_menu.draw(screen, 400, 450)

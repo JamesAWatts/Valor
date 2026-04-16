@@ -6,31 +6,31 @@ UPGRADE_COSTS = {
 }
 
 ENCHANTMENTS = {
-    "lifesteal": {
+    "vampiric": {
         "cost": 300,
         "description": "Heal for 50% of damage dealt."
     },
-    "critical": {
+    "honed_edged": {
         "cost": 400,
         "description": "Increases critical hit range (19-20)."
     },
-    "extra_critical": {
+    "diamond_edged": {
         "cost": 800,
         "description": "Massively increases critical hit range (18-20)."
     },
-    "focusing_lens": {
+    "focused": {
         "cost": 500,
-        "description": "Improves Spell Save DC by 1."
+        "description": "Improves Spell DC by 1."
     },
-    "silence": {
+    "silencing": {
         "cost": 600,
         "description": "On hit: DC 12 save or enemy cannot cast spells."
     },
-    "fire": {
+    "burning": {
         "cost": 250,
         "description": "Adds 1d4 fire damage to attacks."
     },
-    "frost": {
+    "freezing": {
         "cost": 250,
         "description": "Slows enemy on hit."
     }

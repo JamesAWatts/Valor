@@ -16,14 +16,13 @@ class InventoryPanel:
     def draw(self, screen, player):
         if not player: return
 
-        # Panel Dimensions
-        pw, ph = scale_x(165), SCREEN_HEIGHT - scale_y(170)
-        # Panel Position (Right Side)
-        px, py = SCREEN_WIDTH - pw - scale_x(310), scale_y(40)
+        # Panel Dimensions (RAW 800x600)
+        raw_pw, raw_ph = 250, 480
+        # Panel Position (Right Side RAW)
+        raw_px, raw_py = 520, 50
 
         panel = Panel(
-            px / scale_x(1), py / scale_y(1), 
-            pw / scale_x(1), ph / scale_y(1),
+            raw_px, raw_py, raw_pw, raw_ph,
             bg_color=(30, 30, 50),
             border_color=COLOR_GOLD,
             border_width=3,
@@ -47,12 +46,12 @@ class InventoryPanel:
         draw_text_outlined(screen, class_str, self.font, COLOR_GOLD, center_x - cw // 2, curr_y)
         curr_y += line_h + scale_y(15)
 
-        # AC & Spell Save
+        # AC & Spell DC
         ac_str = f"Armor Class: {player.get('ac', 10)}"
         draw_text_outlined(screen, ac_str, self.font, COLOR_WHITE, rect.x + scale_x(15), curr_y)
         curr_y += line_h
-        
-        ss_str = f"Spell Save Bonus: +{player.get('spell_save', 0)}"
+
+        ss_str = f"Spell DC: +{player.get('spell_save', 0)}"
         draw_text_outlined(screen, ss_str, self.font, COLOR_WHITE, rect.x + scale_x(15), curr_y)
         curr_y += line_h + scale_y(20)
 
@@ -105,18 +104,18 @@ class InventoryPanel:
         # Extract buffs from trinket/robes/shields
         t_stats = self.trinkets_db.get(player.get('trinket', 'none'), {})
         if t_stats.get('bonus_hp'): buffs.append(f"Health +{t_stats['bonus_hp']}")
-        if t_stats.get('spell_save'): buffs.append(f"Spell Save +{t_stats['spell_save']}")
+        if t_stats.get('spell_save'): buffs.append(f"Spell DC +{t_stats['spell_save']}")
         if t_stats.get('bonus_sp'): buffs.append(f"Stamina +{t_stats['bonus_sp']}")
         if t_stats.get('bonus_atk'): buffs.append(f"Attack +{t_stats['bonus_atk']}")
         
         s_stats = self.shields_db.get(player.get('shield', 'none'), {})
         if s_stats.get('bonus_hp'): buffs.append(f"Health +{s_stats['bonus_hp']}")
-        if s_stats.get('spell_save'): buffs.append(f"Spell Save +{s_stats['spell_save']}")
+        if s_stats.get('spell_save'): buffs.append(f"Spell DC +{s_stats['spell_save']}")
         if s_stats.get('bonus_sp'): buffs.append(f"Stamina +{s_stats['bonus_sp']}")
 
         # Robe buffs
         a_stats = self.armor_db.get(player.get('armor', 'none'), {})
-        if a_stats.get('spell_save'): buffs.append(f"Spell Save +{a_stats['spell_save']}")
+        if a_stats.get('spell_save'): buffs.append(f"Spell DC +{a_stats['spell_save']}")
         if a_stats.get('bonus_sp'): buffs.append(f"Stamina +{a_stats['bonus_sp']}")
         if a_stats.get('bonus_dmg'): buffs.append(f"Damage +{a_stats['bonus_dmg']}")
 

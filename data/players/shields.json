@@ -46,6 +46,7 @@
             "damage resist": 1,
             "spell_save": 1,
             "spell_resist": 1,
+            "bonus_mp": 2,
             "cost": 300,
             "description": "A shield etched with runes that improve spell success."
         }
@@ -55,7 +56,7 @@
             "type": "shield",
             "ac": 2,
             "damage resist": 2,
-            "bonus_sp": 10,
+            "bonus_sp": 2,
             "cost": 400,
             "description": "A combat shield designed for endurance."
         },

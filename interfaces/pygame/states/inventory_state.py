@@ -9,18 +9,22 @@ from core.players.player import apply_weapon_to_player, apply_armor_to_player, a
 from core.players.shop import visit_shop
 
 class InventoryState(BaseState):
-    def __init__(self, game, font):
+    def __init__(self, game, font, player=None):
         super().__init__(game, font)
-        self.background = BackgroundManager.get_hub_bg(game.player)
+        
+        # Use provided player or default to the main hero
+        self.player = player if player else game.player
+        
+        self.background = BackgroundManager.get_hub_bg(self.player)
         self.dialogue = DialogueBox(self.font)
         self.message_queue = []
         
         # Mapping to remember original keys for display names
         self.item_map = {}
 
-        self.inventory = game.player.get("inventory_ref", {})
+        self.inventory = self.player.get("inventory_ref", {})
         if not self.inventory:
-            self.inventory = game.player.get("inventory", {})
+            self.inventory = self.player.get("inventory", {})
 
         self.menus = []
         root_menu = Menu(
@@ -57,23 +61,32 @@ class InventoryState(BaseState):
             item_key = self.item_map.get(option, option.split(" (")[0])
             self.open_confirm_menu(item_key)
 
-        # CONFIRM MENU
+        # EQUIP TO / USE ON MENU
         elif len(self.menus) == 3:
-            if option == "No":
+            if option == "Back":
                 self.menus.pop()
                 return
-            if option == "Yes":
-                item_display = self.menus[1].options[self.menus[1].selected]
-                item_key = self.item_map.get(item_display, item_display.split(" (")[0])
+            
+            # Retrieve item from previous menu selection
+            prev_menu = self.menus[1]
+            item_display = prev_menu.options[prev_menu.selected]
+            item_key = self.item_map.get(item_display, item_display.split(" (")[0])
+            
+            # Find target character
+            target_char = next((p for p in self.game.party if p.get('name') == option), None)
+            if not target_char: return
 
-                result_text = self.handle_item_action(item_key)
+            result_text = self.handle_item_action(item_key, target_char)
 
-                if result_text:
-                    self.queue_message(result_text)
-                    self.start_next_message()
+            if result_text:
+                self.queue_message(result_text)
+                self.start_next_message()
 
-                root = self.menus[0]
-                self.menus = [root]
+                # If successful (Equipped or Used), return to root or item list
+                if "cannot be equipped" not in result_text and "not proficient" not in result_text:
+                    root = self.menus[0]
+                    self.menus = [root]
+                # Else: Stay in menu 3 (Equip to) so they can try someone else
     
     def open_item_menu(self, category):
         if category == "weapons":
@@ -98,9 +111,9 @@ class InventoryState(BaseState):
         descriptions = {}
         for item_key in items:
             if category == "weapons":
-                display_name = get_weapon_display_name(self.game.player, item_key)
+                display_name = get_weapon_display_name(self.player, item_key)
             elif category == "armor":
-                display_name = get_armor_display_name(self.game.player, item_key)
+                display_name = get_armor_display_name(self.player, item_key)
             else:
                 display_name = item_key.replace('_', ' ').title()
                 
@@ -130,80 +143,75 @@ class InventoryState(BaseState):
 
         options.append("Back")
 
-        x = self.menus[-1].pos[0] + 250
-        y = self.menus[-1].pos[1]
+        # Use raw_pos for cascading (Base 800x600)
+        x = self.menus[-1].raw_pos[0] + 200
+        y = self.menus[-1].raw_pos[1]
 
         new_menu = Menu(options, self.font, pos=(x, y), header=category.title(), descriptions=descriptions)
         self.menus.append(new_menu)
 
     def open_confirm_menu(self, item_key):
-        display_name = item_key.replace('_', ' ').title()
         category = self.menus[0].options[self.menus[0].selected].lower()
 
-        if category == "consumables":
-            action = "Use"
-        else:
-            action = "Equip"
+        action = "Use on" if category == "consumables" else "Equip to"
+        party_names = [p.get('name', 'Adventurer') for p in self.game.party]
 
-        x = self.menus[-1].pos[0] + 250
-        y = self.menus[-1].pos[1]
+        x = self.menus[-1].raw_pos[0] + 200
+        y = self.menus[-1].raw_pos[1]
 
         confirm_menu = Menu(
-            ["Yes", "No"],
+            party_names + ["Back"],
             self.font,
             pos=(x, y),
-            header=f"{action} {display_name}?"
+            header=f"{action}?"
         )
 
         self.menus.append(confirm_menu)
     
-    def handle_item_action(self, item_key):
+    def handle_item_action(self, item_key, target_char):
         category = self.menus[0].options[self.menus[0].selected].lower()
 
         if category == "weapons":
-            return self.equip_weapon(item_key)
+            return self.equip_weapon(item_key, target_char)
         elif category == "armor":
-            return self.equip_armor(item_key)
+            return self.equip_armor(item_key, target_char)
         elif category == "shields":
-            return self.equip_shield(item_key)
+            return self.equip_shield(item_key, target_char)
         elif category == "trinkets":
-            return self.equip_trinket(item_key)
+            return self.equip_trinket(item_key, target_char)
         elif category == "consumables":
-            return self.use_consumable(item_key)
+            return self.use_consumable(item_key, target_char)
         return None
 
-    def equip_weapon(self, item_key):
-        self.game.player["weapon"] = item_key
-        apply_weapon_to_player(self.game.player)
-        if "equipped" in self.inventory:
-            self.inventory["equipped"]["weapon"] = item_key
-        return f"Equipped {item_key.replace('_', ' ').title()}."
+    def equip_weapon(self, item_key, target_char):
+        from core.players.player import can_equip_weapon
+        if not can_equip_weapon(target_char, item_key):
+            return f"{target_char['name']} is not proficient with {item_key.replace('_', ' ').title()}!"
 
-    def equip_armor(self, item_key):
-        if not can_equip_armor(self.game.player, item_key):
-            return f"You are not proficient with {item_key.replace('_', ' ').title()}!"
+        target_char["weapon"] = item_key
+        apply_weapon_to_player(target_char)
+        # Shared inventory equipment sync if necessary
+        return f"Equipped {item_key.replace('_', ' ').title()} to {target_char['name']}."
+
+    def equip_armor(self, item_key, target_char):
+        if not can_equip_armor(target_char, item_key):
+            return f"{target_char['name']} is not proficient with {item_key.replace('_', ' ').title()}!"
             
-        self.game.player["armor"] = item_key
-        apply_armor_to_player(self.game.player)
-        if "equipped" in self.inventory:
-            self.inventory["equipped"]["armor"] = item_key
-        return f"Equipped {item_key.replace('_', ' ').title()}."
+        target_char["armor"] = item_key
+        apply_armor_to_player(target_char)
+        return f"Equipped {item_key.replace('_', ' ').title()} to {target_char['name']}."
 
-    def equip_shield(self, item_key):
-        self.game.player["shield"] = item_key
-        apply_shield_to_player(self.game.player)
-        if "equipped" in self.inventory:
-            self.inventory["equipped"]["shield"] = item_key
-        return f"Equipped {item_key.replace('_', ' ').title()}."
+    def equip_shield(self, item_key, target_char):
+        target_char["shield"] = item_key
+        apply_shield_to_player(target_char)
+        return f"Equipped {item_key.replace('_', ' ').title()} to {target_char['name']}."
 
-    def equip_trinket(self, item_key):
-        self.game.player["trinket"] = item_key
-        apply_trinket_to_player(self.game.player)
-        if "equipped" in self.inventory:
-            self.inventory["equipped"]["trinket"] = item_key
-        return f"Equipped {item_key.replace('_', ' ').title()}."
+    def equip_trinket(self, item_key, target_char):
+        target_char["trinket"] = item_key
+        apply_trinket_to_player(target_char)
+        return f"Equipped {item_key.replace('_', ' ').title()} to {target_char['name']}."
 
-    def use_consumable(self, item_key):
+    def use_consumable(self, item_key, target_char):
         from core.combat.combat_engine import CombatEngine
         consumables_db = load_consumables()
         item_data = consumables_db.get(item_key)
@@ -211,15 +219,15 @@ class InventoryState(BaseState):
         if not item_data:
             return f"{item_key.replace('_', ' ').title()} not found."
 
-        res = CombatEngine.resolve_item(item_data, self.game.player)
-        p = self.game.player
+        res = CombatEngine.resolve_item(item_data, target_char)
         if res['hp_gain'] > 0:
-            p['hp'] = min(p.get('max_hp', 20), p['hp'] + res['hp_gain'])
+            target_char['current_hp'] = min(target_char.get('max_hp', 20), target_char.get('current_hp', 0) + res['hp_gain'])
+            target_char['hp'] = target_char['current_hp']
         
         from core.players.player_inventory import remove_item
         remove_item(self.inventory, item_key, 'consumable')
 
-        return res['msg']
+        return f"Used on {target_char['name']}. {res['msg']}"
 
     def update(self, events):
         if self.dialogue.current_message:

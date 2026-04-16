@@ -11,14 +11,15 @@ from core.players.shop import load_consumables
 from core.combat.combat_engine import CombatEngine
 
 class ShopState(BaseState):
-    def __init__(self, game, font):
+    def __init__(self, game, font, player=None):
         super().__init__(game, font)
         self.background = BackgroundManager.get_shop_bg()
         self.dialogue = DialogueBox(font)
 
-        self.inventory = game.player.get("inventory_ref", {})
+        self.player = player if player else game.player
+        self.inventory = self.player.get("inventory_ref", {})
         if not self.inventory:
-             self.inventory = game.player.get("inventory", {})
+             self.inventory = self.player.get("inventory", {})
 
         self.mode = "MAIN"
         self.item_map = {}
@@ -30,18 +31,34 @@ class ShopState(BaseState):
         self.purchased_item_cat = None
         self.purchased_item_data = None
 
-        self.main_menu = Menu(["Buy", "Sell", "Back"], font, width=100, header="The Dragon's Hoard")
+        self.main_menu = Menu(["Buy", "Sell", "Blacksmith", "Back"], font, width=100, header="The Dragon's Hoard")
         self.active_menu = self.main_menu
 
     def refresh_buy_menu(self):
         options = ["Weapons", "Armor", "Shields", "Consumables", "Trinkets", "Back"]
         self.active_menu = Menu(options, self.font, width=100, header="What are you looking for?")
 
-    def open_buy_category(self, category):
+    def refresh_weapon_categories(self):
+        options = ["Simple", "Martial", "Caster", "Back"]
+        self.active_menu = Menu(options, self.font, width=100, header="Weapon Class?")
+
+    def refresh_armor_categories(self):
+        options = ["Robes", "Light", "Medium", "Heavy", "Back"]
+        self.active_menu = Menu(options, self.font, width=100, header="Armor Type?")
+
+    def open_buy_category(self, category, sub_category=None):
         if category == "weapons":
             data = load_weapons().get("weapon_list", {})
+            if sub_category:
+                data = {k: v for k, v in data.items() if v.get('weapon_class', 'simple').lower() == sub_category.lower()}
         elif category == "armor":
             data = load_armor()
+            if sub_category:
+                # Handle Robes separately or as a type
+                # Looking at player.py: 'none', 'light', 'medium', 'heavy', 'robe'
+                target_type = sub_category.lower()
+                if target_type == "robes": target_type = "robe"
+                data = {k: v for k, v in data.items() if v.get('type', 'none').lower() == target_type}
         elif category == "shields":
             data = load_shields()
         elif category == "consumables":
@@ -53,16 +70,12 @@ class ShopState(BaseState):
 
         available = {k: v for k, v in data.items() if v.get('cost', 0) > 0}
         
+        # REMOVED class-based filtering here per request
+        
         if category == "armor":
-            from core.players.player import can_equip_armor
-            available = {k: v for k, v in available.items() if can_equip_armor(self.game.player, k)}
             # none > light > medium > heavy > robe
             type_order = {'none': 0, 'light': 1, 'medium': 2, 'heavy': 3, 'robe': 4}
             all_keys = sorted(available.keys(), key=lambda k: (type_order.get(available[k].get('type', 'none'), 99), available[k].get('cost', 0)))
-        elif category == "weapons":
-            from core.players.player import can_equip_weapon
-            available = {k: v for k, v in available.items() if can_equip_weapon(self.game.player, k)}
-            all_keys = sorted(available.keys(), key=lambda k: available[k].get('cost', 0))
         else:
             all_keys = sorted(available.keys(), key=lambda k: available[k].get('cost', 0))
         
@@ -104,7 +117,8 @@ class ShopState(BaseState):
         
         options.append("Return")
         
-        header = f"{category.title()} (Page {self.current_page + 1}/{total_pages})"
+        sub_header = f" - {sub_category.title()}" if sub_category else ""
+        header = f"{category.title()}{sub_header} (Page {self.current_page + 1}/{total_pages})"
         self.active_menu = Menu(options, self.font, width=200, header=header, descriptions=descriptions)
 
     def refresh_sell_menu(self):
@@ -185,6 +199,9 @@ class ShopState(BaseState):
             elif option == "Sell":
                 self.mode = "SELL_CAT"
                 self.refresh_sell_menu()
+            elif option == "Blacksmith":
+                from .blacksmith_state import BlacksmithState
+                self.game.change_state(BlacksmithState(self.game, self.font, player=self.player))
             elif option == "Back":
                 from interfaces.pygame.states.hub import HubState
                 self.game.change_state(HubState(self.game, self.font))
@@ -193,11 +210,40 @@ class ShopState(BaseState):
             if option == "Back":
                 self.mode = "MAIN"
                 self.active_menu = self.main_menu
+            elif option == "Weapons":
+                self.mode = "BUY_WEAPON_CAT"
+                self.refresh_weapon_categories()
+            elif option == "Armor":
+                self.mode = "BUY_ARMOR_CAT"
+                self.refresh_armor_categories()
             else:
                 self.mode = "BUY_ITEMS"
                 self.buy_category = option.lower()
+                self.buy_sub_category = None
                 self.current_page = 0
                 self.open_buy_category(self.buy_category)
+
+        elif self.mode == "BUY_WEAPON_CAT":
+            if option == "Back":
+                self.mode = "BUY_CAT"
+                self.refresh_buy_menu()
+            else:
+                self.mode = "BUY_ITEMS"
+                self.buy_category = "weapons"
+                self.buy_sub_category = option.lower()
+                self.current_page = 0
+                self.open_buy_category(self.buy_category, self.buy_sub_category)
+
+        elif self.mode == "BUY_ARMOR_CAT":
+            if option == "Back":
+                self.mode = "BUY_CAT"
+                self.refresh_buy_menu()
+            else:
+                self.mode = "BUY_ITEMS"
+                self.buy_category = "armor"
+                self.buy_sub_category = option.lower()
+                self.current_page = 0
+                self.open_buy_category(self.buy_category, self.buy_sub_category)
 
         elif self.mode == "SELL_CAT":
             if option == "Back":
@@ -210,17 +256,21 @@ class ShopState(BaseState):
 
         elif self.mode == "BUY_ITEMS":
             if option == "Return":
-                self.mode = "BUY_CAT"
-                self.refresh_buy_menu()
+                if self.buy_category == "weapons":
+                    self.mode = "BUY_WEAPON_CAT"
+                    self.refresh_weapon_categories()
+                elif self.buy_category == "armor":
+                    self.mode = "BUY_ARMOR_CAT"
+                    self.refresh_armor_categories()
+                else:
+                    self.mode = "BUY_CAT"
+                    self.refresh_buy_menu()
             elif option == "Next Page":
                 self.current_page += 1
-                self.open_buy_category(self.buy_category)
+                self.open_buy_category(self.buy_category, self.buy_sub_category)
             elif option == "Previous Page":
                 self.current_page -= 1
-                self.open_buy_category(self.buy_category)
-            elif option == "Back": # Fallback for old menus
-                self.mode = "BUY_CAT"
-                self.refresh_buy_menu()
+                self.open_buy_category(self.buy_category, self.buy_sub_category)
             else:
                 self.handle_buy(option)
 
@@ -289,83 +339,96 @@ class ShopState(BaseState):
         item = data[item_key]
         cost = item['cost']
         
-        # Check gold
-        if self.game.god_mode or self.inventory.get('gold', 0) >= cost:
+        # Check gold (use party inventory gold)
+        inv = self.game.player['inventory_ref']
+        if self.game.god_mode or inv.get('gold', 0) >= cost:
             if not self.game.god_mode:
-                self.inventory['gold'] -= cost
+                inv['gold'] -= cost
             
             from core.players.player_inventory import add_item
             # Mapping Buy Categories to inventory keys
             inv_key = self.buy_category[:-1] if self.buy_category.endswith('s') else self.buy_category
-            add_item(self.inventory, item_key, inv_key)
+            add_item(inv, item_key, inv_key)
             
             # Store for confirmation
             self.purchased_item_key = item_key
             self.purchased_item_cat = inv_key
             self.purchased_item_data = item
             
-            action_verb = "Use" if inv_key == "consumable" else "Equip"
-            item_name = item.get('name', item_key.replace('_', ' ')).title()
-            
+            # --- New "Equip to" Menu ---
             self.mode = "CONFIRM_ACTION"
-            self.active_menu = Menu(["Yes", "No"], self.font, header=f"{action_verb} {item_name} now?")
+            action_verb = "Use on" if inv_key == "consumable" else "Equip to"
+            party_names = [p.get('name', 'Adventurer') for p in self.game.party]
+            self.active_menu = Menu(party_names + ["Back"], self.font, header=f"{action_verb}?")
         else:
             self.dialogue.set_messages(["Not enough gold!"])
 
-    def execute_action(self):
-        player = self.game.player
+    def execute_action(self, character_name):
+        # Find the character
+        target_char = next((p for p in self.game.party if p.get('name') == character_name), None)
+        if not target_char: return
+
         key = self.purchased_item_key
         cat = self.purchased_item_cat
         item = self.purchased_item_data
+        inv = self.game.player['inventory_ref']
         
         # Ensure equipped dict exists
-        if 'equipped' not in self.inventory:
-            self.inventory['equipped'] = {
-                'weapon': player.get('weapon', 'unarmed'),
-                'armor': player.get('armor', 'unarmored'),
-                'shield': player.get('shield', 'none'),
-                'trinket': player.get('trinket', 'none')
-            }
+        if 'equipped' not in inv:
+            inv['equipped'] = {}
 
         if cat == "weapon":
-            apply_weapon_to_player(player, key)
-            self.inventory['equipped']['weapon'] = key
-            self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()}!"])
+            from core.players.player import can_equip_weapon
+            if can_equip_weapon(target_char, key):
+                apply_weapon_to_player(target_char, key)
+                # Note: Inventory system handles equipment per character name if needed, 
+                # but currently seems to use one shared 'equipped' slot or shared inv.
+                # Assuming target_char['weapon'] update is enough for Hub to show.
+                self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()} to {character_name}!"])
+                self.mode = "BUY_ITEMS"
+                self.open_buy_category(self.buy_category, self.buy_sub_category)
+            else:
+                self.dialogue.set_messages([f"{item.get('name', key.replace('_',' ')).title()} cannot be equipped by {character_name}."])
+                # Stay in CONFIRM_ACTION to allow picking someone else
+        
         elif cat == "armor":
-            player['armor'] = key
-            apply_armor_to_player(player)
-            self.inventory['equipped']['armor'] = key
-            self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()}!"])
+            from core.players.player import can_equip_armor
+            if can_equip_armor(target_char, key):
+                target_char['armor'] = key
+                apply_armor_to_player(target_char)
+                self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()} to {character_name}!"])
+                self.mode = "BUY_ITEMS"
+                self.open_buy_category(self.buy_category, self.buy_sub_category)
+            else:
+                self.dialogue.set_messages([f"{item.get('name', key.replace('_',' ')).title()} cannot be equipped by {character_name}."])
+
         elif cat == "shield":
-            apply_shield_to_player(player, key)
-            self.inventory['equipped']['shield'] = key
-            self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()}!"])
+            apply_shield_to_player(target_char, key)
+            self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()} to {character_name}!"])
+            self.mode = "BUY_ITEMS"
+            self.open_buy_category(self.buy_category, self.buy_sub_category)
+
         elif cat == "trinket":
-            apply_trinket_to_player(player, key)
-            self.inventory['equipped']['trinket'] = key
-            self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()}!"])
+            apply_trinket_to_player(target_char, key)
+            self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()} to {character_name}!"])
+            self.mode = "BUY_ITEMS"
+            self.open_buy_category(self.buy_category, self.buy_sub_category)
+
         elif cat == "consumable":
             # Use logic
-            res = CombatEngine.resolve_item(item, player)
+            res = CombatEngine.resolve_item(item, target_char)
             if res.get('hp_gain', 0) > 0:
-                player['current_hp'] = min(player.get('max_hp', 10), player.get('current_hp', 10) + res['hp_gain'])
-                player['hp'] = player['current_hp'] # Sync for some systems
+                target_char['current_hp'] = min(target_char.get('max_hp', 10), target_char.get('current_hp', 10) + res['hp_gain'])
             if res.get('mana_gain', 0) > 0:
-                player['current_mp'] = min(player.get('max_mp', 0), player.get('current_mp', 0) + res['mana_gain'])
-            if res.get('bonus_gain', 0) > 0:
-                player['weapon_bonus'] = player.get('weapon_bonus', 0) + res['bonus_gain']
-            if res.get('attack_gain', 0) > 0:
-                player['attack_count'] = player.get('attack_count', 1) + res['attack_gain']
+                target_char['current_mp'] = min(target_char.get('max_mp', 0), target_char.get('current_mp', 0) + res['mana_gain'])
             
-            # Remove from inventory since we used it
+            # Remove from shared inventory
             from core.players.player_inventory import remove_item
-            remove_item(self.inventory, key, "consumable")
+            remove_item(inv, key, "consumable")
             
-            self.dialogue.set_messages([res.get('msg', "Item used!")])
-
-        # Return to buy list after action or dialogue
-        self.mode = "BUY_ITEMS"
-        self.open_buy_category(self.buy_category)
+            self.dialogue.set_messages([f"Used on {character_name}. {res.get('msg', '')}"])
+            self.mode = "BUY_ITEMS"
+            self.open_buy_category(self.buy_category, self.buy_sub_category)
 
     def update(self, events):
         if self.dialogue.current_message:
@@ -381,25 +444,17 @@ class ShopState(BaseState):
         # --- Draw background FIRST ---
         self.draw_background(screen)
 
-        width, height = screen.get_size()
-        from core.game_rules.constants import scale_x, scale_y, SCREEN_WIDTH, COLOR_GOLD
+        from core.game_rules.constants import scale_y, SCREEN_WIDTH, COLOR_GOLD
         from interfaces.pygame.ui.panel import draw_text_outlined
-        import pygame
         
         # Show Gold at the top
         gold_text = f"Gold: {self.inventory.get('gold', 0)}"
         gw, gh = self.font.size(gold_text)
         draw_text_outlined(screen, gold_text, self.font, COLOR_GOLD, (SCREEN_WIDTH // 2) - (gw // 2), scale_y(40))
 
-        # --- MENU (Left Aligned, Vertically Centered) ---
+        # --- MENU (Left Aligned, Vertically Centered in Base 800x600) ---
         if self.active_menu and not self.dialogue.current_message:
-            menu_width = self.active_menu.get_width()
-            menu_height = len(self.active_menu.options) * scale_y(30) + (scale_y(40) if self.active_menu.header else 0) + scale_y(20)
-            
-            # Left align with padding (50px), center vertically
-            menu_x = scale_x(50) + menu_width // 2
-            menu_y = (height // 2) - (menu_height // 2)
-            
-            self.active_menu.draw(screen, menu_x, menu_y)
+            # Position at x=150, y=300 in Base space
+            self.active_menu.draw(screen, 150, 300)
             
         self.dialogue.draw(screen)

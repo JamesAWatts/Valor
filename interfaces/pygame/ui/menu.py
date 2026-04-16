@@ -4,26 +4,24 @@ from interfaces.pygame.ui.panel import Panel
 
 class Menu:
     def __init__(self, options, font, pos=(0, 0), header=None, disabled_indices=None, bg_color=(30, 30, 50), border_color=COLOR_GOLD, alpha=220, width = 100, descriptions=None):
+        """
+        pos = (x, y) in BASE (800x600) coordinates.
+        width = BASE (800x600) width.
+        """
         self.font = font
-        self.pos = pos # Raw screen coordinates (e.g. 1280x720)
+        self.raw_pos = pos 
         self.header = header
         self.disabled_indices = disabled_indices if disabled_indices is not None else []
         self.bg_color = bg_color
         self.border_color = border_color
         self.alpha = alpha
-        self.width = width
+        self.raw_width = width
         self.descriptions = descriptions # Dictionary mapping option text to description string
         self.set_options(options)
         self.option_rects = []
 
-    def get_width(self):
-        """Returns the SCALED width of the menu."""
-        from core.game_rules.constants import SCALE_X
-        return self.get_raw_width() * SCALE_X
-
     def get_raw_width(self):
         """Returns the RAW (unscaled) width needed for the menu."""
-        from core.game_rules.constants import SCALE_X
         max_text_width = 0
         if self.header:
             hw, _ = self.font.size(self.header)
@@ -34,8 +32,11 @@ class Menu:
             w, _ = self.font.size(text)
             max_text_width = max(max_text_width, w)
             
+        # text_width is currently in SCREEN space (because of font scaling)
+        # We need to convert it back to RAW space for Panel
+        from core.game_rules.constants import SCALE_X
         raw_text_w = max_text_width / SCALE_X
-        return max(raw_text_w + 40, self.width)
+        return max(raw_text_w + 40, self.raw_width)
 
     def set_options(self, options):
         self.options = options
@@ -67,42 +68,35 @@ class Menu:
                     return i 
         return None
 
-    def draw(self, screen, center_x=None, start_y=None, force_bottom_desc=False):
-        from core.game_rules.constants import SCREEN_WIDTH, SCREEN_HEIGHT, SCALE_X, SCALE_Y, scale_y, scale_x
+    def draw(self, screen, raw_center_x=None, raw_start_y=None, force_bottom_desc=False):
+        """
+        raw_center_x, raw_start_y = BASE (800x600) coordinates.
+        """
+        from core.game_rules.constants import SCALE_X, SCALE_Y, scale_y, scale_x, SCREEN_WIDTH, SCREEN_HEIGHT
         
-        # passed values are screen-space (1280x720)
-        if center_x is None: center_x = self.pos[0]
-        if start_y is None: start_y = self.pos[1]
+        if raw_center_x is None: raw_center_x = self.raw_pos[0]
+        if raw_start_y is None: raw_start_y = self.raw_pos[1]
         
-        # --- CALCULATE DIMENSIONS ---
-        line_h = self.font.get_height()
-        spacing = line_h + scale_y(5)
+        # --- CALCULATE DIMENSIONS (RAW) ---
+        raw_line_h = self.font.get_height() / SCALE_Y
+        raw_spacing = raw_line_h + 5
         
-        header_h = (line_h + scale_y(15)) if self.header else 0
-        top_pad = scale_y(15)
-        bottom_pad = scale_y(25)
+        raw_header_h = (raw_line_h + 15) if self.header else 0
+        raw_top_pad = 15
+        raw_bottom_pad = 25
         
-        # get_width() returns scaled width
-        w = self.get_width()
-        h = header_h + (len(self.options) * spacing) + top_pad + bottom_pad
+        raw_w = self.get_raw_width()
+        raw_h = raw_header_h + (len(self.options) * raw_spacing) + raw_top_pad + raw_bottom_pad
 
-        # Anchor Logic (Screen Space)
-        panel_x = center_x - w // 2
-        panel_y = start_y - top_pad
+        # Anchor Logic (RAW Space)
+        raw_x = raw_center_x - raw_w // 2
+        raw_y = raw_start_y - raw_top_pad
 
-        # --- CLAMPING (Screen Space) ---
-        if panel_x < scale_x(5): panel_x = scale_x(5)
-        if panel_x + w > SCREEN_WIDTH - scale_x(5): panel_x = SCREEN_WIDTH - scale_x(5) - w
-        if panel_y < scale_y(5): panel_y = scale_y(5)
-        if panel_y + h > SCREEN_HEIGHT - scale_y(5): panel_y = SCREEN_HEIGHT - scale_y(5) - h
-
-        # Draw Panel (Panel expects raw, but we'll bypass scaling by passing 1.0 or modifying Panel)
-        # Better: Update Panel to accept 'is_scaled' or just pass raw values by dividing.
-        # But for now, let's keep it simple and just use raw values for Panel input.
-        raw_w = w / SCALE_X
-        raw_h = h / SCALE_Y
-        raw_x = panel_x / SCALE_X
-        raw_y = panel_y / SCALE_Y
+        # --- CLAMPING (RAW Space 800x600) ---
+        if raw_x < 5: raw_x = 5
+        if raw_x + raw_w > 795: raw_x = 795 - raw_w
+        if raw_y < 5: raw_y = 5
+        if raw_y + raw_h > 595: raw_y = 595 - raw_h
 
         panel = Panel(
             raw_x, raw_y, raw_w, raw_h,
@@ -114,9 +108,12 @@ class Menu:
         self.option_rects = []
         from interfaces.pygame.ui.panel import draw_text_outlined
         
-        # Draw Content (Screen Space)
+        # Draw Content (Screen Space from rect)
         draw_center_x = rect.centerx
-        current_y = rect.y + top_pad
+        # We must use scaled versions of raw_top_pad and raw_spacing for screen-space Y
+        current_y = rect.y + scale_y(raw_top_pad)
+        line_h = self.font.get_height()
+        spacing = scale_y(raw_spacing)
         
         if self.header:
             tw, th = self.font.size(self.header)
@@ -142,11 +139,11 @@ class Menu:
             desc_text = self.descriptions.get(selected_option)
             if desc_text:
                 if force_bottom_desc:
-                    self.draw_description(screen, draw_center_x, rect.bottom + 10 * SCALE_Y, raw_w, desc_text, centered=True)
+                    self.draw_description(screen, draw_center_x, rect.bottom + scale_y(10), raw_w, desc_text, centered=True)
                 elif draw_center_x < SCREEN_WIDTH // 2:
-                    self.draw_description(screen, rect.right + 5 * SCALE_X, rect.y, 250, desc_text, centered=False)
+                    self.draw_description(screen, rect.right + scale_x(5), rect.y, 160, desc_text, centered=False)
                 else:
-                    self.draw_description(screen, draw_center_x, rect.bottom + 10 * SCALE_Y, raw_w, desc_text, centered=True)
+                    self.draw_description(screen, draw_center_x, rect.bottom + scale_y(10), raw_w, desc_text, centered=True)
 
     def draw_description(self, screen, x, y, raw_w, text, centered=True):
         from core.game_rules.constants import SCALE_X, SCALE_Y, scale_y, scale_x
@@ -159,7 +156,7 @@ class Menu:
         for word in words:
             test_line = ' '.join(current_line + [word])
             tw, th = self.font.size(test_line)
-            if tw > scaled_w - 20 * SCALE_X:
+            if tw > scaled_w - scale_x(20):
                 lines.append(' '.join(current_line))
                 current_line = [word]
             else:
@@ -185,7 +182,7 @@ class Menu:
         )
         rect = panel.draw(screen)
         
-        spacing = raw_spacing * SCALE_Y
+        spacing = scale_y(raw_spacing)
         for i, line in enumerate(lines):
             lw, lh = self.font.size(line)
-            draw_text_outlined(screen, line, self.font, (220, 220, 220), rect.centerx - lw // 2, rect.y + 15 * SCALE_Y + i * spacing)
+            draw_text_outlined(screen, line, self.font, (220, 220, 220), rect.centerx - lw // 2, rect.y + scale_y(15) + i * spacing)

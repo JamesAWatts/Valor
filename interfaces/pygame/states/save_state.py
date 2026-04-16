@@ -17,7 +17,7 @@ class SaveState(BaseState):
         self.slot_options.append("Back")
         
         header = "Save Game" if mode == "SAVE" else "Load Game"
-        self.menu = Menu(self.slot_options, font, header=header, width=300)
+        self.menu = Menu(self.slot_options, font, header=header, width=300, pos=(400, 300))
         self.active_menu = self.menu
         
         self.confirm_menu = None
@@ -27,13 +27,13 @@ class SaveState(BaseState):
         if self.confirm_menu:
             if option == "Yes":
                 if self.mode == "SAVE":
-                    success = SaveManager.save_game(self.selected_slot, self.game.player)
-                    if success:
-                        print(f"Game saved to slot {self.selected_slot}")
+                    # Save currently selected party
+                    SaveManager.save_game(self.selected_slot, self.game.party)
+                    print(f"Game saved to slot {self.selected_slot}")
                 else: # LOAD
-                    data = SaveManager.load_game(self.selected_slot)
-                    if data:
-                        self.game.player = data
+                    party_data = SaveManager.load_game(self.selected_slot)
+                    if party_data:
+                        self.game.party = party_data
                         from .hub import HubState
                         self.game.change_state(HubState(self.game, self.font))
                         return # Exit early after loading
@@ -54,9 +54,14 @@ class SaveState(BaseState):
                     from .title import TitleState
                     self.game.change_state(TitleState(self.game, self.font))
             else:
-                # Get the slot number from the option (it's 1-indexed in the slots list)
-                idx = self.slot_options.index(option)
-                if idx < len(self.slots):
+                # Find the index in our original options list to know which slot was chosen
+                idx = -1
+                for i, s_opt in enumerate(self.slot_options):
+                    if s_opt == option:
+                        idx = i
+                        break
+
+                if idx != -1 and idx < len(self.slots):
                     self.selected_slot = self.slots[idx]
                     
                     if self.mode == "LOAD" and SaveManager.load_game(self.selected_slot) is None:
@@ -64,7 +69,7 @@ class SaveState(BaseState):
                         return
                         
                     confirm_text = f"Overwrite Slot {self.selected_slot}?" if self.mode == "SAVE" else f"Load Slot {self.selected_slot}?"
-                    self.confirm_menu = Menu(["Yes", "No"], self.font, header=confirm_text, width=200)
+                    self.confirm_menu = Menu(["Yes", "No"], self.font, header=confirm_text, width=200, pos=(400, 300))
                     self.active_menu = self.confirm_menu
 
     def refresh_slots(self):
@@ -73,9 +78,14 @@ class SaveState(BaseState):
         self.menu.set_options(self.slot_options)
 
     def draw(self, screen):
-        super().draw(screen)
-        width, height = screen.get_size()
+        self.draw_background(screen)
         
+        # Center active menu (Base 400, 300)
+        if self.active_menu:
+            self.active_menu.draw(screen, 400, 300)
+
         title_str = "Save / Load"
         tw, th = self.font.size(title_str)
-        draw_text_outlined(screen, title_str, self.font, COLOR_WHITE, width // 2 - tw // 2, scale_y(50))
+        # SCREEN_WIDTH // 2 is fine for simple horizontal centering of text
+        from core.game_rules.constants import SCREEN_WIDTH
+        draw_text_outlined(screen, title_str, self.font, COLOR_WHITE, SCREEN_WIDTH // 2 - tw // 2, scale_y(50))

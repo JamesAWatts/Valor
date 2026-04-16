@@ -42,6 +42,9 @@
             "level": 2,
             "dice": "1d8+4",
             "type": "attack",
+            "dot": true,
+            "dot_dice": "1d8 +4",
+            "duration": 5,
             "description": "You create a floating, spectral weapon within range that lasts for the duration or until you cast this spell again."
         },
         "hold_person": {
@@ -49,6 +52,7 @@
             "level": 2,
             "type": "save",
             "effect": "stunned",
+            "duration": 5,
             "description": "Choose a humanoid that you can see within range. The target must succeed on a save or be stunned."
         },
         "moonbeam": {
@@ -98,6 +102,9 @@
             "dice": "5d8",
             "type": "save",
             "aoe" : true,
+            "dot": true,
+            "dot_dice": "5d8",
+            "duration": 3,
             "description": "You create a wall of fire on a solid surface within range. Deals damage to creatures within 10 feet of it."
         },
         "ice_storm":{
@@ -107,6 +114,9 @@
             "type": "save",
             "effect": "disadvantage",
             "aoe" : true,
+            "dot": true,
+            "dot_dice": "2d10",
+            "duration": 3,
             "description": "You create a hail storm. Dealing damage in an AoE and giving disadvantage to all who fail their save"
         },
         "cone_of_cold": {
@@ -115,6 +125,8 @@
             "dice": "8d8",
             "type": "save",
             "aoe": true,
+            "effect": "slow",
+            "duration": 3,
             "description": "A blast of cold air emits from your hands. Con save for half damage."
         },
         "immolation": {
@@ -138,6 +150,14 @@
             "dot_dice": "4d6",
             "duration": 3,
             "description": "A swirling mass of water appears, churing into a storm. Dealing damage and impeding the target."
+        },
+        "mass_cure_wounds": {
+            "name": "Mass Cure Wounds",
+            "level": 5,
+            "dice": "5d8+10",
+            "type": "heal",
+            "aoe": true,
+            "description": "A wave of healing energy eminates from you, healing allies for 5d8+10 hit points."
         },
         "chain_lightning": {
             "name": "Chain Lightning",
@@ -178,8 +198,8 @@
             "level": 7,
             "dice": "4d8+15",
             "type": "heal",
-            "dot" : true,
-            "dot_dice": "4d8",
+            "hot" : true,
+            "hot_dice": "4d8",
             "duration": 3,
             "description": "The target regains 4d8 + 15 hit points. For the duration, the target regains 4d8 hit points at the start of each of its turns."
         },
@@ -189,6 +209,9 @@
             "dice": "7d10",
             "type": "save",
             "aoe": true,
+            "dot": true,
+            "dot_dice": "4d10",
+            "duration": 3,
             "description": "A storm of fire appears. Each creature in the area must make a Dex save."
         },
         "prismatic_spray": {
@@ -197,6 +220,8 @@
             "dice": "12d6",
             "type": "save",
             "aoe": true,
+            "effect": "varied",
+            "duration": 3,
             "description": "Eight multicolored rays of light flash from your hand. Each ray has a different power and purpose."
         },
         "sunburst": {
@@ -259,6 +284,15 @@
             "effect": "death",
             "hp_threshold": 100,
             "description": "You utter a word of power that can compel one creature you can see within range to die instantly if it has 100 HP or less."
+        },
+        "mass_heal": {
+            "name": "Mass Heal",
+            "level": 9,
+            "dice": "200",
+            "type": "heal",
+            "aoe" : true,
+            "effect": "remove_conditions",
+            "description": "The target regains 4d8 + 15 hit points. For the duration, the target regains 4d8 hit points at the start of each of its turns."
         }
     }
 }

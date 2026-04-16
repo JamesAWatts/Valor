@@ -6,11 +6,25 @@ pygame.init()
 class GameManager:
     def __init__(self, god_mode=False, music_manager=None):
         self.state = None
-        self.player = None
+        self.party = [] # List of player dicts
         self.enemies = []
         self.god_mode = god_mode
         self.debug_overlay = None
         self.music_manager = music_manager
+        self.party_member_name = None # Used during hiring process
+
+    @property
+    def player(self):
+        """Returns the first player in the party for backward compatibility."""
+        return self.party[0] if self.party else None
+
+    @player.setter
+    def player(self, value):
+        """Sets the first player in the party."""
+        if not self.party:
+            self.party.append(value)
+        else:
+            self.party[0] = value
 
     def set_debug_font(self, font):
         # The new DebugOverlay initializes its own font based on size, 

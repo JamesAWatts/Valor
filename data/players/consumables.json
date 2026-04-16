@@ -2,17 +2,25 @@
     "consumable_list": {
         "healing_potion": {
             "name": "Healing Potion",
-            "cost": 10,
-            "effect_type": "heal",
-            "value": 10,
-            "description": "Restores 10 HP."
-        },
-        "greater_healing_potion": {
-            "name": "Greater Healing Potion",
-            "cost": 25,
+            "cost": 20,
             "effect_type": "heal",
             "value": 25,
             "description": "Restores 25 HP."
+        },
+        
+        "greater_healing_potion": {
+            "name": "Greater Healing Potion",
+            "cost": 40,
+            "effect_type": "heal",
+            "value": 60,
+            "description": "Restores 60 HP."
+        },
+        "stamina_potion": {
+            "name": "Stamina Potion",
+            "cost": 20,
+            "effect_type": "restore_stamina",
+            "value": 10,
+            "description": "Restores 10 Stamina."
         },
         "mana_potion": {
             "name": "Mana Potion",
@@ -23,10 +31,17 @@
         },
         "strength_potion": {
             "name": "Strength Potion",
-            "cost": 15,
+            "cost": 40,
             "effect_type": "buff_bonus",
             "value": 2,
             "description": "+2 to Attack/Damage bonus for the rest of combat."
+        },
+        "greater_strength_potion": {
+            "name": "Greater Strength Potion",
+            "cost": 100,
+            "effect_type": "buff_bonus",
+            "value": 4,
+            "description": "+4 to Attack/Damage bonus for the rest of combat."
         },
         "speed_potion": {
             "name": "Speed Potion",
@@ -37,10 +52,40 @@
         },
         "poison_vial": {
             "name": "Poison Vial",
-            "cost": 12,
-            "effect_type": "extra_damage",
+            "cost": 30,
+            "effect_type": "on_hit_effect",
+            "effect": "poison",
+            "dot": true,
             "value": 5,
-            "description": "Your next successful hit deals 5 extra damage."
+            "duration": 3,
+            "description": "Your next successful hit poisons the target for 3 turns."
+        },
+        "alchemists_fire": {
+            "name": "Alchemist's Fire",
+            "cost": 30,
+            "effect_type": "on_hit_effect",
+            "dot": true,
+            "value": 8,
+            "duration": 3,
+            "description": "Your next successful hit burns the target for 3 turns."
+        },
+        "love_potion": {
+            "name": "Love Potion",
+            "cost": 50,
+            "effect_type": "on_hit_effect",
+            "effect": "charmed",
+            "duration": 5,
+            "description": "Your next successful hit charmes the target for 5 turns."
+        },
+        "purple_wurm_poison": {
+            "name": "Purple Wurm Poison",
+            "cost": 150,
+            "effect_type": "on_hit_effect",
+            "effect": "poison",
+            "dot": true,
+            "value": 15,
+            "duration": 3,
+            "description": "Your next successful hit poisons the target for 3 turns."
         }
     }
 }

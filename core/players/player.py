@@ -124,7 +124,7 @@ def apply_weapon_to_player(player_data, weapon_name=None):
         player_data.setdefault('crit_on_19', False)
         player_data.setdefault('crit_on_18', False)
 
-    # Focusing Lens: +1 to Spell Save
+    # Focusing Lens: +1 to Spell DC
     if enchantment == 'focusing_lens':
         player_data['spell_save'] = player_data.get('spell_save', 0) + 1
 
@@ -144,7 +144,7 @@ def validate_player_data(player_data):
     # 2. Apply current weapon (Bonuses, Ranges, Enchantments)
     apply_weapon_to_player(player_data)
     
-    # 3. Apply armor, shields, and trinkets (AC, HP/MP/SP bonuses, Spell Save)
+    # 3. Apply armor, shields, and trinkets (AC, HP/MP/SP bonuses, Spell DC)
     apply_armor_to_player(player_data)
     
     return player_data
@@ -183,11 +183,15 @@ def can_equip_weapon(player_data, weapon_name):
     classes_data = load_player_classes()
     class_info = classes_data.get(class_name, {})
     
-    # All classes get simple proficiency if not explicitly defined otherwise, 
+    # All classes get simple proficiency if not explicitly defined otherwise,
     # but we added it to all in player_classes.json
     proficiencies = class_info.get('weapon_proficiencies', ['simple'])
-    return weapon_class in proficiencies
 
+    # Fallback for cleric if missing
+    if class_name == 'cleric' and 'caster' not in proficiencies:
+        proficiencies.append('caster')
+
+    return weapon_class in proficiencies
 def can_equip_armor(player_data, armor_name):
     """
     Checks if the player's class is proficient with the given armor.
@@ -445,9 +449,9 @@ if __name__ == '__main__':
             continue
 
         xp_gain = int(entry)
-        update_xp_and_level(selected_class_data, xp_gain, class_name=selected_class_name, base_hp=selected_class_data['base_hp'])
+        update_xp_and_level(selected_class_data, xp_gain)
 
-        next_xp = xp_to_next_level(selected_class_data['xp'], class_name=selected_class_name)
+        next_xp = xp_to_next_level(selected_class_data['xp'])
         print(f"Total XP: {selected_class_data['xp']}")
         print(f"Level: {selected_class_data['level']} (HP: {selected_class_data['hp']}, AC: {selected_class_data['ac']})")
         if next_xp is None:

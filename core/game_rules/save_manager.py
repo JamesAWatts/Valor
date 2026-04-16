@@ -15,20 +15,21 @@ class SaveManager:
         return os.path.join(SaveManager.SAVE_DIR, f"save_slot_{slot}.json")
 
     @staticmethod
-    def save_game(slot, player_data):
+    def save_game(slot, party):
         SaveManager.ensure_save_dir()
         path = SaveManager.get_save_path(slot)
         
-        # Create a copy to avoid modifying the active player data
-        save_data = player_data.copy()
-        
-        # Remove non-serializable objects if any (like inventory_ref might be an object in some versions, 
-        # but here it's a dict according to player_inventory.py)
-        # However, BackgroundManager might have added a background object or path.
-        # Let's ensure we only save what's necessary.
-        
-        # We should also handle the inventory_ref carefully if it's not a dict.
-        # In this project, it seems to be a dict.
+        # Ensure it's a list
+        if not isinstance(party, list):
+            party = [party]
+
+        lead = party[0] if party else {}
+        save_data = {
+            "is_party_save": True,
+            "party": party,
+            "name": lead.get('name', 'Unknown'),
+            "level": lead.get('level', 1)
+        }
         
         try:
             with open(path, 'w', encoding='utf-8') as f:
@@ -46,20 +47,33 @@ class SaveManager:
         
         try:
             with open(path, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                data = json.load(f)
+                
+                # Check for new party format
+                if isinstance(data, dict) and data.get("is_party_save"):
+                    return data.get("party", [])
+                # Old single-player save (directly a dict)
+                elif isinstance(data, dict):
+                    return [data]
+                return None
         except Exception as e:
             print(f"Error loading game: {e}")
             return None
 
     @staticmethod
     def get_slot_info(slot):
-        data = SaveManager.load_game(slot)
-        if not data:
+        # We need the raw data for slot info to be efficient, or just use load_game
+        # load_game now returns a list of players
+        party = SaveManager.load_game(slot)
+        if not party:
             return "Empty Slot"
         
-        name = data.get('name', 'Unknown')
-        level = data.get('level', 1)
-        return f"{name}, Level {level}"
+        lead = party[0] if party else {}
+        name = lead.get('name', 'Unknown')
+        level = lead.get('level', 1)
+        party_size = len(party)
+        size_str = f" (Party: {party_size})" if party_size > 1 else ""
+        return f"{name}, Level {level}{size_str}"
 
     @staticmethod
     def delete_save(slot):

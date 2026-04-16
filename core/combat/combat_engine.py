@@ -222,6 +222,7 @@ class CombatEngine:
         
         hits_by_target = {id(t): 0 for t in active_targets}
         damage_by_target = {id(t): 0 for t in active_targets}
+        healing_by_target = {id(t): 0 for t in active_targets}
         failed_saves_by_target = {id(t): 0 for t in active_targets}
 
         for target in active_targets:
@@ -344,6 +345,7 @@ class CombatEngine:
                 heal_amt = roll_dice(current_dice) if current_dice else 0
                 heal_amt *= ability_data.get('multiplier', 1)
                 total_healing += heal_amt
+                healing_by_target[id(target)] += heal_amt
                 hits_by_target[id(target)] += 1
                 failed_saves_by_target[id(target)] += 1
                 
@@ -387,24 +389,31 @@ class CombatEngine:
 
             
             # Handle DOT/HOT
-            if ability_data.get('dot'):
-                dot_dice = ability_data.get('dot_dice', '1d6')
-                dot_duration = ability_data.get('duration', 3)
-                effect_type = 'hot' if ability_data.get('type') == 'heal' else 'dot'
+            has_dot = ability_data.get('dot')
+            has_hot = ability_data.get('hot')
+
+            if has_dot or has_hot:
+                duration = ability_data.get('duration', 3)
                 
-                # Store DOT info in effects to be handled by combat state
-                all_effects.append((effect_type, (dot_dice, dot_duration)))
-                
-                if effect_type == 'hot':
+                if has_hot or ability_data.get('type') == 'heal':
+                    effect_type = 'hot'
+                    dice = ability_data.get('hot_dice', ability_data.get('dot_dice', '1d6'))
                     msg_parts.append("Regeneration effect applied!")
                 else:
+                    effect_type = 'dot'
+                    dice = ability_data.get('dot_dice', '1d6')
                     msg_parts.append("Lingering damage applied!")
+                
+                # Store info in effects to be handled by combat state
+                all_effects.append((effect_type, (dice, duration)))
             
         return {
             'mana_cost': mana_cost,
             'damage': total_damage,
             'healing': total_healing,
             'damage_by_target': damage_by_target, # Map of id(target) -> damage
+            'healing_by_target': healing_by_target, # Map of id(target) -> healing
+            'hits_by_target': hits_by_target, # Map of id(target) -> hits
             'effects': all_effects,
             'hit': total_hits > 0,
             'msg': msg_parts

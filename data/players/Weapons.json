@@ -253,6 +253,15 @@
             "bonus": 0,
             "cost": 0,
             "description": "A magical hunk of earth that slams into the target."
+        },
+        "sacred_flame": {
+            "type": "cantrip",
+            "attack_range": 5,
+            "die": 8,
+            "on_hit_effect": "vex",
+            "bonus": 0,
+            "cost": 0,
+            "description": "Bright flame descends on a creature you can see within range."
         }
     }
 }

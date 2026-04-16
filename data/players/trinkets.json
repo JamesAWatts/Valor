@@ -11,17 +11,17 @@
             "bonus_atk": 0,
             "description": "No trinket equipped."
         },
-        "rabbit's_foot": {
-            "name": "rabbit's_foot",
+        "rabbits_foot": {
+            "name": "rabbits_foot",
             "class": "all",
-            "cost": 100,
+            "cost": 50,
             "bonus_atk": 1,
             "description": "A small rabbit's foot. You feel a bit luckier. +1 Damage."
         },
         "ring_of_protection": {
             "name": "Ring of Protection",
             "class": "all",
-            "cost": 250,
+            "cost": 200,
             "bonus_ac": 1,
             "spell_resist": 1,
             "description": "A simple gold band that hums with protective energy. +1 AC, +1 Spell Resist."
@@ -29,7 +29,7 @@
         "cloak_of_protection": {
             "name": "Cloak of Protection",
             "class": "all",
-            "cost": 750,
+            "cost": 500,
             "bonus_ac": 2,
             "spell_resist": 2,
             "description": "A heavy velvet cloak that seems to turn away blades. +2 AC, +2 Spell Resist."
@@ -37,74 +37,95 @@
         "belt_of_ogre_strength": {
             "name": "Belt of Ogre Strength",
             "class": "martial",
-            "cost": 1000,
+            "cost": 600,
             "bonus_atk": 3,
+            "bonus_sp": 3,
             "description": "A giant leather belt that infuses you with raw power. +3 Damage."
         },
         "belt_of_giant_strength": {
             "name": "Belt of Giant Strength",
             "class": "martial",
-            "cost": 2500,
+            "cost": 1200,
             "bonus_atk": 5,
+            "bonus_sp": 5,
             "description": "A belt made from the hide of a Hill Giant. Immense power! +5 Damage."
         },
         "bracers_of_defense": {
             "name": "Bracers of Defense",
             "class": "all",
-            "cost": 1500,
-            "bonus_ac": 3,
-            "description": "Magical bracers that create a shimmering field of force. +3 AC."
+            "cost": 1000,
+            "bonus_ac": 2,
+            "spell_resist": 2,
+            "damage_resist": 2,
+            "description": "Magical bracers that create a shimmering field of force. +2 AC, +2 Spell Resist, +2 Damage Resist."
         },
         "ring_of_health": {
             "name": "Ring of Health",
             "class": "all",
-            "cost": 500,
-            "bonus_hp": 10,
-            "description": "A pulsating red gem that invigorates the wearer. +10 Max HP."
+            "cost": 100,
+            "bonus_hp": 20,
+            "description": "A pulsating red gem that invigorates the wearer. +20 Max HP."
         },
         "amulet_of_health": {
             "name": "Amulet of Health",
             "class": "all",
-            "cost": 800,
-            "bonus_hp": 25,
+            "cost": 500,
+            "bonus_hp": 50,
             "description": "A radiant artifact that vastly increases vitality. +25 Max HP."
         },
         "mana_crystal": {
             "name": "Mana Crystal",
             "class": "caster",
-            "cost": 300,
+            "cost": 200,
             "spell_save": 1,
+            "bonus_mp": 2,
+            "description": "A shard of pure magical energy. Improves spell success."
+        },
+        "spell_book": {
+            "name": "Spell Book",
+            "class": "caster",
+            "cost": 400,
+            "spell_save": 2,
+            "bonus_mp": 3,
             "description": "A shard of pure magical energy. Improves spell success."
         },
         "archmage_crystal": {
             "name": "Archmage Crystal",
             "class": "caster",
-            "cost": 1200,
+            "cost": 800,
             "spell_save": 3,
+            "bonus_mp": 4,
             "description": "A dense cluster of mana crystals. Significantly improves spell success."
         },
-        "stamina_belt": {
-            "name": "Stamina Belt",
+        "training_belt": {
+            "name": "Training Belt",
             "class": "martial",
-            "cost": 300,
-            "bonus_sp": 5,
-            "description": "A sturdy leather belt that helps you keep going. +5 Max Stamina."
+            "cost": 250,
+            "bonus_hp": 5,
+            "bonus_sp": 2,
+            "attack_bonus": 1,
+            "damage_bonus": 1,
+            "description": "A training belt imbued with special properties. +1 to hit and damage, +2 Max Stamina and +5 Max HP."
         },
         "hero_belt": {
             "name": "Hero Belt",
             "class": "martial",
-            "cost": 900,
-            "bonus_hp": 25,
-            "bonus_sp": 15,
-            "description": "The belt of a legendary champion. +15 Max Stamina and +25 Max HP."
+            "cost": 750,
+            "bonus_hp": 20,
+            "bonus_sp": 4,
+            "attack_bonus": 2,
+            "damage_bonus": 2,
+            "description": "The belt of a legendary champion. +2 to hit and damage, +4 Max Stamina and +20 Max HP."
         },
-        "ring_of_the_warmage": {
-            "name": "Ring of the Warmage",
+        "Amulet_of_the_warmage": {
+            "name": "Amulet of the Warmage",
             "class": "caster",
-            "cost": 2000,
-            "spell_save": 4,
+            "cost": 1200,
+            "spell_save": 3,
+            "spell_resist": 3,
             "bonus_atk": 3,
-            "description": "A ring favored by battle-mages. Greatly improves spell success, +3 Damage."
+            "bonus_mp": 5,
+            "description": "An amulet favored by battle-mages. Greatly improves spell success, +3 Spell DC, resistance & attack rolls, and +5 Max MP."
         }
     }
 }

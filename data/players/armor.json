@@ -12,7 +12,7 @@
             "ac":11,
             "cost":10,
             "spell_resist": 1,
-            "bonus_sp": 2,
+            "initiative_boost": 1,
             "description": "Quilted layers of cloth and batting. Basic protection."
         },
         "leather":{
@@ -20,7 +20,7 @@
             "ac":12,
             "cost":25,
             "spell_resist": 1,
-            "bonus_sp": 4,
+            "initiative_boost": 2,
             "description": "Standard leather armor used by scouts and rogues."
         },
         "studded_leather":{
@@ -28,23 +28,23 @@
             "ac":13,
             "cost":100,
             "spell_resist": 2,
-            "bonus_sp": 6,
+            "initiative_boost": 3,
             "description": "Made from tough but flexible leather, studded leather is reinforced with close-set rivets or spikes."
         },
         "dark_leather":{
             "type": "light",
             "ac":14,
             "cost":500,
-            "spell_resist": 3,
-            "bonus_sp": 8,
+            "spell_resist": 2,
+            "initiative_boost": 4,
             "description": "Studded leather, dyed black and enchanted to provide extra protection."
         },
         "assassin_leather":{
             "type": "light",
             "ac":15,
             "cost":1000,
-            "spell_resist": 4,
-            "bonus_sp": 10,
+            "spell_resist": 3,
+            "initiative_boost": 5,
             "description": "Enchanted leather armor providing unparallelled stealth and protection."
         },
         "hide_armor":{
@@ -61,20 +61,28 @@
             "damage_resist": 1,
             "description": "Made of interlocking metal rings, a chain shirt is worn between layers of clothing or leather."
         },
-        "breastplate":{
+        "Studded_hide_armor":{
+            "name": "Studded Hide Armor",
             "type": "medium",
             "ac":14,
-            "cost":600,
+            "cost":400,
+            "spell_resist": 1,
+            "description": "Made of interlocking metal rings, a chain shirt is worn between layers of clothing or leather."
+        },
+        "breastplate":{
+            "type": "medium",
+            "ac":15,
+            "cost":800,
             "damage_resist": 1,
             "spell_resist": 1,
             "description": "This armor consists of a fitted metal chest piece worn with supple leather."
         },
         "half_plate":{
             "type": "medium",
-            "ac":15,
-            "cost":1200,
+            "ac":16,
+            "cost":1400,
             "damage_resist": 2,
-            "spell_resist": 2,
+            "spell_resist": 1,
             "description": "Half plate consists of shaped metal plates that cover most of the wearer's body."
         },
         "ring_mail":{
@@ -86,22 +94,22 @@
         },
         "chainmail":{
             "type": "heavy",
-            "ac":16,
+            "ac":15,
             "cost":400,
             "damage_resist": 2,
             "description": "A complete suit of chain mail, providing excellent protection."
         },
         "splint":{
             "type": "heavy",
-            "ac":17,
+            "ac":16,
             "cost":1200,
             "damage_resist": 3,
             "description": "This armor is made of narrow vertical strips of metal riveted to a backing of leather."
         },
         "plate":{
             "type": "heavy",
-            "ac":18,
-            "cost":2000,
+            "ac":17,
+            "cost":1600,
             "damage_resist": 4,
             "description": "Plate consists of shaped, interlocking metal plates to cover the entire body."
         },
@@ -135,6 +143,7 @@
             "ac": 12,
             "bonus_sp": 4,
             "spell_resist": 2,
+            "initiative_boost": 2,
             "cost": 400,
             "description": "Simple linen wraps that aid in focus. Increases Stamina."
         },
@@ -143,6 +152,7 @@
             "ac": 13,
             "bonus_sp": 8,
             "spell_resist": 3,
+            "initiative_boost": 3,
             "cost": 800,
             "description": "Simple linen wraps that aid in focus. Increases Stamina."
         },
@@ -151,6 +161,7 @@
             "ac": 14,
             "bonus_sp": 12,
             "spell_resist": 4,
+            "initiative_boost": 4,
             "cost": 1500,
             "description": "Simple linen wraps that aid in focus. Increases Stamina."
         }
