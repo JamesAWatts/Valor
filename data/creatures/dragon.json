@@ -1,0 +1,262 @@
+{
+    "kobold": {
+        "level": 1,
+        "hp": 6,
+        "armor": 6,
+        "die": 4,
+        "proficiency_bonus": 1,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 100,
+        "reward": {
+            "gold": 5,
+            "items": [
+                {"name": "loincloth", "type": "junk"}
+            ]
+        }
+    },
+    "kobold_slinger": {
+        "level": 1,
+        "hp": 4,
+        "armor": 5,
+        "die": 4,
+        "proficiency_bonus": 1,
+        "attack_range": 5,
+        "attack_count": 1,
+        "xp": 100,
+        "skills": ["sling_shot"],
+        "reward": {
+            "gold": 5,
+            "items": [
+                {"name": "sling", "type": "weapon"},
+                {"name": "loincloth", "type": "junk"}
+            ]
+        }
+    },
+    "kobold_inventor": {
+        "level": 2,
+        "hp": 15,
+        "armor": 8,
+        "die": 6,
+        "proficiency_bonus": 2,
+        "attack_range": 5,
+        "attack_count": 1,
+        "xp": 150,
+        "skills": ["sling_shot"],
+        "reward": {
+            "gold": 15,
+            "items": [
+                {"name": "smoke_bomb", "type": "junk"},
+                {"name": "rusty_gears", "type": "junk"}
+            ]
+        }
+    },
+    "kobold_sorcerer":{
+        "level": 2,
+        "hp": 10,
+        "armor": 6,
+        "die": 6,
+        "proficiency_bonus": 2,
+        "attack_range": 5,
+        "attack_count": 1,
+        "xp": 175,
+        "spell_dc": 10,
+        "spell_resist": 2,
+        "spells": ["magic_missile", "lesser_heal"],
+        "reward": {
+            "gold": 12,
+            "items": [
+                {"name": "orb", "type": "weapon"},
+                {"name": "tattered_robes", "type": "junk"}
+            ]
+        }
+    },
+    "kobold_dragonshield": {
+        "level": 3,
+        "hp": 25,
+        "armor": 14,
+        "die": 8,
+        "proficiency_bonus": 3,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 300,
+        "skills": ["second_wind"],
+        "reward": {
+            "gold": 25,
+            "items": [
+                {"name": "wooden_shield", "type": "shield"},
+                {"name": "dragon_scale_fragment", "type": "junk"}
+            ]
+        }
+    },
+    
+    "dragons_chosen": {
+        "level": 5,
+        "hp": 45,
+        "armor": 12,
+        "die": 10,
+        "proficiency_bonus": 5,
+        "attack_range": 1,
+        "attack_count": 2,
+        "xp": 1100,
+        "spell_dc": 13,
+        "spells": ["magic_missile", "lesser_heal"],
+        "reward": {
+            "gold": 60,
+            "items": [
+                {"name": "ceremonial_dagger", "type": "weapon"},
+                {"name": "draconic_idol", "type": "trinket"}
+            ]
+        }
+    },
+    "wyrmling": {
+        "level": 6,
+        "hp": 55,
+        "armor": 13,
+        "die": 8,
+        "proficiency_bonus": 6,
+        "attack_range": 3,
+        "attack_count": 2,
+        "xp": 1800,
+        "spell_dc": 14,
+        "spells": ["fire_breath"],
+        "reward": {
+            "gold": 100,
+            "items": [
+                {"name": "dragon_tooth", "type": "junk"}
+            ]
+        }
+    },
+    "wyvern": {
+        "level": 9,
+        "hp": 85,
+        "armor": 11,
+        "die": "2d6",
+        "proficiency_bonus": 7,
+        "attack_range": 2,
+        "attack_count": 2,
+        "xp": 4500,
+        "on_hit_effect": "poison",
+        "skills": ["stinger_strike"],
+        "reward": {
+            "gold": 200,
+            "items": [
+                {"name": "wyvern_stinger", "type": "weapon"},
+                {"name": "venom_sac", "type": "junk"}
+            ]
+        }
+    },
+    "young_dragon": {
+        "level": 13,
+        "hp": 130,
+        "armor": 15,
+        "die": "2d10",
+        "proficiency_bonus": 9,
+        "attack_range": 5,
+        "attack_count": 3,
+        "xp": 10000,
+        "spell_dc": 15,
+        "skills":["cleave"],
+        "spells": ["fire_breath", "heal"],
+        "reward": {
+            "gold": 500,
+            "items": [
+                {"name": "dragon_hide", "type": "armor"}
+            ]
+        }
+    },
+    "behir": {
+        "level": 15,
+        "hp": 160,
+        "armor": 14,
+        "die": "3d8",
+        "proficiency_bonus": 10,
+        "attack_range": 2,
+        "attack_count": 3,
+        "xp": 13000,
+        "skills": ["dragon_breath"],
+        "spells": ["charge"],
+        "reward": {
+            "gold": 750,
+            "items": [
+                {"name": "behir_scale", "type": "armor"},
+                {"name": "lightning_gland", "type": "trinket"}
+            ]
+        }
+    },
+    "adult_dragon": {
+        "level": 18,
+        "hp": 250,
+        "armor": 17,
+        "die": "3d10",
+        "proficiency_bonus": 11,
+        "attack_range": 5,
+        "attack_count": 3,
+        "xp": 20000,
+        "spell_dc": 17,
+        "skills": ["tail_swipe"],
+        "spells": ["dragon_breath", "heal"],
+        "reward": {
+            "gold": 1200,
+            "items": [
+                {"name": "dragon_blood", "type": "consumable"}
+            ]
+        }
+    },
+    "dragon_turtle": {
+        "level": 20,
+        "hp": 350,
+        "armor": 18,
+        "die": "4d8",
+        "proficiency_bonus": 12,
+        "attack_range": 3,
+        "attack_count": 3,
+        "xp": 30000,
+        "skills": ["tail_swipe"],
+        "spells": ["fire_breath"],
+        "reward": {
+            "gold": 1500,
+            "items": [
+                {"name": "massive_shell", "type": "armor"}
+            ]
+        }
+    },
+    "ancient_dragon": {
+        "level": 24,
+        "hp": 550,
+        "armor": 19,
+        "die": "4d10",
+        "proficiency_bonus": 14,
+        "attack_range": 5,
+        "attack_count": 3,
+        "xp": 50000,
+        "spell_dc": 18,
+        "skills": ["tail_swipe"],
+        "spells": ["dragon_breath", "greater_heal"],
+        "reward": {
+            "gold": 2500,
+            "items": [
+                {"name": "dragons_claw", "type": "trinket"}
+            ]
+        }
+    },
+    "greatwyrm": {
+        "level": 30,
+        "hp": 1000,
+        "armor": 22,
+        "die": "6d12",
+        "proficiency_bonus": 16,
+        "attack_range": 10,
+        "attack_count": 4,
+        "xp": 100000,
+        "spell_dc": 22,
+        "skills": ["tail_swipe"],
+        "spells": ["dragon_breath", "greater_heal"],
+        "reward": {
+            "gold": 10000,
+            "items": [
+                {"name": "orb_of_dragonkind", "type": "trinket"}
+            ]
+        }
+    }
+}

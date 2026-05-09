@@ -101,8 +101,8 @@ def simulate_combat(player_data, enemy_list, player_goes_first=True):
                         res = CombatEngine.resolve_attack(player, target, advantage=player_advantage)
                         player_advantage = 0 
                         
+                        dmg = max(0, res['damage'] - target.get('damage_resist', 0))
                         if res['hit']:
-                            dmg = res['damage']
                             if extra_damage_once > 0:
                                 dmg += extra_damage_once
                                 print(f"  Effect applied! +{extra_damage_once} damage.")
@@ -122,26 +122,34 @@ def simulate_combat(player_data, enemy_list, player_goes_first=True):
                                     print(f"  Effect: {target['name']} is stunned!")
                                 elif effect == 'msg': print(f"  {val}")
                         else:
-                            print(f"Player misses {target['name']} (roll {res['roll']})")
+                            if dmg > 0:
+                                total_damage += dmg
+                                print(f"Player grazes {target['name']} for {dmg} damage (roll {res['roll']})")
+                            else:
+                                print(f"Player misses {target['name']} (roll {res['roll']})")
                     
                     target['hp'] = max(0, target['hp'] - total_damage)
                     print(f"Total damage to {target['name']}: {total_damage}. Remaining HP: {target['hp']}")
                     action_taken = True
                     
                 elif choice == '2':
-                    items = player_data.get('inventory_ref', {}).get('consumable', [])
-                    if not items:
+                    inv = player_data.get('inventory_ref', {})
+                    consumable_dict = inv.get('consumable', {})
+                    if not consumable_dict:
                         print("You have no consumables!")
                         continue
                     
+                    items = sorted(consumable_dict.keys())
                     print("\n--- Consumables ---")
-                    for i, item in enumerate(items, 1):
-                        print(f"{i}. {item.replace('_', ' ').title()}")
+                    for i, item_name in enumerate(items, 1):
+                        count = consumable_dict[item_name]
+                        print(f"{i}. {item_name.replace('_', ' ').title()} (x{count})")
                     print(f"{len(items) + 1}. Back")
                     
                     item_choice = input("Select an item to use: ").strip()
                     if item_choice.isdigit() and 1 <= int(item_choice) <= len(items):
-                        item_key = items[int(item_choice) - 1].lower().replace(' ', '_')
+                        item_name = items[int(item_choice) - 1]
+                        item_key = item_name.lower().replace(' ', '_')
                         item_data = consumables_db.get(item_key)
                         
                         if item_data:
@@ -150,7 +158,13 @@ def simulate_combat(player_data, enemy_list, player_goes_first=True):
                             
                             if res['hp_gain'] > 0:
                                 player_hp = min(player_max_hp, player_hp + res['hp_gain'])
+                                player['hp'] = player_hp
                                 print(f"Healed for {res['hp_gain']} HP! (Current: {player_hp}/{player_max_hp})")
+                            
+                            # Resources
+                            if res['mana_gain'] > 0:
+                                player['current_mp'] = min(player.get('max_mp', 0), player.get('current_mp', 0) + res['mana_gain'])
+                            
                             if res['bonus_gain'] > 0:
                                 player['weapon_bonus'] = player.get('weapon_bonus', 0) + res['bonus_gain']
                                 print(f"Attack/Damage bonus increased by {res['bonus_gain']}!")
@@ -161,7 +175,8 @@ def simulate_combat(player_data, enemy_list, player_goes_first=True):
                                 extra_damage_once += res['extra_damage']
                                 print(f"Next hit will deal +{res['extra_damage']} damage!")
                             
-                            items.pop(int(item_choice) - 1)
+                            from core.players.player_inventory import remove_item
+                            remove_item(inv, item_name, 'consumable')
                             action_taken = True
                     else:
                         continue
@@ -259,6 +274,7 @@ def simulate_combat(player_data, enemy_list, player_goes_first=True):
             nonlocal player_hp, enemy_advantage
             total_damage = 0
             alive_enemies = get_alive_enemies()
+            from core.combat.enemy_ai import EnemyAI
             
             for enemy in alive_enemies:
                 if enemy['conditions'].get('stunned', 0) > 0:
@@ -266,27 +282,77 @@ def simulate_combat(player_data, enemy_list, player_goes_first=True):
                     enemy['conditions']['stunned'] -= 1
                     continue
 
-                e_attack_count = int(enemy.get('attack_count', 1))
-                print(f"{enemy['name'].title()} attacks!")
+                # Regen (CLI equivalent)
+                max_sp = 10
+                max_mp = 10
+                enemy['current_sp'] = min(max_sp, enemy.get('current_sp', 0) + 1)
+                enemy['current_mp'] = min(max_mp, enemy.get('current_mp', 0) + 1)
+
+                max_attacks = int(enemy.get('attack_count', 1))
+                attacks_made = 0
                 
-                for _ in range(e_attack_count):
-                    res = CombatEngine.resolve_attack(enemy, player, advantage=enemy_advantage)
-                    enemy_advantage = 0 
+                while attacks_made < max_attacks:
+                    action = EnemyAI.decide_action(enemy)
                     
-                    if res['hit']:
-                        dmg = res['damage']
-                        total_damage += dmg
-                        print(f"  Hits for {dmg} (roll {res['roll']})")
+                    if action['type'] == 'ability':
+                        ability_data = action['data']
                         
+                        # Target selection
+                        if ability_data.get('type') == 'heal':
+                            targets = [enemy]
+                        elif ability_data.get('aoe'):
+                            targets = [player] # In CLI 1v1, AOE is just player
+                        else:
+                            targets = [player]
+
+                        res = CombatEngine.resolve_ability(ability_data, enemy, targets)
+                        print(f"{enemy['name']} " + res['msg'][0])
+                        
+                        # Deduct cost
+                        res_type = ability_data.get('resource', 'mp')
+                        enemy[f'current_{res_type}'] -= res.get('mana_cost', 0)
+
+                        if res['damage'] > 0:
+                            total_damage += res['damage']
+                        
+                        if res['healing'] > 0:
+                            enemy['hp'] = min(enemy.get('max_hp', enemy['hp']), enemy['hp'] + res['healing'])
+
+                        # Apply effects
                         for effect, val in res['effects']:
-                            if effect == 'heal_attacker':
-                                enemy['hp'] = min(enemy.get('max_hp', enemy['hp']), enemy['hp'] + val)
-                                print(f"  {enemy['name']} heals for {val} HP!")
-                            elif effect == 'stunned':
+                            if effect == 'stunned':
                                 player_conditions['stunned'] = val
                                 print("  Effect: You are stunned!")
+                        
+                        if ability_data.get('use_attack_count'):
+                            attacks_made += 1
+                        else:
+                            break # Non-multi-hit ability ends turn
                     else:
-                        print(f"  Misses (roll {res['roll']})")
+                        # Basic Attack
+                        res = CombatEngine.resolve_attack(enemy, player, advantage=enemy_advantage)
+                        enemy_advantage = 0 
+                        
+                        dmg = max(0, res['damage'] - player.get('damage_resist', 0))
+                        if res['hit']:
+                            total_damage += dmg
+                            print(f"{enemy['name']} hits you for {dmg} damage! (roll {res['roll']})")
+                            
+                            for effect, val in res['effects']:
+                                if effect == 'heal_attacker':
+                                    enemy['hp'] = min(enemy.get('max_hp', enemy['hp']), enemy['hp'] + val)
+                                    print(f"  {enemy['name']} heals for {val} HP!")
+                                elif effect == 'stunned':
+                                    player_conditions['stunned'] = val
+                                    print("  Effect: You are stunned!")
+                        else:
+                            if dmg > 0:
+                                total_damage += dmg
+                                print(f"{enemy['name']} grazes you for {dmg} damage! (roll {res['roll']})")
+                            else:
+                                print(f"{enemy['name']} misses you! (roll {res['roll']})")
+                        
+                        attacks_made += 1
 
             player_hp = max(0, player_hp - total_damage)
             print(f"Total damage received: {total_damage}. Player HP: {player_hp}\n")
@@ -388,9 +454,9 @@ def main():
 
         enemies = choose_enemies(enemy_data, player_profile.get('level', 1))
         
-        p_init = random.randint(1, 20) + player_profile.get('proficiency_bonus', 0)
+        p_init = random.randint(1, 20) + player_profile.get('proficiency_bonus', 0) + player_profile.get('initiative_boost', 0)
         # Initiative against the "first" enemy's bonus as a representative
-        e_init = random.randint(1, 20) + enemies[0].get('bonus', 0)
+        e_init = random.randint(1, 20) + enemies[0].get('bonus', 0) + enemies[0].get('initiative_boost', 0)
         player_first = p_init >= e_init
         
         print(f"Initiative: Player {p_init} vs Enemies {e_init}")
@@ -426,11 +492,8 @@ def main():
             print(f"You escaped.")
             player_profile['hp'] = result['player_hp']
         else:
-            print(f"Game Over. Final Score: {player_profile['xp'] + enemies_defeated}")
+            print("Game Over.")
             break
-
-    final_score = player_profile['xp'] + enemies_defeated
-    print(f"Final Score: {final_score} (XP: {player_profile['xp']}, Defeated: {enemies_defeated})")
 
 if __name__ == '__main__':
     main()

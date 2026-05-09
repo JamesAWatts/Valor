@@ -184,35 +184,81 @@ class InventoryState(BaseState):
         return None
 
     def equip_weapon(self, item_key, target_char):
-        from core.players.player import can_equip_weapon
+        from core.players.player import apply_weapon_to_player, can_equip_weapon
+        from core.players.player_inventory import add_item, remove_item
+        
         if not can_equip_weapon(target_char, item_key):
             return f"{target_char['name']} is not proficient with {item_key.replace('_', ' ').title()}!"
 
+        # 1. Return old weapon to inventory (if not unarmed)
+        old_weapon = target_char.get("weapon", "unarmed")
+        if old_weapon and old_weapon != "unarmed":
+            add_item(self.inventory, old_weapon, "weapon")
+            
+        # 2. Remove new weapon from inventory
+        remove_item(self.inventory, item_key, "weapon")
+
+        # 3. Equip new weapon
         target_char["weapon"] = item_key
         apply_weapon_to_player(target_char)
-        # Shared inventory equipment sync if necessary
+        
         return f"Equipped {item_key.replace('_', ' ').title()} to {target_char['name']}."
 
     def equip_armor(self, item_key, target_char):
+        from core.players.player import apply_armor_to_player, can_equip_armor
+        from core.players.player_inventory import add_item, remove_item
+
         if not can_equip_armor(target_char, item_key):
             return f"{target_char['name']} is not proficient with {item_key.replace('_', ' ').title()}!"
             
+        # 1. Return old armor to inventory
+        old_armor = target_char.get("armor", "unarmored")
+        if old_armor and old_armor != "unarmored":
+            add_item(self.inventory, old_armor, "armor")
+            
+        # 2. Remove new armor from inventory
+        remove_item(self.inventory, item_key, "armor")
+
+        # 3. Equip new armor
         target_char["armor"] = item_key
         apply_armor_to_player(target_char)
         return f"Equipped {item_key.replace('_', ' ').title()} to {target_char['name']}."
 
     def equip_shield(self, item_key, target_char):
+        from core.players.player import apply_shield_to_player
+        from core.players.player_inventory import add_item, remove_item
+        
+        # 1. Return old shield
+        old_shield = target_char.get("shield", "none")
+        if old_shield and old_shield != "none":
+            add_item(self.inventory, old_shield, "shield")
+            
+        # 2. Remove new shield
+        remove_item(self.inventory, item_key, "shield")
+
         target_char["shield"] = item_key
         apply_shield_to_player(target_char)
         return f"Equipped {item_key.replace('_', ' ').title()} to {target_char['name']}."
 
     def equip_trinket(self, item_key, target_char):
+        from core.players.player import apply_trinket_to_player
+        from core.players.player_inventory import add_item, remove_item
+        
+        # 1. Return old trinket
+        old_trinket = target_char.get("trinket", "none")
+        if old_trinket and old_trinket != "none":
+            add_item(self.inventory, old_trinket, "trinket")
+            
+        # 2. Remove new trinket
+        remove_item(self.inventory, item_key, "trinket")
+
         target_char["trinket"] = item_key
         apply_trinket_to_player(target_char)
         return f"Equipped {item_key.replace('_', ' ').title()} to {target_char['name']}."
 
     def use_consumable(self, item_key, target_char):
         from core.combat.combat_engine import CombatEngine
+        from core.players.player import apply_consumable_effect
         consumables_db = load_consumables()
         item_data = consumables_db.get(item_key)
         
@@ -220,9 +266,7 @@ class InventoryState(BaseState):
             return f"{item_key.replace('_', ' ').title()} not found."
 
         res = CombatEngine.resolve_item(item_data, target_char)
-        if res['hp_gain'] > 0:
-            target_char['current_hp'] = min(target_char.get('max_hp', 20), target_char.get('current_hp', 0) + res['hp_gain'])
-            target_char['hp'] = target_char['current_hp']
+        apply_consumable_effect(target_char, res)
         
         from core.players.player_inventory import remove_item
         remove_item(self.inventory, item_key, 'consumable')
@@ -233,7 +277,7 @@ class InventoryState(BaseState):
         if self.dialogue.current_message:
             self.dialogue.update()
             for event in events:
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                     was_typing = self.dialogue.is_typing
                     self.dialogue.handle_event(event)
                     if not was_typing and not self.dialogue.current_message:

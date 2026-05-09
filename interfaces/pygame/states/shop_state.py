@@ -3,6 +3,8 @@ from interfaces.pygame.states.base_state import BaseState
 from interfaces.pygame.ui.menu import Menu
 from interfaces.pygame.ui.backgrounds import BackgroundManager
 from interfaces.pygame.ui.dialogue_box import DialogueBox
+from interfaces.pygame.ui.panel import draw_text_outlined
+from core.game_rules.constants import scale_y, SCREEN_WIDTH, COLOR_GOLD
 from core.players.player import (
     load_weapons, load_armor, load_trinkets, load_shields, 
     apply_weapon_to_player, apply_armor_to_player, apply_shield_to_player, apply_trinket_to_player
@@ -31,7 +33,7 @@ class ShopState(BaseState):
         self.purchased_item_cat = None
         self.purchased_item_data = None
 
-        self.main_menu = Menu(["Buy", "Sell", "Blacksmith", "Back"], font, width=100, header="The Dragon's Hoard")
+        self.main_menu = Menu(["Buy", "Sell", "Back"], font, width=100, header="The Dragon's Hoard")
         self.active_menu = self.main_menu
 
     def refresh_buy_menu(self):
@@ -46,6 +48,41 @@ class ShopState(BaseState):
         options = ["Robes", "Light", "Medium", "Heavy", "Back"]
         self.active_menu = Menu(options, self.font, width=100, header="Armor Type?")
 
+    def is_item_unlocked(self, category, item):
+        party_lvl = sum(p.get('level', 1) for p in self.game.party)
+        cost = item.get('cost', 0)
+        bonus = item.get('bonus', 0)
+        
+        if category == "weapons":
+            if party_lvl >= 46: return True # Weapon +3
+            if bonus >= 3: return party_lvl >= 46
+            if party_lvl >= 31: return True # Weapon +2
+            if bonus >= 2: return party_lvl >= 31
+            if party_lvl >= 16: return True # Weapons +1
+            if bonus >= 1: return party_lvl >= 16
+            return True # Base weapons at lvl 1
+            
+        elif category == "armor":
+            if party_lvl >= 36: return True # All armor
+            if party_lvl >= 21: return cost < 1000
+            if party_lvl >= 3: return cost < 500
+            return False 
+            
+        elif category == "shields":
+            if party_lvl >= 36: return True # All shields
+            if party_lvl >= 21: return cost < 800
+            if party_lvl >= 1: return cost < 400
+            return False
+            
+        elif category == "trinkets":
+            if party_lvl >= 51: return True # All trinkets
+            if party_lvl >= 41: return cost < 2000
+            if party_lvl >= 26: return cost < 1500
+            if party_lvl >= 6: return cost < 500
+            return False
+            
+        return True # Consumables
+
     def open_buy_category(self, category, sub_category=None):
         if category == "weapons":
             data = load_weapons().get("weapon_list", {})
@@ -54,8 +91,6 @@ class ShopState(BaseState):
         elif category == "armor":
             data = load_armor()
             if sub_category:
-                # Handle Robes separately or as a type
-                # Looking at player.py: 'none', 'light', 'medium', 'heavy', 'robe'
                 target_type = sub_category.lower()
                 if target_type == "robes": target_type = "robe"
                 data = {k: v for k, v in data.items() if v.get('type', 'none').lower() == target_type}
@@ -68,7 +103,8 @@ class ShopState(BaseState):
         else:
             return
 
-        available = {k: v for k, v in data.items() if v.get('cost', 0) > 0}
+        # Filter by level and in_shop
+        available = {k: v for k, v in data.items() if v.get('cost', 0) > 0 and v.get('in_shop', True) and self.is_item_unlocked(category, v)}
         
         # REMOVED class-based filtering here per request
         
@@ -76,8 +112,13 @@ class ShopState(BaseState):
             # none > light > medium > heavy > robe
             type_order = {'none': 0, 'light': 1, 'medium': 2, 'heavy': 3, 'robe': 4}
             all_keys = sorted(available.keys(), key=lambda k: (type_order.get(available[k].get('type', 'none'), 99), available[k].get('cost', 0)))
+        elif category == "weapons":
+            # melee > ranged
+            type_order = {'melee': 0, 'ranged': 1}
+            all_keys = sorted(available.keys(), key=lambda k: (type_order.get(available[k].get('type', 'melee'), 99), available[k].get('cost', 0)))
         else:
             all_keys = sorted(available.keys(), key=lambda k: available[k].get('cost', 0))
+
         
         total_pages = (len(all_keys) + self.items_per_page - 1) // self.items_per_page
         if self.current_page >= total_pages: self.current_page = 0
@@ -123,7 +164,27 @@ class ShopState(BaseState):
 
     def refresh_sell_menu(self):
         options = ["Weapons", "Armor", "Shields", "Consumables", "Trinkets", "Junk", "Back"]
-        self.active_menu = Menu(options, self.font, width=100, header="What would you like to sell?")
+        disabled_indices = []
+        
+        # Determine which categories are empty
+        for i, option in enumerate(options):
+            if option == "Back":
+                continue
+            
+            # Map category name to inventory key (e.g., "Weapons" -> "weapon")
+            cat_name = option.lower()
+            inv_key = cat_name[:-1] if cat_name.endswith('s') else cat_name
+            items_dict = self.inventory.get(inv_key, {})
+            
+            # If no items in this category, mark it as disabled (greyed out)
+            if not items_dict or len(items_dict) == 0:
+                disabled_indices.append(i)
+
+        self.active_menu = Menu(
+            options, self.font, width=100, 
+            header="What would you like to sell?", 
+            disabled_indices=disabled_indices
+        )
 
     def open_sell_category(self, category):
         inv_key = category[:-1] if category.endswith('s') else category
@@ -131,6 +192,7 @@ class ShopState(BaseState):
         
         if not items_dict:
             self.dialogue.set_messages([f"You have no {category} to sell."])
+            self.mode = "SELL_CAT"
             self.refresh_sell_menu()
             return
 
@@ -145,10 +207,18 @@ class ShopState(BaseState):
             data = load_consumables()
         elif category == "trinkets":
             data = load_trinkets()
-        else: # Junk
+        elif category == "junk":
+            from core.game_rules.path_utils import get_resource_path
+            import json
+            import os
+            try:
+                with open(get_resource_path(os.path.join('data', 'items', 'junk.json')), 'r') as f:
+                    data = json.load(f)
+            except:
+                data = {}
+        else: # Misc
             data = {}
 
-        equipped = self.inventory.get('equipped', {})
         options = []
         descriptions = {}
         self.item_map = {}
@@ -157,35 +227,30 @@ class ShopState(BaseState):
         all_keys = sorted(items_dict.keys())
         
         for k in all_keys:
-            # Skip if equipped
-            if k == equipped.get(inv_key):
-                # If we only have 1 of this item and it's equipped, skip it
-                if items_dict[k] <= 1:
-                    continue
-            
             count = items_dict[k]
-            # Equipped check for items with multiple counts
-            sellable_count = count
-            if k == equipped.get(inv_key):
-                sellable_count -= 1
-
-            if sellable_count <= 0:
-                continue
-
-            item_data = data.get(k, {})
-            # Junk sells for 1g, others for 50% cost
-            price = item_data.get('cost', 2) // 2 if category != "junk" else 1
-            if price < 1: price = 1
+            if category == "junk":
+                item_data = data.get('junk_list', {}).get(k, {})
+            else:
+                item_data = data.get(k, {})
+            
+            # Calculate sell prices
+            if category == "junk":
+                # Junk sells for full cost value (not half like other items)
+                price = item_data.get('cost', 1)
+                print(f"DEBUG PYGAME PRICE: {k} junk cost = {item_data.get('cost', 'NOT_FOUND')} → sell price = {price}")
+            else:
+                # Other items sell for 50% cost
+                price = item_data.get('cost', 2) // 2
+                if price < 1: price = 1
             
             display_name = item_data.get('name', k.replace('_', ' ')).title()
-            full_display = f"{display_name} x{sellable_count} ({price}g)"
+            full_display = f"{display_name} x{count} ({price}g)"
             options.append(full_display)
             self.item_map[full_display] = (k, price, inv_key)
             descriptions[full_display] = item_data.get('description', 'A miscellaneous item.')
 
         if not options:
-            self.dialogue.set_messages([f"You have no unequipped {category} to sell."])
-            self.refresh_sell_menu()
+            self.dialogue.set_messages([f"You have no {category} to sell."])
             return
 
         options.append("Back")
@@ -199,9 +264,6 @@ class ShopState(BaseState):
             elif option == "Sell":
                 self.mode = "SELL_CAT"
                 self.refresh_sell_menu()
-            elif option == "Blacksmith":
-                from .blacksmith_state import BlacksmithState
-                self.game.change_state(BlacksmithState(self.game, self.font, player=self.player))
             elif option == "Back":
                 from interfaces.pygame.states.hub import HubState
                 self.game.change_state(HubState(self.game, self.font))
@@ -282,11 +344,11 @@ class ShopState(BaseState):
                 self.handle_sell(option)
 
         elif self.mode == "CONFIRM_ACTION":
-            if option == "Yes":
-                self.execute_action()
-            else:
+            if option == "Back":
                 self.mode = "BUY_ITEMS"
-                self.open_buy_category(self.buy_category)
+                self.open_buy_category(self.buy_category, self.buy_sub_category)
+            else:
+                self.execute_action(option)
 
         elif self.mode == "SELL": # Cleanup old mode if hit
             self.mode = "SELL_CAT"
@@ -294,9 +356,13 @@ class ShopState(BaseState):
 
     def handle_sell(self, display_name):
         mapped = self.item_map.get(display_name)
-        if not mapped: return
+        if not mapped: 
+            print(f"DEBUG SHOP: handle_sell called with '{display_name}' but not in item_map (mode={self.mode})")
+            return
         
         item_key, price, inv_key = mapped
+        
+        print(f"DEBUG PYGAME SELL: Selling {item_key} for {price} gold (category: {inv_key})")
         
         # Verify we still have it
         category = self.inventory.get(inv_key, {})
@@ -317,6 +383,7 @@ class ShopState(BaseState):
         if remove_item(self.inventory, item_key, inv_key):
             self.inventory['gold'] = self.inventory.get('gold', 0) + price
             self.dialogue.set_messages([f"Sold {item_key.replace('_',' ').title()} for {price} gold."])
+            print(f"DEBUG PYGAME SELL: Successfully sold {item_key} for {price} gold")
         
         # Refresh the current sell category view
         self.open_sell_category(self.sell_category)
@@ -371,29 +438,37 @@ class ShopState(BaseState):
         key = self.purchased_item_key
         cat = self.purchased_item_cat
         item = self.purchased_item_data
-        inv = self.game.player['inventory_ref']
+        inv = self.game.inventory
         
-        # Ensure equipped dict exists
-        if 'equipped' not in inv:
-            inv['equipped'] = {}
+        from core.players.player_inventory import add_item, remove_item
 
         if cat == "weapon":
             from core.players.player import can_equip_weapon
             if can_equip_weapon(target_char, key):
-                apply_weapon_to_player(target_char, key)
-                # Note: Inventory system handles equipment per character name if needed, 
-                # but currently seems to use one shared 'equipped' slot or shared inv.
-                # Assuming target_char['weapon'] update is enough for Hub to show.
+                # Return old
+                old = target_char.get("weapon", "unarmed")
+                if old and old != "unarmed": add_item(inv, old, "weapon")
+                # Remove new (it was added in handle_buy)
+                remove_item(inv, key, "weapon")
+                
+                target_char["weapon"] = key
+                apply_weapon_to_player(target_char)
+                
                 self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()} to {character_name}!"])
                 self.mode = "BUY_ITEMS"
                 self.open_buy_category(self.buy_category, self.buy_sub_category)
             else:
                 self.dialogue.set_messages([f"{item.get('name', key.replace('_',' ')).title()} cannot be equipped by {character_name}."])
-                # Stay in CONFIRM_ACTION to allow picking someone else
         
         elif cat == "armor":
             from core.players.player import can_equip_armor
             if can_equip_armor(target_char, key):
+                # Return old
+                old = target_char.get("armor", "unarmored")
+                if old and old != "unarmored": add_item(inv, old, "armor")
+                # Remove new
+                remove_item(inv, key, "armor")
+
                 target_char['armor'] = key
                 apply_armor_to_player(target_char)
                 self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()} to {character_name}!"])
@@ -403,27 +478,38 @@ class ShopState(BaseState):
                 self.dialogue.set_messages([f"{item.get('name', key.replace('_',' ')).title()} cannot be equipped by {character_name}."])
 
         elif cat == "shield":
-            apply_shield_to_player(target_char, key)
+            # Return old
+            old = target_char.get("shield", "none")
+            if old and old != "none": add_item(inv, old, "shield")
+            # Remove new
+            remove_item(inv, key, "shield")
+
+            target_char["shield"] = key
+            apply_shield_to_player(target_char)
             self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()} to {character_name}!"])
             self.mode = "BUY_ITEMS"
             self.open_buy_category(self.buy_category, self.buy_sub_category)
 
         elif cat == "trinket":
-            apply_trinket_to_player(target_char, key)
+            # Return old
+            old = target_char.get("trinket", "none")
+            if old and old != "none": add_item(inv, old, "trinket")
+            # Remove new
+            remove_item(inv, key, "trinket")
+
+            target_char["trinket"] = key
+            apply_trinket_to_player(target_char)
             self.dialogue.set_messages([f"Equipped {item.get('name', key.replace('_',' ')).title()} to {character_name}!"])
             self.mode = "BUY_ITEMS"
             self.open_buy_category(self.buy_category, self.buy_sub_category)
 
         elif cat == "consumable":
             # Use logic
+            from core.players.player import apply_consumable_effect
             res = CombatEngine.resolve_item(item, target_char)
-            if res.get('hp_gain', 0) > 0:
-                target_char['current_hp'] = min(target_char.get('max_hp', 10), target_char.get('current_hp', 10) + res['hp_gain'])
-            if res.get('mana_gain', 0) > 0:
-                target_char['current_mp'] = min(target_char.get('max_mp', 0), target_char.get('current_mp', 0) + res['mana_gain'])
+            apply_consumable_effect(target_char, res)
             
-            # Remove from shared inventory
-            from core.players.player_inventory import remove_item
+            # Remove from shared inventory (it was added in handle_buy)
             remove_item(inv, key, "consumable")
             
             self.dialogue.set_messages([f"Used on {character_name}. {res.get('msg', '')}"])
@@ -434,7 +520,7 @@ class ShopState(BaseState):
         if self.dialogue.current_message:
             self.dialogue.update()
             for event in events:
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                     self.dialogue.handle_event(event)
             return
             
@@ -444,9 +530,6 @@ class ShopState(BaseState):
         # --- Draw background FIRST ---
         self.draw_background(screen)
 
-        from core.game_rules.constants import scale_y, SCREEN_WIDTH, COLOR_GOLD
-        from interfaces.pygame.ui.panel import draw_text_outlined
-        
         # Show Gold at the top
         gold_text = f"Gold: {self.inventory.get('gold', 0)}"
         gw, gh = self.font.size(gold_text)

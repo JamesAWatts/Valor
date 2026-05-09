@@ -1,0 +1,364 @@
+{
+    "cockatrice": {
+        "level": 1,
+        "hp": 12,
+        "armor": 5,
+        "die": 4,
+        "proficiency_bonus": 2,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 100,
+        "spell_dc": 10,
+        "spells": ["petrifying_gaze"],
+        "reward": {
+            "gold": 5,
+            "items": [
+                {
+                    "name": "cockatrice_feather",
+                    "type": "junk"
+                }
+            ]
+        }
+    },
+    "deep_roathe": {
+        "level": 3,
+        "hp": 40,
+        "armor": 8,
+        "die": 6,
+        "proficiency_bonus": 3,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 100,
+        "skills": ["gore"],
+        "reward": {
+            "gold": 5,
+            "items": [
+                {
+                    "name": "roathe_meat",
+                    "type": "consumable"
+                }
+            ]
+        }
+    },
+    "brown_bear": {
+        "level": 4,
+        "hp": 45,
+        "armor": 7,
+        "die": 8,
+        "proficiency_bonus": 3,
+        "attack_range": 1,
+        "attack_count": 2,
+        "xp": 200,
+        "skills": ["cleave"],
+        "reward": {
+            "gold": 12,
+            "items": [
+                {
+                    "name": "bear_pelt",
+                    "type": "junk"
+                }
+            ]
+        }
+    },
+    "harpy": {
+        "level": 3,
+        "hp": 30,
+        "armor": 12,
+        "die": 6,
+        "proficiency_bonus": 4,
+        "attack_range": 1,
+        "attack_count": 2,
+        "xp": 300,
+        "spell_dc": 11,
+        "spell_resist": 3,
+        "skills": ["screech"],
+        "reward": {
+            "gold": 20,
+            "items": [
+                {
+                    "name": "harpy_feather",
+                    "type": "junk"
+                },
+                {
+                    "name": "ring_of_health",
+                    "type": "trinket"
+                }
+            ]
+        }
+    },
+    "griffon": {
+        "level": 5,
+        "hp": 70,
+        "armor": 10,
+        "die": 8,
+        "proficiency_bonus": 4,
+        "attack_range": 1,
+        "attack_count": 2,
+        "xp": 450,
+        "skills": ["swift_strikes"],
+        "reward": {
+            "gold": 30,
+            "items": [
+                {
+                    "name": "griffon_claw",
+                    "type": "junk"
+                }
+            ]
+        }
+    },
+    "owlbear": {
+        "level": 6,
+        "hp": 85,
+        "armor": 11,
+        "die": 10,
+        "proficiency_bonus": 5,
+        "attack_range": 1,
+        "attack_count": 2,
+        "xp": 700,
+        "skills": ["swift_strikes"],
+        "reward": {
+            "gold": 50,
+            "items": [
+                {
+                    "name": "owlbear_beak",
+                    "type": "junk"
+                }
+            ]
+        }
+    },
+    "manticore": {
+        "level": 7,
+        "hp": 90,
+        "armor": 12,
+        "die": 8,
+        "proficiency_bonus": 5,
+        "attack_range": 5,
+        "attack_count": 3,
+        "xp": 1100,
+        "skills": ["stinger_strike"],
+        "reward": {
+            "gold": 80,
+            "items": [
+                {
+                    "name": "manticore_spine",
+                    "type": "weapon"
+                }
+            ]
+        }
+    },
+    "bulette": {
+        "level": 8,
+        "hp": 130,
+        "armor": 15,
+        "die": "2d12",
+        "proficiency_bonus": 6,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 2300,
+        "spell": ["charge"],
+        "reward": {
+            "gold": 150,
+            "items": [
+                {
+                    "name": "bulette_plate",
+                    "type": "armor"
+                }
+            ]
+        }
+    },
+    "minotaur": {
+        "level": 10,
+        "hp": 100,
+        "armor": 12,
+        "die": 12,
+        "proficiency_bonus": 6,
+        "attack_range": 1,
+        "attack_count": 3,
+        "xp": 10000,
+        "skills": ["gore"],
+        "spells": ["charge","heal"],
+        "reward": {
+            "gold": 400,
+            "items": [
+                {
+                    "name": "greataxe_1",
+                    "type": "weapon"
+                },
+                {
+                    "name": "minotaurs_horn",
+                    "type": "trinket"
+                }
+            ]
+        }
+    },
+    "medusa": {
+        "level": 12,
+        "hp": 120,
+        "armor": 14,
+        "die": 10,
+        "proficiency_bonus": 7,
+        "attack_range": 5,
+        "attack_count": 3,
+        "xp": 12500,
+        "spell_dc": 15,
+        "spell_resist": 6,
+        "on_hit_effect": "sap",
+        "skills": ["poison_strike"],
+        "spells": ["petrifying_gaze","heal"],
+        "sneak_attack_die": 6,
+        "sneak_attack_rolls": 6,
+        "reward": {
+            "gold": 680,
+            "items": [
+                {
+                    "name": "snake_scale",
+                    "type": "junk"
+                },
+                {
+                    "name": "archmage_crystal",
+                    "type": "trinket"
+                }
+            ]
+        }
+    },
+    "hydra": {
+        "level": 14,
+        "hp": 200,
+        "armor": 14,
+        "die": 10,
+        "proficiency_bonus": 8,
+        "attack_range": 2,
+        "attack_count": 5,
+        "xp": 13000,
+        "skills": ["swift_strikes"],
+        "spells": ["regenerate", "charge"],
+        "reward": {
+            "gold": 800,
+            "items": [
+                {
+                    "name": "hydra_tooth",
+                    "type": "trinket"
+                }
+            ]
+        }
+    },
+    "remorhaz": {
+        "level": 17,
+        "hp": 300,
+        "armor": 16,
+        "die": "3d10",
+        "proficiency_bonus": 10,
+        "attack_range": 2,
+        "attack_count": 2,
+        "xp": 18000,
+        "on_hit_effect": "burn",
+        "skills": ["charge"],
+        "reward": {
+            "gold": 1200,
+            "items": [
+                {
+                    "name": "remorhaz_carapace",
+                    "type": "armor"
+                }
+            ]
+        }
+    },
+    "chimera": {
+        "level": 17,
+        "hp": 280,
+        "armor": 14,
+        "die": "2d8",
+        "proficiency_bonus": 9,
+        "attack_range": 2,
+        "attack_count": 3,
+        "xp": 25000,
+        "spell_dc": 16,
+        "spell_resist": 7,
+        "skills": ["stinger_strike"],
+        "spells": ["fire_breath","greater_heal"],
+        "effect": "advantage",
+        "power": -2,
+        "dot": true,
+        "dot_dice": "3d4",
+        "duration": 2,
+        "reward": {
+            "gold": 1000,
+            "items": [
+                {
+                    "name": "minotaurs_horn",
+                    "type": "trinket"
+                },
+                {
+                    "name": "snake_scale",
+                    "type": "junk"
+                }
+            ]
+        }
+    },
+    "purple_worm": {
+        "level": 21,
+        "hp": 450,
+        "armor": 17,
+        "die": "4d12",
+        "proficiency_bonus": 12,
+        "attack_range": 3,
+        "attack_count": 2,
+        "xp": 35000,
+        "on_hit_effect": "poison",
+        "skills": ["tail_swipe"],
+        "reward": {
+            "gold": 2000,
+            "items": [
+                {
+                    "name": "worm_toxin",
+                    "type": "consumable"
+                }
+            ]
+        }
+    },
+    "kraken": {
+        "level": 25,
+        "hp": 650,
+        "armor": 18,
+        "die": "4d10",
+        "proficiency_bonus": 14,
+        "attack_range": 10,
+        "attack_count": 4,
+        "xp": 50000,
+        "spell_dc": 17,
+        "skills": ["screech"],
+        "spells": ["darkness", "greater_heal"],
+        "reward": {
+            "gold": 5000,
+            "items": [
+                {
+                    "name": "kraken_ink",
+                    "type": "junk"
+                }
+            ]
+        }
+    },
+    "tarrasque": {
+        "level": 30,
+        "hp": 1000,
+        "armor": 25,
+        "die": "8d12",
+        "proficiency_bonus": 18,
+        "attack_range": 5,
+        "attack_count": 5,
+        "xp": 150000,
+        "spell_dc": 18,
+        "skills": ["tail_swipe"],
+        "spells": ["regenerate", "charge"],
+        "damage_resist": 5,
+        "reward": {
+            "gold": 25000,
+            "items": [
+                {
+                    "name": "tarrasque_heart",
+                    "type": "trinket"
+                }
+            ]
+        }
+    }
+}

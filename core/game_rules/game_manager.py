@@ -12,6 +12,38 @@ class GameManager:
         self.debug_overlay = None
         self.music_manager = music_manager
         self.party_member_name = None # Used during hiring process
+        self.battle_counter = 0
+        self.consecutive_combats = 0
+        self.bestiary_rp = {}
+        self.inventory = {
+            'gold': 0,
+            'weapon': {},
+            'armor': {},
+            'shield': {},
+            'trinket': {},
+            'consumable': {},
+            'junk': {},
+            'key_items': {}
+        }
+
+    def reset_game(self):
+        """Resets all session-specific data for a clean start."""
+        self.party = []
+        self.enemies = []
+        self.party_member_name = None
+        self.battle_counter = 0
+        self.consecutive_combats = 0
+        self.bestiary_rp = {}
+        self.inventory = {
+            'gold': 0,
+            'weapon': {},
+            'armor': {},
+            'shield': {},
+            'trinket': {},
+            'consumable': {},
+            'junk': {},
+            'key_items': {}
+        }
 
     @property
     def player(self):

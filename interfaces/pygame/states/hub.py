@@ -19,7 +19,13 @@ class HubState(BaseState):
         # Get persistent hub background from manager
         self.background = BackgroundManager.get_hub_bg(self.game.player)
 
-        self.base_options = ["Fight", "Tavern", "Shop", "Inventory", "Settings", "Retire"]
+        self.base_options = ["Fight", "Tavern", "Shop", "Inventory", "Settings"]
+        
+        # --- Bestiary Unlock Check ---
+        total_party_level = sum(p.get('level', 1) for p in self.game.party)
+        if total_party_level >= 21:
+            self.base_options.insert(1, "Bestiary")
+
         options = list(self.base_options)
         if game.god_mode:
             options += ["Level Up", "Invincible"]
@@ -84,21 +90,30 @@ class HubState(BaseState):
     def handle_main_menu(self, option):
         p = self.game.party[self.selected_index]
         if option == "Fight":
-            from core.creatures.enemies import load_enemy_data, get_scaled_enemies
-            import math
-            
-            # Determine encounter level
-            if len(self.game.party) > 1:
-                total_level = sum(p.get('level', 1) for p in self.game.party)
-                encounter_level = math.ceil(total_level / 2)
+            # Check for Rumors encounter
+            if hasattr(self.game, 'next_encounter') and self.game.next_encounter:
+                enemies = self.game.next_encounter
+                self.game.next_encounter = None # Clear it
             else:
-                encounter_level = self.game.player.get('level', 1)
+                from core.creatures.enemies import get_scaled_enemies
+                import math
+                
+                # Determine encounter level (Budget)
+                party_size = len(self.game.party)
+                total_level = sum(p.get('level', 1) for p in self.game.party)
+                
+                if party_size > 1:
+                    encounter_level = math.ceil((total_level / 2) + (party_size - 1))
+                else:
+                    encounter_level = total_level
 
-            enemy_data = load_enemy_data()
-            enemies = get_scaled_enemies(enemy_data, encounter_level)
+                enemies = get_scaled_enemies(encounter_level, battle_count=self.game.battle_counter)
 
+            # Increment battle counter and consecutive counter
+            self.game.battle_counter += 1
+            self.game.consecutive_combats += 1
             self.game.enemies = enemies
-
+            
             from .combat import CombatState
             self.game.change_state(CombatState(self.game, self.font))
 
@@ -111,9 +126,9 @@ class HubState(BaseState):
             # Pass selected character to inventory
             self.game.change_state(InventoryState(self.game, self.font, player=p))
 
-        elif option == "Retire":
-            from .game_over import GameOverState
-            self.game.change_state(GameOverState(self.game, self.font, retired=True))
+        elif option == "Bestiary":
+            from .bestiary import BestiaryState
+            self.game.change_state(BestiaryState(self.game, self.font))
 
         elif option == "Settings":
             from .settings_state import SettingsState
@@ -192,6 +207,33 @@ class HubState(BaseState):
                 draw_bar(screen, bx, by + y_off, scale_x(200), scale_y(25),
                          cur_sp, p.get("max_sp", 0), (255, 200, 0), self.font)
 
+            # --- XP Bar ---
+            from core.players.leveler import load_xp_table, get_total_level_for_xp
+            xp_table = load_xp_table()
+            total_xp = p.get('xp', 0)
+            current_lvl = get_total_level_for_xp(total_xp)
+            
+            # Progress within current level
+            xp_this_lvl = xp_table.get(str(current_lvl), 0)
+            next_lvl_str = str(current_lvl + 1)
+            
+            if next_lvl_str in xp_table:
+                xp_needed_total = xp_table[next_lvl_str]
+                xp_in_level = total_xp - xp_this_lvl
+                xp_needed_in_level = xp_needed_total - xp_this_lvl
+                
+                # Calculate Y offset for XP bar (after HP, MP/SP)
+                if p.get("max_mp", 0) > 0 and p.get("max_sp", 0) > 0:
+                    xp_y_off = scale_y(90)
+                elif p.get("max_mp", 0) > 0 or p.get("max_sp", 0) > 0:
+                    xp_y_off = scale_y(60)
+                else:
+                    xp_y_off = scale_y(30)
+                
+                # Draw Teal XP Bar
+                draw_bar(screen, bx, by + xp_y_off, scale_x(200), scale_y(25),
+                         xp_in_level, xp_needed_in_level, (0, 128, 128), self.font)
+
         # --- Draw Party Characters (Rotating Dish) ---
         from interfaces.pygame.graphics.enemy_sprites import SpriteManager
         num_party = len(self.game.party)
@@ -263,7 +305,7 @@ class HubState(BaseState):
 
         # --- MENU (Left Aligned) ---
         if self.active_menu:
-            self.active_menu.draw(screen, 120, 400)
+            self.active_menu.draw(screen, 120, 250)
             
         # --- Tooltip (Draw LAST) ---
         self.inventory_panel.draw_tooltip(screen)

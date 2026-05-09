@@ -1,12 +1,12 @@
 {
-    "Weapon_effefts":{
-        "cleave": "hits all creatures in attack_range",
+    "Weapon_effects":{
         "vex": "hits grant self advantage on next attack",
         "sap": "hits give enemy disadvantage on their next attack",
         "push": "hits push enemy away by 2",
         "slow": "hits reduce enemy movement by 2",
         "graze": "missed attacks deal your bonus in damage",
-        "lifesteal": "hits heal you for half the damage dealt"
+        "lifesteal": "hits heal you for half the damage dealt",
+        "swift": "attack_count +=1"
     },
     "Conditions": {
         "stunned": "skip next turn",
@@ -22,6 +22,7 @@
         "incapacitated": "can't take actions or reactions",
         "invisible": "can't be seen without magic, advantage on attack rolls against you",
         "paralyzed": "incapacitated, can't move, meleeattack rolls against you have advantage, any hit is a critical hit",
-        "petrified": "turns to stone, incapacitated, can't move, can't speak, and is unaware of surroundings"
+        "petrified": "turns to stone, incapacitated, can't move, can't speak, and is unaware of surroundings",
+        "taunted": "enemies must target caster until effect ends"
     }
 }

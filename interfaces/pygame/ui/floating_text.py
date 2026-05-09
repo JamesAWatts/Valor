@@ -3,7 +3,7 @@ import random
 from core.game_rules.constants import scale_x, scale_y
 
 class FloatingText:
-    def __init__(self, text, pos, color=(255, 255, 255), lifetime=60, rise_speed=1.0, font_size=24):
+    def __init__(self, text, pos, color=(255, 255, 255), lifetime=120, rise_speed=1.0, font_size=24, delay=0):
         # Initialize font if not already done
         if not pygame.font.get_init():
             pygame.font.init()
@@ -22,11 +22,16 @@ class FloatingText:
         self.color = color
         self.lifetime = lifetime
         self.max_lifetime = lifetime
+        self.delay = delay
         
         self.rise_speed = rise_speed * scale_y(1)
         self.alpha = 255
 
     def update(self):
+        if self.delay > 0:
+            self.delay -= 1
+            return
+
         self.y -= self.rise_speed
         self.rise_speed += 0.02 # Slight acceleration
         self.lifetime -= 1
@@ -35,7 +40,7 @@ class FloatingText:
         self.alpha = int(255 * (self.lifetime / self.max_lifetime))
 
     def draw(self, surface):
-        if self.alpha <= 0:
+        if self.delay > 0 or self.alpha <= 0:
             return
             
         surf = self.font.render(self.text, True, self.color)
@@ -47,7 +52,7 @@ class FloatingText:
         surface.blit(temp_surf, (self.x, self.y))
 
     def is_alive(self):
-        return self.lifetime > 0
+        return self.lifetime > 0 or self.delay > 0
 
 
 class FloatingTextManager:
@@ -66,13 +71,13 @@ class FloatingTextManager:
             "stamina": (255, 220, 100)
         }
 
-    def add(self, text, pos, color_key="hit", lifetime=60, rise_speed=1.2):
+    def add(self, text, pos, color_key="hit", lifetime=120, rise_speed=1.2, delay=0):
         color = self.COLORS.get(color_key, (255, 255, 255))
         # Support passing direct color tuples too
         if isinstance(color_key, tuple):
             color = color_key
             
-        self.texts.append(FloatingText(text, pos, color, lifetime, rise_speed))
+        self.texts.append(FloatingText(text, pos, color, lifetime, rise_speed, delay=delay))
 
     def update(self):
         for t in self.texts:

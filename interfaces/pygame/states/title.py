@@ -24,7 +24,7 @@ class TitleState(BaseState):
         self.fade_speed = 2
         self.title_pos = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 4)
         
-        self.menu = Menu(["New Game", "Load Game", "High Scores", "Settings"], font, width=200, pos=(400, 400))
+        self.menu = Menu(["New Game", "Load Game", "Settings"], font, width=200, pos=(400, 400))
         self.active_menu = None 
         
         self.state = "FADING" # FADING, PRESS_START, MENU, NAMING
@@ -77,9 +77,6 @@ class TitleState(BaseState):
         elif option == "Load Game":
             from .save_state import SaveState
             self.game.change_state(SaveState(self.game, self.font, mode="LOAD"))
-        elif option == "High Scores":
-            from .high_score import HighScoreState
-            self.game.change_state(HighScoreState(self.game, self.font))
         elif option == "Settings":
             from .settings_state import SettingsState
             self.game.change_state(SettingsState(self.game, self.font, previous_state=self))

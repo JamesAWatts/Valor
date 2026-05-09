@@ -19,7 +19,7 @@ class DialogueBox:
     # =========================
     # MESSAGE CONTROL
     # =========================
-    def set_messages(self, messages):
+    def set_messages(self, messages, skip_typing=False):
         if isinstance(messages, str):
             messages = [messages]
 
@@ -27,15 +27,25 @@ class DialogueBox:
         self.current_message = self.messages.pop(0) if self.messages else ""
         self.visible_text = ""
         self.index = 0
-        self.is_typing = True
+        self.skip_typing = skip_typing
+        self.is_typing = not skip_typing
         self.finished = False
+        
+        if skip_typing:
+            self.index = len(self.current_message)
+            self.visible_text = self.current_message
 
     def next_message(self):
         if self.messages:
             self.current_message = self.messages.pop(0)
             self.visible_text = ""
             self.index = 0
-            self.is_typing = True
+            if getattr(self, 'skip_typing', False):
+                self.index = len(self.current_message)
+                self.visible_text = self.current_message
+                self.is_typing = False
+            else:
+                self.is_typing = True
         else:
             self.finished = True
             self.current_message = ""
@@ -60,7 +70,16 @@ class DialogueBox:
     # =========================
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
+            if event.key in [pygame.K_RETURN, pygame.K_SPACE]:
+                if self.is_typing:
+                    # Skip to full text
+                    self.index = len(self.current_message)
+                    self.visible_text = self.current_message
+                    self.is_typing = False
+                else:
+                    self.next_message()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1: # Left click
                 if self.is_typing:
                     # Skip to full text
                     self.index = len(self.current_message)
@@ -73,24 +92,30 @@ class DialogueBox:
     # TEXT WRAPPING
     # =========================
     def wrap_text(self, text, max_width):
-        words = text.split(" ")
-        lines = []
-        current_line = ""
+        if not isinstance(text, str): text = str(text)
+        
+        # Support explicit newlines
+        paragraphs = text.split("\n")
+        all_lines = []
+        
+        for para in paragraphs:
+            words = para.split(" ")
+            current_line = ""
 
-        for word in words:
-            test_line = current_line + word + " "
-            width, _ = self.font.size(test_line)
+            for word in words:
+                test_line = current_line + word + " "
+                width, _ = self.font.size(test_line)
 
-            if width <= max_width:
-                current_line = test_line
-            else:
-                lines.append(current_line)
-                current_line = word + " "
+                if width <= max_width:
+                    current_line = test_line
+                else:
+                    all_lines.append(current_line)
+                    current_line = word + " "
 
-        if current_line:
-            lines.append(current_line)
+            if current_line:
+                all_lines.append(current_line)
 
-        return lines
+        return all_lines
 
     # =========================
     # DRAW
@@ -99,13 +124,13 @@ class DialogueBox:
         if not self.current_message:
             return
 
-        from core.game_rules.constants import COLOR_MIDNIGHT_BLUE, COLOR_GOLD, COLOR_WHITE
+        from core.game_rules.constants import COLOR_GOLD, COLOR_WHITE
         # Use RAW coordinates (Base Res: 800x600)
         panel = Panel(
             400, # Center X
             450, # Near Bottom Y (600 - 150)
             760, # Width
-            140, # Height
+            200 if getattr(self, 'skip_typing', False) else 140, # Expand for results
             border_color=COLOR_GOLD,
             border_width=3,
             centered=True,
@@ -120,9 +145,11 @@ class DialogueBox:
         line_height = self.font.get_height()
 
         from interfaces.pygame.ui.panel import draw_text_outlined
-        for i, line in enumerate(lines[:3]):  # limit to 3 lines
+        # Increased line limit for results
+        max_lines = 8 if getattr(self, 'skip_typing', False) else 3
+        for i, line in enumerate(lines[:max_lines]): 
             text_x = rect.x + scale_y(20)
-            text_y = rect.y + scale_y(20) + i * line_height
+            text_y = rect.y + scale_y(15) + i * line_height
 
             draw_text_outlined(screen, line, self.font, COLOR_WHITE, text_x, text_y)
 

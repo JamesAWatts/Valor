@@ -36,8 +36,26 @@ class LevelUpState(BaseState):
         for name in self.class_names:
             descriptions[name] = get_level_up_benefits(self.player, name)
 
+        # Determine default selection - use the player's highest level class
+        initial_selection = 0
+        player_class_levels = self.player.get('class_levels', {})
+        if player_class_levels:
+            # Find the class with the highest level
+            max_level = 0
+            primary_class = None
+            for class_name, level in player_class_levels.items():
+                if level > max_level:
+                    max_level = level
+                    primary_class = class_name
+            
+            if primary_class:
+                # Find the index of this class in our menu options
+                primary_class_title = primary_class.title()
+                if primary_class_title in self.class_names:
+                    initial_selection = self.class_names.index(primary_class_title)
+
         # 25% transparent means 75% opacity, alpha = 255 * 0.75 = 191
-        self.menu = Menu(self.class_names, self.font, bg_color=COLOR_BG, border_color=COLOR_LIGHT_GRAY, alpha=191, width=200, descriptions=descriptions, pos=(150, 150))
+        self.menu = Menu(self.class_names, self.font, bg_color=COLOR_BG, border_color=COLOR_LIGHT_GRAY, alpha=191, width=200, descriptions=descriptions, initial_selection=initial_selection, pos=(150, 150))
         self.active_menu = self.menu
 
     def on_select(self, option):

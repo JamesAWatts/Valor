@@ -12,7 +12,7 @@ class MusicManager:
         self.last_combat_index = -1
         
         # Settings
-        self.volume = 0.5
+        self.volume = 0.15
         self.is_muted = False
         
         # 2. Force a clean mixer initialization

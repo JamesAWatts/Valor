@@ -2,40 +2,20 @@ import random
 
 
 def create_inventory(selected_player):
-    # Initialize player inventory using chosen class equipment.
-    starting_weapon = selected_player.get('weapon', 'unarmed')
-    starting_armor = selected_player.get('armor', 'unarmored')
-    starting_shield = selected_player.get('shield', 'none')
-    starting_trinket = selected_player.get('trinket', 'none')
+    # Initialize player inventory.
+    # We no longer add starting equipment to the inventory here, 
+    # as it's assumed to be already equipped on the player profile.
     
     inventory = {
         'gold': 0,
-        'weapon': {}, # Changed to dict for counts
-        'armor': {},  # Changed to dict for counts
+        'weapon': {}, 
+        'armor': {},  
         'shield': {},
         'trinket': {},
-        'junk': {},   # Changed to dict for counts
-        'consumable': {}, # Changed to dict for counts
-        'key_items': {},  # Changed to dict for counts
-        'equipped': {
-            'weapon': starting_weapon,
-            'armor': starting_armor,
-            'shield': starting_shield,
-            'trinket': starting_trinket
-        }
+        'junk': {},   
+        'consumable': {}, 
+        'key_items': {}
     }
-
-    if starting_weapon:
-        add_item(inventory, starting_weapon, 'weapon')
-
-    if starting_armor:
-        add_item(inventory, starting_armor, 'armor')
-        
-    if starting_shield and starting_shield != 'none':
-        add_item(inventory, starting_shield, 'shield')
-        
-    if starting_trinket and starting_trinket != 'none':
-        add_item(inventory, starting_trinket, 'trinket')
 
     return inventory
 
@@ -74,6 +54,11 @@ def add_item(inventory, item_name, item_type='junk', count=1):
         category = new_cat
 
     category[item_name] = category.get(item_name, 0) + count
+    
+    # DEBUG: Show when junk items are added to inventory
+    if item_type == 'junk':
+        print(f"DEBUG INVENTORY: Added '{item_name}' to junk inventory (count: {category[item_name]})")
+    
     return item_name
 
 
@@ -161,14 +146,6 @@ def display_inventory(inventory):
         if category:
             item_strings = [f"{name.replace('_', ' ').title()} (x{count})" for name, count in category.items()]
             print(f"{category_key.title()}: {', '.join(item_strings)}")
-            
-    equipped = inventory.get('equipped', {})
-    if equipped:
-        eq_weapon = equipped.get('weapon', 'None').replace('_', ' ').title()
-        eq_armor = equipped.get('armor', 'None').replace('_', ' ').title()
-        eq_shield = equipped.get('shield', 'None').replace('_', ' ').title()
-        eq_trinket = equipped.get('trinket', 'None').replace('_', ' ').title()
-        print(f"Equipped: Weapon={eq_weapon}, Armor={eq_armor}, Shield={eq_shield}, Trinket={eq_trinket}")
     print("-----------------\n")
 
 def manage_inventory(player_profile, inventory):
@@ -177,12 +154,11 @@ def manage_inventory(player_profile, inventory):
 
     while True:
         print("\n=== INVENTORY MANAGEMENT ===")
-        equipped = inventory.get('equipped', {})
-        print(f"Currently Equipped:")
-        print(f"  Weapon: {equipped.get('weapon', 'None').replace('_', ' ').title()}")
-        print(f"  Armor: {equipped.get('armor', 'None').replace('_', ' ').title()}")
-        print(f"  Shield: {equipped.get('shield', 'None').replace('_', ' ').title()}")
-        print(f"  Trinket: {equipped.get('trinket', 'None').replace('_', ' ').title()}")
+        print(f"Currently Equipped ({player_profile.get('name', 'Adventurer')}):")
+        print(f"  Weapon: {player_profile.get('weapon', 'None').replace('_', ' ').title()}")
+        print(f"  Armor: {player_profile.get('armor', 'None').replace('_', ' ').title()}")
+        print(f"  Shield: {player_profile.get('shield', 'None').replace('_', ' ').title()}")
+        print(f"  Trinket: {player_profile.get('trinket', 'None').replace('_', ' ').title()}")
         print(f"Gold: {inventory.get('gold', 0)}")
         
         categories = ['weapon', 'armor', 'shield', 'trinket', 'consumable', 'junk']
@@ -226,28 +202,48 @@ def manage_inventory(player_profile, inventory):
             selected_item = items[int(item_choice) - 1]
             
             if category_key == 'weapon':
+                # Return old
+                old = player_profile.get('weapon', 'unarmed')
+                if old and old != 'unarmed': add_item(inventory, old, 'weapon')
+                # Remove new
+                remove_item(inventory, selected_item, 'weapon')
+                
                 player_profile['weapon'] = selected_item
                 apply_weapon_to_player(player_profile)
-                inventory['equipped']['weapon'] = selected_item
                 print(f"Equipped {selected_item.replace('_', ' ').title()}.")
             elif category_key == 'armor':
                 from core.players.player import can_equip_armor
                 if can_equip_armor(player_profile, selected_item):
+                    # Return old
+                    old = player_profile.get('armor', 'unarmored')
+                    if old and old != 'unarmored': add_item(inventory, old, 'armor')
+                    # Remove new
+                    remove_item(inventory, selected_item, 'armor')
+                    
                     player_profile['armor'] = selected_item
                     apply_armor_to_player(player_profile)
-                    inventory['equipped']['armor'] = selected_item
                     print(f"Equipped {selected_item.replace('_', ' ').title()}.")
                 else:
                     print(f"You are not proficient with {selected_item.replace('_', ' ').title()}!")
             elif category_key == 'shield':
+                # Return old
+                old = player_profile.get('shield', 'none')
+                if old and old != 'none': add_item(inventory, old, 'shield')
+                # Remove new
+                remove_item(inventory, selected_item, 'shield')
+                
                 player_profile['shield'] = selected_item
                 apply_shield_to_player(player_profile)
-                inventory['equipped']['shield'] = selected_item
                 print(f"Equipped {selected_item.replace('_', ' ').title()}.")
             elif category_key == 'trinket':
+                # Return old
+                old = player_profile.get('trinket', 'none')
+                if old and old != 'none': add_item(inventory, old, 'trinket')
+                # Remove new
+                remove_item(inventory, selected_item, 'trinket')
+                
                 player_profile['trinket'] = selected_item
                 apply_trinket_to_player(player_profile)
-                inventory['equipped']['trinket'] = selected_item
                 print(f"Equipped {selected_item.replace('_', ' ').title()}.")
             elif category_key == 'consumable':
                 from core.combat.combat_engine import CombatEngine
@@ -268,4 +264,28 @@ def manage_inventory(player_profile, inventory):
                 else:
                     print("You're not sure how to use this consumable.")
             elif category_key == 'junk':
-                print("It's best just to sell this.")
+                from core.game_rules.path_utils import get_resource_path
+                import json
+                import os
+                
+                junk_data = {}
+                try:
+                    with open(get_resource_path(os.path.join('data', 'items', 'junk.json')), 'r') as f:
+                        junk_data = json.load(f)
+                except: pass
+
+                if not category:
+                    print("You have no junk to sell.")
+                    break
+                
+                total_value = 0
+                for item_name, count in category.items():
+                    item_val = junk_data.get(item_name, {}).get('cost', 1)
+                    total_value += item_val * count
+                
+                confirm = input(f"Sell all junk for {total_value} gold? (y/n): ").strip().lower()
+                if confirm in ('y', 'yes'):
+                    inventory['gold'] += total_value
+                    inventory['junk'] = {}
+                    print(f"Sold all junk for {total_value} gold.")
+                break

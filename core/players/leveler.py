@@ -75,7 +75,17 @@ def recalculate_stats(player_data):
     """
     class_defs = load_player_classes()
     class_levels = player_data.get('class_levels', {})
+    
+    # Redirection for renamed class
+    if "archer" in class_levels:
+        val = class_levels.pop("archer")
+        class_levels["ranger"] = class_levels.get("ranger", 0) + val
+        player_data['class'] = "ranger"
+
     total_level = sum(class_levels.values())
+    
+    # Set default dice style
+    player_data.setdefault('dice_style', 'gothic')
     
     if not class_levels:
         return player_data
@@ -109,7 +119,7 @@ def recalculate_stats(player_data):
     player_data['max_mp_base'] = max_mp
 
     # STAMINA POOL (SP)
-    martial_classes = ["fighter", "monk", "archer", "rogue"]
+    martial_classes = ["fighter", "monk", "ranger", "rogue"]
     max_sp = 0
     for c_name, c_level in class_levels.items():
         if c_name.lower() in martial_classes:
@@ -120,7 +130,6 @@ def recalculate_stats(player_data):
     player_data['spells'] = []
     player_data['skills'] = []
     player_data['attack_count'] = 1
-    player_data['sneak_attack_rolls'] = 0
     player_data['cantrip_dice_rolled'] = 1
     
     # Spell DC Base (equipment will add to this)
@@ -136,8 +145,6 @@ def recalculate_stats(player_data):
             
             if 'attack_count' in lvl_data:
                 player_data['attack_count'] = max(player_data['attack_count'], lvl_data['attack_count'])
-            if 'sneak_attack_rolls' in lvl_data:
-                player_data['sneak_attack_rolls'] = max(player_data['sneak_attack_rolls'], lvl_data['sneak_attack_rolls'])
             if 'cantrip_dice_rolled' in lvl_data:
                 player_data['cantrip_dice_rolled'] = max(player_data['cantrip_dice_rolled'], lvl_data['cantrip_dice_rolled'])
             if 'spells' in lvl_data:
@@ -147,7 +154,18 @@ def recalculate_stats(player_data):
                 for s in lvl_data['skills']:
                     if s not in player_data['skills']: player_data['skills'].append(s)
             if 'damage_die' in lvl_data:
-                player_data['damage_die'] = max(player_data.get('damage_die', 0), lvl_data['damage_die'])
+                def get_val(d):
+                    if isinstance(d, int): return d
+                    if isinstance(d, str):
+                        import re
+                        m = re.search(r'd(\d+)', d)
+                        return int(m.group(1)) if m else 0
+                    return 0
+                
+                curr_d = player_data.get('damage_die', 0)
+                new_d = lvl_data['damage_die']
+                if get_val(new_d) > get_val(curr_d):
+                    player_data['damage_die'] = new_d
 
     return player_data
 
@@ -183,7 +201,7 @@ def get_level_up_benefits(player_data, class_name):
         
     # MP/SP
     caster_classes = ["wizard", "druid", "alchemist", "sorcerer", "cleric"]
-    martial_classes = ["fighter", "monk", "archer", "rogue"]
+    martial_classes = ["fighter", "monk", "ranger", "rogue"]
     if class_name_lower in caster_classes:
         benefits.append("Mana: +1")
     if class_name_lower in martial_classes:
@@ -211,15 +229,23 @@ def get_level_up_benefits(player_data, class_name):
     for spell in new_spells:
         benefits.append(f"Spell: {spell.replace('_', ' ').title()}")
 
-    if 'sneak_attack_rolls' in lvl_data:
-        current_sa = player_data.get('sneak_attack_rolls', 0)
-        if lvl_data['sneak_attack_rolls'] > current_sa:
-             benefits.append(f"Sneak Attack: {lvl_data['sneak_attack_rolls']}d6")
-             
+    if class_name_lower == "rogue":
+        sa_dice = (next_level + 1) // 2
+        benefits.append(f"Sneak Attack: {sa_dice}d6")
+
     if 'damage_die' in lvl_data:
+        def get_val(d):
+            if isinstance(d, int): return d
+            if isinstance(d, str):
+                import re
+                m = re.search(r'd(\d+)', d)
+                return int(m.group(1)) if m else 0
+            return 0
+            
         current_dd = player_data.get('damage_die', 0)
-        if lvl_data['damage_die'] > current_dd:
-            benefits.append(f"Unarmed Die: d{lvl_data['damage_die']}")
+        new_dd = lvl_data['damage_die']
+        if get_val(new_dd) > get_val(current_dd):
+            benefits.append(f"Unarmed Die: d{new_dd}")
 
     if not benefits:
         return f"Level {next_level} {class_name.title()}"

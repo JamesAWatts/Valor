@@ -1,0 +1,209 @@
+{
+    "blink_dog": {
+        "level": 1,
+        "hp": 12,
+        "armor": 6,
+        "die": 6,
+        "proficiency_bonus": 2,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 100,
+        "skills": ["blink_strike"],
+        "reward": {
+            "gold": 5,
+            "items": [{"name": "blink_fur", "type": "junk"}]
+        }
+    },
+    "needle_blight": {
+        "level": 1,
+        "hp": 11,
+        "armor": 5,
+        "die": 4,
+        "proficiency_bonus": 1,
+        "attack_range": 3,
+        "attack_count": 1,
+        "xp": 100,
+        "skills": ["needle_burst"],
+        "reward": {
+            "gold": 2,
+            "items": [{"name": "poison_needle", "type": "junk"}]
+        }
+    },
+    "darkling": {
+        "level": 2,
+        "hp": 15,
+        "armor": 8,
+        "die": 6,
+        "proficiency_bonus": 3,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 200,
+        "skills": ["sneak_attack"],
+        "sneak_attack_die": 6,
+        "sneak_attack_rolls": 2,
+        "reward": {
+            "gold": 15,
+            "items": [{"name": "dark_cloth", "type": "junk"}]
+        }
+    },
+    "vine_blight": {
+        "level": 3,
+        "hp": 26,
+        "armor": 12,
+        "die": 8,
+        "proficiency_bonus": 4,
+        "attack_range": 2,
+        "attack_count": 1,
+        "xp": 450,
+        "skills": ["needle_burst"],
+        "spells": ["entangle"],
+        "reward": {
+            "gold": 10,
+            "items": [{"name": "sturdy_vine", "type": "junk"}]
+        }
+    },
+    "quickling": {
+        "level": 4,
+        "hp": 24,
+        "armor": 16,
+        "die": 6,
+        "proficiency_bonus": 5,
+        "attack_range": 1,
+        "attack_count": 3,
+        "xp": 700,
+        "skills": ["swift_strikes"],
+        "reward": {
+            "gold": 40,
+            "items": [{"name": "feather_of_speed", "type": "trinket"}]
+        }
+    },
+    "darkling_elder": {
+        "level": 5,
+        "hp": 40,
+        "armor": 13,
+        "die": 8,
+        "proficiency_bonus": 5,
+        "attack_range": 1,
+        "attack_count": 2,
+        "xp": 1100,
+        "spells": ["darkness"],
+        "reward": {
+            "gold": 60,
+            "items": [{"name": "eldritch_essence", "type": "junk"}]
+        }
+    },
+    "dryad": {
+        "level": 6,
+        "hp": 35,
+        "armor": 11,
+        "die": 6,
+        "proficiency_bonus": 4,
+        "attack_range": 1,
+        "attack_count": 1,
+        "xp": 1800,
+        "spell_dc": 14,
+        "skills": ["needle_burst"],
+        "spells": ["entangle", "lesser_heal"],
+        "reward": {
+            "gold": 80,
+            "items": [{"name": "willow_bark", "type": "junk"}]
+        }
+    },
+    "green_hag": {
+        "level": 8,
+        "hp": 82,
+        "armor": 14,
+        "die": "2d10",
+        "proficiency_bonus": 6,
+        "attack_range": 5,
+        "attack_count": 1,
+        "xp": 3900,
+        "spell_dc": 15,
+        "skills": ["vicious_mockery", "conjure_minor_elemental"],
+        "spells": ["darkness", "regenerate"],
+        "reward": {
+            "gold": 250,
+            "items": [{"name": "hags_eye", "type": "trinket"}]
+        }
+    },
+    "redcap": {
+        "level": 9,
+        "hp": 65,
+        "armor": 13,
+        "die": 10,
+        "proficiency_bonus": 7,
+        "attack_range": 1,
+        "attack_count": 3,
+        "xp": 5000,
+        "skills": ["swift_strikes"],
+        "reward": {
+            "gold": 200,
+            "items": [{"name": "bloody_cap", "type": "junk"}]
+        }
+    },
+    "yeth_hound": {
+        "level": 11,
+        "hp": 75,
+        "armor": 14,
+        "die": "2d8",
+        "proficiency_bonus": 8,
+        "attack_range": 1,
+        "attack_count": 2,
+        "xp": 7200,
+        "skills": ["screech"],
+        "spells": ["darkness"],
+        "reward": {
+            "gold": 0,
+            "items": [{"name": "hounds_tooth", "type": "junk"}]
+        }
+    },
+    "yggdrasti": {
+        "level": 12,
+        "hp": 150,
+        "armor": 17,
+        "die": "3d6",
+        "proficiency_bonus": 8,
+        "attack_range": 2,
+        "attack_count": 3,
+        "xp": 25000,
+        "spell_dc": 15,
+        "skills": ["cleave", "summon_wolf"],
+        "spells": ["entangle", "regenerate"],
+        "reward": {
+            "gold": 1200,
+            "items": [{"name": "world_tree_leaf", "type": "trinket"}]
+        }
+    },
+    "shambling_mound": {
+        "level": 14,
+        "hp": 180,
+        "armor": 15,
+        "die": "2d12",
+        "proficiency_bonus": 9,
+        "attack_range": 2,
+        "attack_count": 2,
+        "xp": 15000,
+        "skills": ["needle_burst"],
+        "spells": ["regenerate","charge"],
+        "reward": {
+            "gold": 500,
+            "items": [{"name": "swamp_core", "type": "trinket"}]
+        }
+    },
+    "treant": {
+        "level": 20,
+        "hp": 400,
+        "armor": 16,
+        "die": "4d12",
+        "proficiency_bonus": 12,
+        "attack_range": 5,
+        "attack_count": 2,
+        "xp": 50000,
+        "skills": ["cleave", "summon_owlbear"],
+        "spells": ["entangle", "regenerate"],
+        "reward": {
+            "gold": 5000,
+            "items": [{"name": "ancient_amber", "type": "trinket"}]
+        }
+    }
+}

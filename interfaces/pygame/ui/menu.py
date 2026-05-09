@@ -3,7 +3,7 @@ from core.game_rules.constants import scale_y, scale_x, COLOR_ROYAL_BLUE, COLOR_
 from interfaces.pygame.ui.panel import Panel
 
 class Menu:
-    def __init__(self, options, font, pos=(0, 0), header=None, disabled_indices=None, bg_color=(30, 30, 50), border_color=COLOR_GOLD, alpha=220, width = 100, descriptions=None):
+    def __init__(self, options, font, pos=(0, 0), header=None, disabled_indices=None, bg_color=(30, 30, 50), border_color=COLOR_GOLD, alpha=220, width = 100, descriptions=None, initial_selection=0):
         """
         pos = (x, y) in BASE (800x600) coordinates.
         width = BASE (800x600) width.
@@ -17,7 +17,7 @@ class Menu:
         self.alpha = alpha
         self.raw_width = width
         self.descriptions = descriptions # Dictionary mapping option text to description string
-        self.set_options(options)
+        self.set_options(options, initial_selection)
         self.option_rects = []
 
     def get_raw_width(self):
@@ -38,9 +38,9 @@ class Menu:
         raw_text_w = max_text_width / SCALE_X
         return max(raw_text_w + 40, self.raw_width)
 
-    def set_options(self, options):
+    def set_options(self, options, initial_selection=0):
         self.options = options
-        self.selected = 0
+        self.selected = initial_selection
 
     def is_disabled(self, index):
         return index in self.disabled_indices

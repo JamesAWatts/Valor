@@ -1,0 +1,263 @@
+{
+    "ability_list": {
+        "sling_shot": {
+            "name": "Sling Shot",
+            "cost": "{prof}",
+            "resource": "sp",
+            "type": "attack",
+            "dice": "{prof}d{damage_die}+{prof}",
+            "effect": "enemy_advantage",
+            "power": -1,
+            "description": "A well-aimed stone that can daze an opponent."
+        },
+        "bone_toss": {
+            "name": "Bone Toss",
+            "cost": 3,
+            "resource": "sp",
+            "type": "attack",
+            "dice": "2d6+2",
+            "description": "The skeleton rips a bone from its body and hurls it."
+        },
+        "blink_strike": {
+            "name": "Blink Strike",
+            "cost": "{prof}",
+            "resource": "sp",
+            "type": "attack",
+            "dice": "2d{damage_die}+{prof}",
+            "effect": "enemy_advantage",
+            "power": -1,
+            "description": "The creature blinks out of existence and reappears to strike from a different location."
+        },
+        "swift_strikes": {
+            "name": "Swift Strikes",
+            "cost": "{prof}",
+            "resource": "sp",
+            "type": "attack",
+            "dice": "2d{damage_die}+{prof/2}",
+            "use_attack_count": true,
+            "attack_count_overide": "+2",
+            "description": "Enemy attacks wiht a flurry of strikes."
+        },
+        "screech": {
+            "name": "Screech",
+            "cost": "{prof/2+1}",
+            "resource": "sp",
+            "type": "save",
+            "dice": "{prof/2}d6",
+            "aoe": true,
+            "effect": "enemy_advantage",
+            "power": -3,
+            "description": "A magical song that draws the player in, leaving them vulnerable."
+        },
+        
+        "darkness": {
+            "name": "Darkness",
+            "cost": 5,
+            "resource": "mp",
+            "type": "auto",
+            "aoe": true,
+            "effect": "blinded",
+            "duration": 3,
+            "description": "A magical darkness that blinds all caught within it."
+        },
+        "gore": {
+            "name": "Gore",
+            "cost": "{prof}",
+            "resource": "sp",
+            "type": "attack",
+            "dice": "2d{damage_die}+{prof}",
+            "dot": true,
+            "dot_dice": "2d{damage_die}",
+            "duration": 2,
+            "description": "A brutal thrust with sharp horns."
+        },
+        "charge": {
+            "name": "Charge",
+            "cost": "{prof/2}",
+            "resource": "mp",
+            "type": "attack",
+            "dice": "{prof/2}d12+{level}",
+            "effect": "stunned",
+            "duration": "{prof/4}",
+            "description": "A thundering charge that stuns on impact."
+        },
+        "petrifying_gaze": {
+            "name": "Petrifying Gaze",
+            "cost": "{prof}",
+            "resource": "mp",
+            "type": "save",
+            "effect": "stunned",
+            "duration": "{prof/2}",
+            "description": "A gaze that turns flesh to stone."
+        },
+        "cleave":{
+            "name": "Cleave",
+            "cost": "{prof/2}+1",
+            "resource": "sp",
+            "type": "save",
+            "dice": "{prof/2}d6+{level/2}",
+            "aoe": true,
+            "description": "A wide swing that can hit multiple targets."
+        },
+        "drain_life": {
+            "name": "Drain Life",
+            "cost": "{prof/2}+1",
+            "resource": "sp",
+            "type": "attack",
+            "dice": "{prof/2}d6+{level/2}",
+            "on_hit_effect": "lifesteal",
+            "description": "A leeching attack that heals the user for the damage dealt."
+        },
+        "putrid_claw": {
+            "name": "Putrid Claw",
+            "cost": "{prof}",
+            "resource": "sp",
+            "type": "attack",
+            "dice": "{prof}d{damage_die}+{prof}",
+            "on_hit_effect": "petrify",
+            "duration": "({level}/2)+1"
+        },
+        "raise_dead": {
+            "name": "Raise Dead",
+            "cost": "({prof}-1)/2",
+            "resource": "sp",
+            "type": "summon",
+            "summon_type": ["skeleton", "zombie"],
+            "summon_count": "{level}/6",
+            "description": "Necromancer summons a skeleton to fight for them."
+        },
+        "necrosis":{
+            "name": "Necrosis",
+            "cost": "{prof/2}",
+            "resource": "mp",
+            "type": "save",
+            "dice": "{prof/2}d8+{level}/3",
+            "aoe": true,
+            "dot": true,
+            "dot_dice": "{prof/2}d8",
+            "duration": "{prof/2}-1",
+            "description": "A wave of necrotic energy that damages and weakens the target."
+        },
+        "eldritch_smite": {
+            "name": "Eldritch Smite",
+            "cost": "{prof/2}",
+            "resource": "mp",
+            "type": "auto",
+            "dice": "{prof/2}d12+{level/2}",
+            "description": "Summon forth eldritch power to smite your target."
+        },
+        "fire_breath": {
+            "name": "Fire Breath",
+            "cost": "{prof/2}",
+            "resource": "mp",
+            "type": "save",
+            "dice": "{prof/2}d6+{level/2}",
+            "aoe": true,
+            "description": "A cone of searing flames."
+        },
+        "stinger_strike": {
+            "name": "Stinger Strike",
+            "cost": "({prof}+1)/2",
+            "resource": "sp",
+            "type": "attack",
+            "dice": "3d({prof}+1)+({level}-1)/2",
+            "effect": "enemy_advantage",
+            "power": -3,
+            "dot": true,
+            "dot_dice": "3d({prof}+1)",
+            "duration": 3,
+            "description": "A stab from a poisonous stinger."
+        },
+        "tail_swipe": {
+            "name": "Tail Swipe",
+            "cost": "{prof/4}",
+            "resource": "sp",
+            "type": "save",
+            "dice": "{prof/2}d10",
+            "aoe": true,
+            "description": "A sweep of the tail from a massive creature."
+        },
+        "dragon_breath": {
+            "name": "Dragon Breath",
+            "cost": "{prof/2}",
+            "resource": "mp",
+            "type": "save",
+            "dice": "{prof/2}d8+{level/2}",
+            "aoe": true,
+            "description": "The ultimate destructive force of a dragon."
+        },
+        "lesser_heal": {
+            "name": "Lesser Heal",
+            "cost": "{current_mp}",
+            "resource": "mp",
+            "type": "heal",
+            "dice": "{current_mp}d8+{prof}",
+            "description": "A minor mending of wounds."
+        },
+        "heal": {
+            "name": "Heal",
+            "cost": "{current_mp}",
+            "resource": "mp",
+            "type": "heal",
+            "dice": "{current_mp}d10+{level}",
+            "description": "A solid restoration of health."
+        },
+        "greater_heal": {
+            "name": "Greater Heal",
+            "cost": "{current_mp}",
+            "resource": "mp",
+            "type": "heal",
+            "dice": "({current_mp}*2)d12+{level}",
+            "description": "A powerful restoration of health."
+        },
+        "regenerate": {
+            "name": "Regenerate",
+            "cost": "{current_mp}",
+            "resource": "mp",
+            "type": "heal",
+            "hot": true,
+            "dice": "{current_mp}d10+{level}",
+            "duration": "{current_mp}",
+            "hot_dice": "3d10+{prof}",
+            "description": "The target's wounds close automatically over time."
+        },
+        "entangle": {
+            "name": "Entangle",
+            "cost": "{prof/2}+1",
+            "resource": "mp",
+            "type": "save",
+            "effect": "stunned",
+            "duration": "{prof/4}+1",
+            "aoe": true,
+            "description": "Grasping weeds and vines sprout from the ground, restraining those caught within."
+        },
+        "needle_burst": {
+            "name": "Needle Burst",
+            "cost": "({prof}+1)/2",
+            "resource": "sp",
+            "type": "attack",
+            "dice": "{prof}d6+{prof}",
+            "aoe": true,
+            "description": "The creature flings a barrage of sharp needles in all directions."
+        },
+        "vicious_mockery": {
+            "name": "Vicious Mockery",
+            "cost": "{level/2}",
+            "resource": "sp",
+            "type": "save",
+            "dice": "2d{level/2}+{prof}",
+            "effect": "enemy_advantage",
+            "power": -2,
+            "description": "A string of enchanted insults that wounds the target and leaves them distracted."
+        },
+        "conjure_minor_elemental": {
+            "name": "Conjure Minor Elemental",
+            "cost": "{prof/2}",
+            "resource": "sp",
+            "type": "summon",
+            "summon_type": ["vine_blight"],
+            "summon_count": "{level}/4",
+            "description": "Summon a plant-based vine blight to entangle your enemies."
+        }
+    }
+}

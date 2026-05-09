@@ -15,7 +15,7 @@ class SaveManager:
         return os.path.join(SaveManager.SAVE_DIR, f"save_slot_{slot}.json")
 
     @staticmethod
-    def save_game(slot, party):
+    def save_game(slot, party, inventory=None, battle_counter=0, bestiary_rp=None):
         SaveManager.ensure_save_dir()
         path = SaveManager.get_save_path(slot)
         
@@ -24,9 +24,17 @@ class SaveManager:
             party = [party]
 
         lead = party[0] if party else {}
+        
+        # If inventory is not provided, try to get it from the lead's ref
+        if inventory is None and lead:
+            inventory = lead.get('inventory_ref', {})
+
         save_data = {
             "is_party_save": True,
             "party": party,
+            "inventory": inventory, # Global Inventory
+            "battle_counter": battle_counter,
+            "bestiary_rp": bestiary_rp or {},
             "name": lead.get('name', 'Unknown'),
             "level": lead.get('level', 1)
         }
@@ -40,25 +48,53 @@ class SaveManager:
             return False
 
     @staticmethod
-    def load_game(slot):
+    def load_game_data(slot):
+        """Returns the full save dictionary or None."""
         path = SaveManager.get_save_path(slot)
         if not os.path.exists(path):
             return None
         
         try:
             with open(path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                
-                # Check for new party format
-                if isinstance(data, dict) and data.get("is_party_save"):
-                    return data.get("party", [])
-                # Old single-player save (directly a dict)
-                elif isinstance(data, dict):
-                    return [data]
-                return None
+                return json.load(f)
         except Exception as e:
             print(f"Error loading game: {e}")
             return None
+
+    @staticmethod
+    def load_game(slot):
+        data = SaveManager.load_game_data(slot)
+        if not data:
+            return None
+            
+        # Check for new party format
+        if isinstance(data, dict) and data.get("is_party_save"):
+            party = data.get("party", [])
+            # Fallback to lead player's inventory_ref if global inventory is missing
+            inventory = data.get("inventory")
+            if inventory is None and party:
+                inventory = party[0].get('inventory_ref', {})
+            
+            if inventory is None:
+                inventory = {
+                    'gold': 0, 'weapon': {}, 'armor': {}, 'shield': {},
+                    'trinket': {}, 'consumable': {}, 'junk': {}, 'key_items': {}
+                }
+
+            # Sync all players to use the SAME inventory object
+            for p in party:
+                p['inventory_ref'] = inventory
+            return party
+        # Old single-player save (directly a dict)
+        elif isinstance(data, dict):
+            # For very old saves, the dict IS the player.
+            inventory = data.get('inventory_ref', {
+                'gold': 0, 'weapon': {}, 'armor': {}, 'shield': {},
+                'trinket': {}, 'consumable': {}, 'junk': {}, 'key_items': {}
+            })
+            data['inventory_ref'] = inventory
+            return [data]
+        return None
 
     @staticmethod
     def get_slot_info(slot):

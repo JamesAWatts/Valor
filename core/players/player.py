@@ -11,7 +11,7 @@ with open(json_path, 'r', encoding='utf-8-sig') as f:
 
 
 def load_weapons():
-    path = get_resource_path(os.path.join('data', 'players', 'Weapons.json'))
+    path = get_resource_path(os.path.join('data', 'items', 'weapons.json'))
 
     with open(path, 'r', encoding='utf-8-sig') as f:
         return json.load(f)
@@ -27,7 +27,7 @@ def get_weapon_stats(weapon_name):
     return wl.get('unarmed', {'die': 4, 'attack_range': 1, 'bonus': 0})
 
 def load_armor():
-    path = get_resource_path(os.path.join('data', 'players', 'armor.json'))
+    path = get_resource_path(os.path.join('data', 'items', 'armor.json'))
     with open(path, 'r', encoding='utf-8-sig') as f:
         data = json.load(f)
     return data.get('armor_list', {})
@@ -35,7 +35,7 @@ def load_armor():
 armor_data = load_armor()
 
 def load_shields():
-    path = get_resource_path(os.path.join('data', 'players', 'shields.json'))
+    path = get_resource_path(os.path.join('data', 'items', 'shields.json'))
     try:
         with open(path, 'r', encoding='utf-8-sig') as f:
             data = json.load(f)
@@ -46,7 +46,7 @@ def load_shields():
 shields_data = load_shields()
 
 def load_trinkets():
-    path = get_resource_path(os.path.join('data', 'players', 'trinkets.json'))
+    path = get_resource_path(os.path.join('data', 'items', 'trinkets.json'))
     try:
         with open(path, 'r', encoding='utf-8-sig') as f:
             data = json.load(f)
@@ -57,7 +57,7 @@ def load_trinkets():
 trinkets_data = load_trinkets()
 
 def load_consumables():
-    json_path = get_resource_path(os.path.join('data', 'players', 'consumables.json'))
+    json_path = get_resource_path(os.path.join('data', 'items', 'consumables.json'))
     try:
         with open(json_path, 'r', encoding='utf-8-sig') as f:
             return json.load(f).get('consumable_list', {})
@@ -65,7 +65,7 @@ def load_consumables():
         return {}
 
 def load_spells():
-    json_path = get_resource_path(os.path.join('data', 'players', 'spells.json'))
+    json_path = get_resource_path(os.path.join('data', 'combat', 'spells.json'))
     try:
         with open(json_path, 'r', encoding='utf-8-sig') as f:
             return json.load(f).get('spell_list', {})
@@ -73,7 +73,7 @@ def load_spells():
         return {}
 
 def load_skills():
-    json_path = get_resource_path(os.path.join('data', 'players', 'skills.json'))
+    json_path = get_resource_path(os.path.join('data', 'combat', 'skills.json'))
     try:
         with open(json_path, 'r', encoding='utf-8-sig') as f:
             return json.load(f).get('skill_list', {})
@@ -87,17 +87,30 @@ def apply_weapon_to_player(player_data, weapon_name=None):
     weapon_stats = get_weapon_stats(weapon_name)
     
     # Class die is set in recalculate_stats (from leveler.py)
-    # We must capture it before overwriting player_data['damage_die']
-    class_die = int(player_data.get('damage_die', 0))
-    weapon_die = int(weapon_stats.get('die', 4))
+    class_die = player_data.get('damage_die', 0)
+    weapon_die = weapon_stats.get('die', 4)
 
     player_data['weapon'] = weapon_name
     
+    # Helper to get numeric comparison value for a die
+    def get_die_comp(d):
+        if isinstance(d, int): return d
+        if isinstance(d, str):
+            import re
+            match = re.search(r'd(\d+)', d)
+            if match: return int(match.group(1))
+            try: return int(d)
+            except: return 0
+        return 0
+
     # Monk Override: Unarmed or Simple weapons use class die if better
     if player_data.get('class') == 'monk':
         w_class = weapon_stats.get('weapon_class', 'simple')
         if weapon_name == 'unarmed' or w_class == 'simple':
-            player_data['damage_die'] = max(class_die, weapon_die)
+            if get_die_comp(class_die) > get_die_comp(weapon_die):
+                player_data['damage_die'] = class_die
+            else:
+                player_data['damage_die'] = weapon_die
         else:
             player_data['damage_die'] = weapon_die
     else:
@@ -105,28 +118,22 @@ def apply_weapon_to_player(player_data, weapon_name=None):
     
     # Base on-hit effect from weapon stats
     player_data['on_hit_effect'] = weapon_stats.get('on_hit_effect') or weapon_stats.get('condition')
+    player_data['dot'] = weapon_stats.get('dot', False)
+    player_data['dot_dice'] = weapon_stats.get('dot_dice', 0)
+    player_data['duration'] = weapon_stats.get('duration', 0)
     
-    # Check for upgrades/enchantments
-    upgrades = player_data.get('weapon_upgrades', {}).get(weapon_name, {})
-    level = upgrades.get('level', 0)
-    enchantment = upgrades.get('enchantment')
+    player_data['weapon_bonus'] = int(weapon_stats.get('bonus', 0))
+    player_data['weapon_range'] = int(weapon_stats.get('attack_range', 1))
+    player_data['weapon_type'] = weapon_stats.get('type', 'melee')
     
-    player_data['weapon_bonus'] = weapon_stats.get('bonus', 0) + level
-    player_data['weapon_range'] = weapon_stats.get('attack_range', 1)
-    player_data['weapon_enchantment'] = enchantment
-    
-    # Handle specific enchantment property changes
-    if enchantment == 'critical':
-        player_data['crit_on_19'] = True
-    elif enchantment == 'extra_critical':
-        player_data['crit_on_18'] = True
-    else:
-        player_data.setdefault('crit_on_19', False)
-        player_data.setdefault('crit_on_18', False)
+    # Critical hit logic
+    crit_range = int(weapon_stats.get('critical', 20))
+    player_data['critical'] = crit_range
+    player_data['crit_on_19'] = (crit_range <= 19)
+    player_data['crit_on_18'] = (crit_range <= 18)
 
-    # Focusing Lens: +1 to Spell DC
-    if enchantment == 'focusing_lens':
-        player_data['spell_save'] = player_data.get('spell_save', 0) + 1
+    # Spell DC bonus
+    player_data['spell_save'] = int(weapon_stats.get('spell_save', 0))
 
     return player_data
 
@@ -214,28 +221,13 @@ def can_equip_armor(player_data, armor_name):
 
 def get_weapon_display_name(player, weapon_name):
     """
-    Returns the formatted name of a weapon including its enchantment and upgrade level.
-    Example: 'Fire Dagger +1'
+    Returns the formatted name of a weapon.
     """
     if not weapon_name or weapon_name == 'none':
         return "None"
         
-    base_name = weapon_name.replace('_', ' ').title()
-    
-    upgrades = player.get('weapon_upgrades', {}).get(weapon_name, {})
-    level = upgrades.get('level', 0)
-    enchantment = upgrades.get('enchantment')
-    
-    display_name = base_name
-    
-    if enchantment:
-        enchant_str = enchantment.replace('_', ' ').title()
-        display_name = f"{enchant_str} {display_name}"
-        
-    if level > 0:
-        display_name = f"{display_name} +{level}"
-        
-    return display_name
+    weapon_stats = get_weapon_stats(weapon_name)
+    return weapon_stats.get('name', weapon_name.replace('_', ' ').title())
 
 def get_armor_display_name(player, armor_name):
     """
@@ -329,7 +321,8 @@ def apply_armor_to_player(player_data):
     player_data['current_sp'] = min(player_data.get('current_sp', 0), player_data['max_sp'])
 
     # Bonuses
-    eq_dmg = armor_stats.get('bonus_dmg', 0) + shield_stats.get('bonus_dmg', 0) + trinket_stats.get('bonus_atk', 0)
+    eq_atk = armor_stats.get('bonus_atk', 0) + shield_stats.get('bonus_atk', 0) + trinket_stats.get('bonus_atk', 0)
+    eq_dmg = armor_stats.get('bonus_dmg', 0) + shield_stats.get('bonus_dmg', 0) + trinket_stats.get('bonus_dmg', 0)
     
     # Include base weapon spell_save bonus
     weapon_name = player_data.get('weapon', 'unarmed')
@@ -339,14 +332,10 @@ def apply_armor_to_player(player_data):
     eq_spell_save = armor_stats.get('spell_save', 0) + shield_stats.get('spell_save', 0) + trinket_stats.get('spell_save', 0) + weapon_spell_save
     eq_spell_resist = armor_stats.get('spell_resist', 0) + shield_stats.get('spell_resist', 0) + trinket_stats.get('spell_resist', 0)
     
+    player_data['equipment_atk_bonus'] = eq_atk
     player_data['equipment_dmg_bonus'] = eq_dmg
-    
-    upgrades = player_data.get('weapon_upgrades', {}).get(weapon_name, {})
-    weapon_level = upgrades.get('level', 0)
-    eq_spell_save += weapon_level
-    
-    if upgrades.get('enchantment') == 'focusing_lens':
-        eq_spell_save += 1
+    player_data['damage_resist'] = armor_stats.get('damage_resist', 0) + shield_stats.get('damage_resist', 0) + trinket_stats.get('damage_resist', 0)
+    player_data['initiative_boost'] = armor_stats.get('initiative_boost', 0) + shield_stats.get('initiative_boost', 0) + trinket_stats.get('initiative_boost', 0)
         
     player_data['spell_save'] = eq_spell_save
     player_data['spell_resist'] = eq_spell_resist
@@ -362,6 +351,31 @@ def apply_trinket_to_player(player_data, trinket_name=None):
     if trinket_name:
         player_data['trinket'] = trinket_name
     return apply_armor_to_player(player_data)
+
+def apply_consumable_effect(player, item_res):
+    """
+    Applies the results of a consumable item (from CombatEngine.resolve_item) to a player.
+    """
+    if item_res.get('hp_gain', 0) > 0:
+        max_hp = player.get('max_hp_combat', player.get('max_hp', 10))
+        player['current_hp'] = min(max_hp, player.get('current_hp', 0) + item_res['hp_gain'])
+        player['hp'] = player['current_hp']
+        
+    if item_res.get('mana_gain', 0) > 0:
+        max_mp = player.get('max_mp', 0)
+        player['current_mp'] = min(max_mp, player.get('current_mp', 0) + item_res['mana_gain'])
+        
+    if item_res.get('stamina_gain', 0) > 0:
+        max_sp = player.get('max_sp', 0)
+        player['current_sp'] = min(max_sp, player.get('current_sp', 0) + item_res['stamina_gain'])
+        
+    if item_res.get('bonus_gain', 0) > 0:
+        # Buffs like Grind Stone
+        player['weapon_bonus'] = player.get('weapon_bonus', 0) + item_res['bonus_gain']
+        
+    if item_res.get('attack_gain', 0) > 0:
+        # Extra attacks (temporary)
+        player['attack_count'] = player.get('attack_count', 1) + item_res['attack_gain']
 
 def choose_player_class(class_data):
     class_names = list(class_data.keys())
@@ -458,6 +472,3 @@ if __name__ == '__main__':
             print('Max level reached.')
         else:
             print(f"XP to next level: {next_xp}")
-
-    total_score = selected_class_data.get('xp', 0)
-    print(f'\nFinal Total Score: {total_score} XP')

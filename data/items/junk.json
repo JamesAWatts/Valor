@@ -1,0 +1,276 @@
+{
+    "junk_list": {
+        "rusty_sword": {
+            "name": "Rusty Sword",
+            "cost": 5,
+            "description": "An old, rusty sword. Not very effective, but it has sentimental value."
+        },
+        "tattered_cloak": {
+            "name": "Tattered Cloak",
+            "cost": 4,
+            "description": "A worn-out cloak that offers minimal protection. It smells like it hasn't been washed in years."
+        },
+        "broken_shield": {
+            "name": "Broken Shield",
+            "cost": 6,
+            "description": "A shield that's seen better days. It has a large crack and won't block much damage."
+        },
+        "dented_helmet": {
+            "name": "Dented Helmet",
+            "cost": 6,
+            "description": "A helmet with several dents. It might still offer some protection, but it's not reliable."
+        },
+        "cracked_potion_bottle": {
+            "name": "Cracked Potion Bottle",
+            "cost": 4,
+            "description": "A potion bottle that's cracked and leaking. The contents are likely useless, but it could be worth something to a collector."
+        },
+        "loincloth": {
+            "name": "Loincloth",
+            "cost": 2,
+            "description": "A simple loincloth. Not very comfortable, but better than nothing."
+        },
+        "bone": {
+            "name": "Bone",
+            "cost": 2,
+            "description": "A dry, brittle bone. It might have belonged to someone once."
+        },
+        "tattered_robes": {
+            "name": "Tattered Robes",
+            "cost": 4,
+            "description": "Worn-out robes from a sorcerer. They smell of ozone and old parchment."
+        },
+        "tattered_robe": {
+            "name": "Tattered Robe",
+            "cost": 4,
+            "description": "A worn-out robe that offers minimal protection."
+        },
+        "robes": {
+            "name": "Robes",
+            "cost": 8,
+            "description": "Simple cultist robes. Dark and mysterious."
+        },
+        "harpy_feather": {
+            "name": "Harpy Feather",
+            "cost": 10,
+            "description": "A vibrant feather from a harpy. It shimmer with an oily sheen."
+        },
+        "shiny_trinket": {
+            "name": "Shiny Trinket",
+            "cost": 15,
+            "description": "A shiny trinket dropped by a harpy. It's mostly just glass, but it's pretty."
+        },
+        "snake_scale": {
+            "name": "Snake Scale",
+            "cost": 20,
+            "description": "A shimmering scale from one of Medusa's snakes."
+        },
+        "lion_pelt": {
+            "name": "Lion Pelt",
+            "cost": 50,
+            "description": "The pelt of a Chimera's lion head. It's thick and warm."
+        },
+        "dragon_scale": {
+            "name": "Dragon Scale",
+            "cost": 500,
+            "description": "A hard, glowing scale from an ancient dragon. It's incredibly tough."
+        },
+        "legendary_hoard": {
+            "name": "Legendary Hoard",
+            "cost": 1000,
+            "description": "A small part of a dragon's legendary treasure. It's worth a fortune!"
+        },
+        "bear_pelt": {
+            "name": "Bear Pelt",
+            "cost": 30,
+            "in_shop": false,
+            "description": "A thick, coarse pelt from a brown bear."
+        },
+        "blink_fur": {
+            "name": "Blink Fur",
+            "cost": 40,
+            "in_shop": false,
+            "description": "Soft fur that seems to shimmer and shift in and out of focus."
+        },
+        "bloody_cap": {
+            "name": "Bloody Cap",
+            "cost": 25,
+            "in_shop": false,
+            "description": "A small, red cap that smells strongly of iron."
+        },
+        "chainmail_scrap": {
+            "name": "Chainmail Scrap",
+            "cost": 12,
+            "in_shop": false,
+            "description": "A few links of broken chainmail."
+        },
+        "cockatrice_feather": {
+            "name": "Cockatrice Feather",
+            "cost": 35,
+            "in_shop": false,
+            "description": "A sickly green feather that feels oddly stiff."
+        },
+        "dark_cloth": {
+            "name": "Dark Cloth",
+            "cost": 20,
+            "in_shop": false,
+            "description": "Fabric that seems to absorb light around it."
+        },
+        "dragon_scale_fragment": {
+            "name": "Dragon Scale Fragment",
+            "cost": 80,
+            "in_shop": false,
+            "description": "A broken piece of a dragon's scale."
+        },
+        "dragon_tooth": {
+            "name": "Dragon Tooth",
+            "cost": 150,
+            "in_shop": false,
+            "description": "A large, sharp tooth from a dragon."
+        },
+        "eldritch_essence": {
+            "name": "Eldritch Essence",
+            "cost": 100,
+            "in_shop": false,
+            "description": "A swirling mist contained in a vial, pulsating with dark energy."
+        },
+        "essence_of_shadow": {
+            "name": "Essence of Shadow",
+            "cost": 90,
+            "in_shop": false,
+            "description": "A fragment of pure darkness."
+        },
+        "fetid_gland": {
+            "name": "Fetid Gland",
+            "cost": 45,
+            "in_shop": false,
+            "description": "A disgusting organ that emits an unbearable stench."
+        },
+        "ghost_essence": {
+            "name": "Ghost Essence",
+            "cost": 200,
+            "in_shop": false,
+            "description": "Ethereal remains of a powerful spirit."
+        },
+        "ghoul_claw": {
+            "name": "Ghoul Claw",
+            "cost": 15,
+            "in_shop": false,
+            "description": "A sharp, filthy claw from a ghoul."
+        },
+        "giant_club": {
+            "name": "Giant Club",
+            "cost": 50,
+            "in_shop": false,
+            "description": "A massive piece of wood used as a weapon by an ogre."
+        },
+        "griffon_claw": {
+            "name": "Griffon Claw",
+            "cost": 60,
+            "in_shop": false,
+            "description": "A hooked claw from a griffon."
+        },
+        "hounds_tooth": {
+            "name": "Hounds Tooth",
+            "cost": 40,
+            "in_shop": false,
+            "description": "A tooth from a spectral yeth hound."
+        },
+        "kraken_ink": {
+            "name": "Kraken Ink",
+            "cost": 300,
+            "in_shop": false,
+            "description": "Deep black ink with magical properties."
+        },
+        "owlbear_beak": {
+            "name": "Owlbear Beak",
+            "cost": 70,
+            "in_shop": false,
+            "description": "The sharp, hooked beak of an owlbear."
+        },
+        "poison_needle": {
+            "name": "Poison Needle",
+            "cost": 15,
+            "in_shop": false,
+            "description": "A sharp needle harvested from a blight."
+        },
+        "rotting_flesh": {
+            "name": "Rotting Flesh",
+            "cost": 1,
+            "in_shop": false,
+            "description": "Decaying remains of a zombie. Smells awful."
+        },
+        "rusty_gears": {
+            "name": "Rusty Gears",
+            "cost": 10,
+            "in_shop": false,
+            "description": "Gears from a failed kobold invention."
+        },
+        "silver_comb": {
+            "name": "Silver Comb",
+            "cost": 120,
+            "in_shop": false,
+            "description": "A beautiful, albeit tarnished, silver comb."
+        },
+        "smoke_bomb": {
+            "name": "Smoke Bomb",
+            "cost": 20,
+            "in_shop": false,
+            "description": "A crude device that creates a cloud of smoke when broken."
+        },
+        "spell_scroll": {
+            "name": "Spell Scroll",
+            "cost": 50,
+            "in_shop": false,
+            "description": "A scroll containing arcane symbols. Too damaged to use, but valuable to mages."
+        },
+        "stolen_coin_purse": {
+            "name": "Stolen Coin Purse",
+            "cost": 25,
+            "in_shop": false,
+            "description": "A purse stolen from some unfortunate traveler."
+        },
+        "sturdy_vine": {
+            "name": "Sturdy Vine",
+            "cost": 10,
+            "in_shop": false,
+            "description": "A tough, flexible vine from a plant creature."
+        },
+        "thieves_tools": {
+            "name": "Thieves Tools",
+            "cost": 75,
+            "in_shop": false,
+            "description": "A set of lockpicks and other tools used for burglary."
+        },
+        "troll_fat": {
+            "name": "Troll Fat",
+            "cost": 50,
+            "in_shop": false,
+            "description": "Thick, oily fat that seems to pulse with life."
+        },
+        "vampire_fang": {
+            "name": "Vampire Fang",
+            "cost": 150,
+            "in_shop": false,
+            "description": "A long, sharp fang from a vampire spawn."
+        },
+        "venom_sac": {
+            "name": "Venom Sac",
+            "cost": 100,
+            "in_shop": false,
+            "description": "A sac filled with potent wyvern venom."
+        },
+        "willow_bark": {
+            "name": "Willow Bark",
+            "cost": 15,
+            "in_shop": false,
+            "description": "Bark from a dryad's tree."
+        },
+        "worg_fur": {
+            "name": "Worg Fur",
+            "cost": 30,
+            "in_shop": false,
+            "description": "Coarse, grey fur from a worg."
+        }
+    }
+}

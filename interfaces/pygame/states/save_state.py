@@ -27,13 +27,21 @@ class SaveState(BaseState):
         if self.confirm_menu:
             if option == "Yes":
                 if self.mode == "SAVE":
-                    # Save currently selected party
-                    SaveManager.save_game(self.selected_slot, self.game.party)
+                    # Save currently selected party and global inventory
+                    SaveManager.save_game(self.selected_slot, self.game.party, self.game.inventory, self.game.battle_counter, self.game.bestiary_rp)
                     print(f"Game saved to slot {self.selected_slot}")
                 else: # LOAD
-                    party_data = SaveManager.load_game(self.selected_slot)
-                    if party_data:
+                    data = SaveManager.load_game_data(self.selected_slot)
+                    if data:
+                        party_data = SaveManager.load_game(self.selected_slot)
                         self.game.party = party_data
+                        self.game.battle_counter = data.get("battle_counter", 0)
+                        self.game.bestiary_rp = data.get("bestiary_rp", {})
+                        
+                        # Set the global inventory to the reference shared by the party
+                        if self.game.party:
+                            self.game.inventory = self.game.party[0].get('inventory_ref', {})
+                        
                         from .hub import HubState
                         self.game.change_state(HubState(self.game, self.font))
                         return # Exit early after loading

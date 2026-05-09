@@ -1,0 +1,236 @@
+{
+    "armor_list": {
+        "unarmored":{
+            "type": "none",
+            "ac":8,
+            "cost":0,
+            "spell_resist": 2,
+            "description": "No armor. You rely on your agility and luck."
+        },
+        "padded":{
+            "type": "light",
+            "ac":10,
+            "cost":50,
+            "spell_resist": 1,
+            "initiative_boost": 1,
+            "description": "Quilted layers of cloth and batting. Basic protection. +1 to Initiative & Spell Resistance."
+        },
+        "leather":{
+            "type": "light",
+            "ac":11,
+            "cost":100,
+            "spell_resist": 1,
+            "initiative_boost": 2,
+            "description": "Standard leather armor used by scouts and rogues. +2 to Initiative & +1 Spell Resistance."
+        },
+        "leather_armor":{
+            "type": "light",
+            "ac":11,
+            "cost":100,
+            "spell_resist": 1,
+            "initiative_boost": 2,
+            "description": "Reinforced leather, offering basic protection for scouts."
+        },
+        "studded_leather":{
+            "type": "light",
+            "ac":12,
+            "cost":250,
+            "spell_resist": 2,
+            "initiative_boost": 3,
+            "description": "Made from tough but flexible leather, and reinforced with close-set rivets. +3 to Initiative & +2 Spell Resistance."
+        },
+        "dark_leather":{
+            "type": "light",
+            "ac":12,
+            "cost":500,
+            "spell_resist": 2,
+            "spell_save": 1,
+            "initiative_boost": 4,
+            "description": "Studded leather, dyed black for stealth. +4 to Initiative, +2 Spell Resistance & +1 Spell Save."
+        },
+        "assassin_leather":{
+            "type": "light",
+            "ac":13,
+            "cost":1000,
+            "spell_resist": 3,
+            "spell_save": 2,
+            "initiative_boost": 5,
+            "description": "Leather made from a unique beast, boasting exceptional stealth and protection. +5 to Initiative, +3 Spell Resistance & +2 Spell Save."
+        },
+        "hide_armor":{
+            "type": "medium",
+            "ac":11,
+            "cost":50,
+            "spell_resist": 1,
+            "description": "Rugged armor made from the hides of wild beasts. +1 Spell Resistance."
+        },
+        "chain_shirt":{
+            "type": "medium",
+            "ac":11,
+            "cost":200,
+            "damage_resist": 1,
+            "description": "Interlocking metal rings, worn between layers of clothing or leather. +1 Damage Resistance."
+        },
+        "Studded_hide_armor":{
+            "name": "Studded Hide Armor",
+            "type": "medium",
+            "ac":12,
+            "cost":400,
+            "spell_resist": 2,
+            "description": "Dual layered hide armor held together with metal rivets. +2 Spell Resistance."
+        },
+        "breastplate":{
+            "type": "medium",
+            "ac":13,
+            "cost":800,
+            "damage_resist": 1,
+            "spell_resist": 1,
+            "description": "A fitted metal chest piece worn with supple leather. +1 Damage Resistance & +1 Spell Resistance."
+        },
+        "half_plate":{
+            "type": "medium",
+            "ac":14,
+            "cost":1400,
+            "damage_resist": 2,
+            "spell_resist": 2,
+            "description": "Shaped metal plates that cover most of the wearer's body. +2 Damage Resistance & +2 Spell Resistance."
+        },
+        "ring_mail":{
+            "type": "heavy",
+            "ac":12,
+            "cost":100,
+            "damage_resist": 1,
+            "description": "Leather armor with heavy rings sewn into it. +1 Damage Resistance."
+        },
+        "chainmail":{
+            "type": "heavy",
+            "ac":13,
+            "cost":400,
+            "damage_resist": 2,
+            "description": "A complete suit of chain mail, providing excellent protection. +2 Damage Resistance."
+        },
+        "splint":{
+            "type": "heavy",
+            "ac":14,
+            "cost":900,
+            "damage_resist": 3,
+            "description": "Narrow strips of metal riveted to a backing of leather. +3 Damage Resistance."
+        },
+        "plate":{
+            "type": "heavy",
+            "ac":15,
+            "cost":1600,
+            "damage_resist": 4,
+            "description": "Many shaped, interlocking metal plates cover the entire body. +4 Damage Resistance."
+        },
+        "plate_armor":{
+            "type": "heavy",
+            "ac":16,
+            "cost":2500,
+            "damage_resist": 5,
+            "description": "Exquisite metal plates, offering unmatched physical protection. +5 Damage Resistance."
+        },
+        "novice_robe":{
+            "type": "robe",
+            "ac": 10,
+            "bonus_mp": 2,
+            "spell_resist": 2,
+            "cost": 400,
+            "description": "A basic robe for apprentices. +2 Spell Resistance and MP."
+        },
+        "adept_robe":{
+            "type": "robe",
+            "ac": 11,
+            "bonus_mp": 4,
+            "spell_resist": 3,
+            "cost": 800,
+            "description": "A finely woven robe for experienced casters. +3 Spell Resistance and +4 MP."
+        },
+        "archmage_robe":{
+            "type": "robe",
+            "ac": 12,
+            "bonus_mp": 6,
+            "spell_resist": 4,
+            "cost": 1200,
+            "description": "A powerful robe crackling with energy. +4 Spell Resistance and +6 MP."
+        },
+        "monk_wraps":{
+            "type": "robe",
+            "ac": 12,
+            "bonus_sp": 2,
+            "spell_resist": 2,
+            "initiative_boost": 2,
+            "cost": 400,
+            "description": "Simple linen wraps, befitting a monk. +2 to Initiative, Spell Resistance & Stamina."
+        },
+        "ascendant_wraps":{
+            "type": "robe",
+            "ac": 13,
+            "bonus_sp": 4,
+            "spell_resist": 3,
+            "initiative_boost": 3,
+            "cost": 800,
+            "description": "Intricatley woven warps, awarded to well-practiced monks. +3 to Initiative, Spell Resistance & +4 to Stamina."
+        },
+        "grandmaster_wraps":{
+            "type": "robe",
+            "ac": 14,
+            "bonus_sp": 8,
+            "spell_resist": 4,
+            "initiative_boost": 4,
+            "cost": 1200,
+            "description": "Masterfully crafted wraps, reserved for the most skilled monks. +4 to Initiative, Spell Resistance & +8 to Stamina."
+        },
+        "behir_scale":{
+            "type": "medium",
+            "ac": 14,
+            "cost": 2200,
+            "in_shop": false,
+            "damage_resist": 2,
+            "spell_resist": 4,
+            "description": "Scales harvested from a Behir, naturally resistant to magic. +2 Damage Resistance, +4 Spell Resistance."
+        },
+        "bulette_plate":{
+            "type": "heavy",
+            "ac": 16,
+            "cost": 2800,
+            "in_shop": false,
+            "damage_resist": 6,
+            "description": "A heavy plate made from a Bulette's hide. +6 Damage Resistance."
+        },
+        "dragon_hide":{
+            "type": "medium",
+            "ac": 15,
+            "cost": 3500,
+            "in_shop": false,
+            "damage_resist": 4,
+            "spell_resist": 4,
+            "description": "Armor crafted from the hide of a young dragon. +4 Damage Resistance, +4 Spell Resistance."
+        },
+        "massive_shell":{
+            "type": "heavy",
+            "ac": 18,
+            "cost": 5000,
+            "in_shop": false,
+            "damage_resist": 8,
+            "description": "A massive, extremely heavy shell from a Dragon Turtle. +8 Damage Resistance."
+        },
+        "remorhaz_carapace":{
+            "type": "heavy",
+            "ac": 16,
+            "cost": 3200,
+            "in_shop": false,
+            "damage_resist": 5,
+            "spell_resist": 3,
+            "description": "The heated carapace of a Remorhaz. +5 Damage Resistance, +3 Spell Resistance."
+        },
+        "troll_bone_armor":{
+            "type": "medium",
+            "ac": 13,
+            "cost": 1500,
+            "in_shop": false,
+            "bonus_hp": 30,
+            "description": "Armor reinforced with troll bones. It seems to pulse with vitality. +30 Max HP."
+        }
+    }
+}

@@ -1,6 +1,6 @@
 import pygame
 
-def draw_bar(screen, x, y, w, h, current, max_val, color, font=None, border_radius=8):
+def draw_bar(screen, x, y, w, h, current, max_val, color, font=None, border_radius=8, show_numbers=True):
     from core.game_rules.constants import COLOR_GRAY, COLOR_BLACK
     ratio = min(1.0, current / max_val) if max_val > 0 else 0
 
@@ -18,7 +18,7 @@ def draw_bar(screen, x, y, w, h, current, max_val, color, font=None, border_radi
     from core.game_rules.constants import COLOR_GOLD
     pygame.draw.rect(screen, COLOR_GOLD, (x, y, w, h), 2, border_radius=border_radius)
 
-    if font:
+    if font and show_numbers:
         from interfaces.pygame.ui.panel import draw_text_outlined
         text_str = f"{int(current)} / {int(max_val)}"
         tw, th = font.size(text_str)

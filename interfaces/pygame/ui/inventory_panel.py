@@ -53,7 +53,17 @@ class InventoryPanel:
 
         ss_str = f"Spell DC: +{player.get('spell_save', 0)}"
         draw_text_outlined(screen, ss_str, self.font, COLOR_WHITE, rect.x + scale_x(15), curr_y)
-        curr_y += line_h + scale_y(20)
+        curr_y += line_h
+
+        # Sneak Attack (Rogue only)
+        rogue_level = player.get('class_levels', {}).get('rogue', 0)
+        if rogue_level > 0:
+            sa_dice = (rogue_level + 1) // 2
+            sa_str = f"Sneak Attack: {sa_dice}d6"
+            draw_text_outlined(screen, sa_str, self.font, COLOR_WHITE, rect.x + scale_x(15), curr_y)
+            curr_y += line_h
+
+        curr_y += scale_y(20)
 
         # Equipment
         eq = ["weapon", "armor", "shield", "trinket"]
@@ -94,35 +104,41 @@ class InventoryPanel:
         draw_text_outlined(screen, "Active Buffs:", self.font, COLOR_GOLD, rect.x + scale_x(15), curr_y)
         curr_y += line_h + scale_y(5)
         
-        buffs = []
-        # Extract buffs from weapon enchantments
-        upgrades = player.get('weapon_upgrades', {}).get(player.get('weapon', 'unarmed'), {})
-        enchant = upgrades.get('enchantment')
-        if enchant:
-            buffs.append(f"Weapon: {enchant.replace('_', ' ').title()}")
+        # Aggregated Buffs
+        totals = {
+            'Health': 0,
+            'Stamina': 0,
+            'Attack': 0,
+            'Damage': 0,
+            'Spell Resist': 0,
+            'Initiative': 0,
+            'Damage Resist': 0
+        }
+        special_buffs = []
 
-        # Extract buffs from trinket/robes/shields
-        t_stats = self.trinkets_db.get(player.get('trinket', 'none'), {})
-        if t_stats.get('bonus_hp'): buffs.append(f"Health +{t_stats['bonus_hp']}")
-        if t_stats.get('spell_save'): buffs.append(f"Spell DC +{t_stats['spell_save']}")
-        if t_stats.get('bonus_sp'): buffs.append(f"Stamina +{t_stats['bonus_sp']}")
-        if t_stats.get('bonus_atk'): buffs.append(f"Attack +{t_stats['bonus_atk']}")
+        # Aggregate stats from all equipment
+        for db, slot in [(self.trinkets_db, 'trinket'), (self.shields_db, 'shield'), (self.armor_db, 'armor')]:
+            stats = db.get(player.get(slot, 'none'), {})
+            totals['Health'] += stats.get('bonus_hp', 0)
+            totals['Stamina'] += stats.get('bonus_sp', 0)
+            totals['Attack'] += stats.get('bonus_atk', 0)
+            totals['Damage'] += stats.get('bonus_dmg', 0)
+            totals['Spell Resist'] += stats.get('spell_resist', 0)
+            totals['Initiative'] += stats.get('initiative_boost', 0)
+            totals['Damage Resist'] += stats.get('damage_resist', 0)
+
+        # Format display list
+        display_buffs = []
+        for stat, val in totals.items():
+            if val > 0:
+                display_buffs.append(f"{stat} +{val}")
         
-        s_stats = self.shields_db.get(player.get('shield', 'none'), {})
-        if s_stats.get('bonus_hp'): buffs.append(f"Health +{s_stats['bonus_hp']}")
-        if s_stats.get('spell_save'): buffs.append(f"Spell DC +{s_stats['spell_save']}")
-        if s_stats.get('bonus_sp'): buffs.append(f"Stamina +{s_stats['bonus_sp']}")
+        display_buffs.extend(special_buffs)
 
-        # Robe buffs
-        a_stats = self.armor_db.get(player.get('armor', 'none'), {})
-        if a_stats.get('spell_save'): buffs.append(f"Spell DC +{a_stats['spell_save']}")
-        if a_stats.get('bonus_sp'): buffs.append(f"Stamina +{a_stats['bonus_sp']}")
-        if a_stats.get('bonus_dmg'): buffs.append(f"Damage +{a_stats['bonus_dmg']}")
-
-        if not buffs:
+        if not display_buffs:
             draw_text_outlined(screen, "None", self.font, (150, 150, 150), rect.x + scale_x(30), curr_y)
         else:
-            for b in buffs:
+            for b in display_buffs:
                 draw_text_outlined(screen, f"• {b}", self.font, (200, 255, 200), rect.x + scale_x(25), curr_y)
                 curr_y += line_h
 
